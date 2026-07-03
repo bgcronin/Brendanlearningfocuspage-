@@ -1,0 +1,156 @@
+---
+// src/components/PricingCard.astro
+export interface Props {
+	title: string;
+	price: string;
+	pricePeriod: string;
+	features: string[];
+	buttonText: string;
+	buttonLink: string;
+}
+
+const { title, price, pricePeriod, features, buttonText, buttonLink } =
+	Astro.props;
+---
+
+<div class="pricing-card">
+	<div class="card-content">
+		<h3 class="title">{title}</h3>
+
+		<div class="price-container">
+			<span class="price-amount">{price}</span>
+			<span class="price-period">{pricePeriod}</span>
+		</div>
+
+		<ul class="features-list">
+			{
+				features.map((feature) => (
+					<li class="feature-item">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="20"
+							height="20"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="checkmark"
+						>
+							<polyline points="20 6 9 17 4 12" />
+						</svg>
+						<span>{feature}</span>
+					</li>
+				))
+			}
+		</ul>
+
+		<div class="description">
+			<slot />
+		</div>
+
+		<div class="button-wrapper">
+			<a href={buttonLink} class="cta-button">{buttonText}</a>
+		</div>
+	</div>
+</div>
+
+<style>
+	.pricing-card {
+		background: linear-gradient(
+			0deg,
+			rgba(74, 134, 149, 1) 0%,
+			rgba(29, 49, 75, 1) 100%
+		);
+		color: #ffffff;
+		border-radius: 12px;
+		padding: 20px;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.card-content {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1; /* Makes the card content fill the height */
+	}
+
+	.title {
+		font-size: 1.5rem; /* 24px */
+		font-weight: 700;
+		text-align: center;
+		letter-spacing: 1px;
+		text-transform: uppercase;
+		margin-bottom: 2rem;
+	}
+
+	.price-container {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
+	.price-amount {
+		font-size: 4rem; /* 64px */
+		font-weight: 700;
+	}
+
+	.price-period {
+		font-size: 1.25rem; /* 20px */
+		font-weight: 400;
+		margin-left: 4px;
+	}
+
+	.features-list {
+		list-style: none;
+		text-align: left;
+		padding: 0;
+		margin: 0 0 1.5rem 0;
+	}
+
+	.feature-item {
+		display: flex;
+		align-items: flex-start;
+		margin-bottom: 1rem;
+		font-weight: 300;
+		line-height: 1.6;
+	}
+
+	.feature-item .checkmark {
+		flex-shrink: 0;
+		margin-right: 12px;
+		margin-top: 4px;
+		width: 20px;
+		height: 20px;
+	}
+
+	.description {
+		font-weight: 300;
+		line-height: 1.6;
+		margin-bottom: 2rem;
+	}
+
+	.button-wrapper {
+		margin-top: auto; /* Pushes the button to the bottom */
+		text-align: center;
+	}
+
+	.cta-button {
+		display: inline-block;
+		border: 1px solid #ffffff;
+		border-radius: 9999px;
+		padding: 12px 32px;
+		text-decoration: none;
+		color: #ffffff;
+		font-weight: 500;
+		transition:
+			background-color 0.3s,
+			color 0.3s;
+	}
+
+	.cta-button:hover {
+		background-color: #ffffff;
+		color: #1d314b;
+	}
+</style>

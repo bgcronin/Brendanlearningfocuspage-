@@ -1,0 +1,115 @@
+---
+// src/components/BlogPostCard.astro
+import { Image } from "astro:assets";
+import categoriesData from "../data/categories.json";
+const { post } = Astro.props;
+
+const category = categoriesData.items.find(
+	(c) => c.value === post.data.category,
+);
+
+const datePublished = new Date(post.data.datePublished);
+const dateModified = post.data.dateModified
+	? new Date(post.data.dateModified)
+	: null;
+
+// Only show updated if modified is > 24 hours after published
+const isUpdated =
+	dateModified &&
+	dateModified.getTime() - datePublished.getTime() > 24 * 60 * 60 * 1000;
+---
+
+<a href={`/blog/${post.id.replace(/\.[^/.]+$/, "")}/`} class="card-link">
+	<article class="blog-card">
+		<Image
+			src={post.data.coverImage}
+			alt={`Featured image for ${post.data.title}`}
+			width={600}
+			format="webp"
+			class="card-image"
+		/>
+		<div class="card-content">
+			{category && <span class="category-badge">{category.label}</span>}
+			<p class="publish-date">
+				{isUpdated ? "Last Updated: " : "Published on "}
+				<time
+					datetime={(isUpdated
+						? dateModified
+						: datePublished
+					).toISOString()}
+				>
+					{
+						(isUpdated
+							? dateModified
+							: datePublished
+						).toLocaleDateString("en-us", {
+							year: "numeric",
+							month: "short",
+							day: "numeric",
+						})
+					}
+				</time>
+			</p>
+			<h3 class="card-title">{post.data.title}</h3>
+			<p class="read-more">Read More &rarr;</p>
+		</div>
+	</article>
+</a>
+
+<style>
+	/* Styles remain the same */
+	.card-link {
+		text-decoration: none;
+		color: inherit;
+		display: block;
+		border-radius: 8px;
+		overflow: hidden;
+		background-color: #f4f1ed;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
+	}
+	.card-link:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+	}
+	.card-image {
+		width: 100%;
+		height: auto;
+		object-fit: cover;
+	}
+	.card-content {
+		padding: 24px;
+		display: flex;
+		flex-direction: column;
+	}
+	.category-badge {
+		display: inline-block;
+		background-color: #437b8c;
+		color: white;
+		font-size: 0.75rem;
+		font-weight: 600;
+		padding: 4px 12px;
+		border-radius: 50px;
+		margin-bottom: 12px;
+		align-self: flex-start;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+	.publish-date {
+		font-size: 0.875rem;
+		color: #437b8c;
+		margin: 0 0 8px 0;
+	}
+	.card-title {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin: 0 0 12px 0;
+		color: #1c2f49;
+	}
+	.read-more {
+		font-weight: 500;
+		color: #437b8c;
+	}
+</style>

@@ -1,0 +1,467 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Showcase from "../components/Showcase.astro";
+import Section from "../components/Section.astro";
+import SimpleBanner from "../components/SimpleBanner.astro";
+import Button from "../components/Button.astro";
+import CardGrid from "../components/CardGrid.astro";
+import Card from "../components/Card.astro";
+import TwoColumnContent from "../components/TwoColumnContent.astro";
+import StyledList from "../components/StyledList.astro";
+import Faq from "../components/Faq.astro";
+import Schema from "../components/Schema.astro";
+import {
+	getMedicalClinicSchema,
+	getMedicalWebPageSchema,
+	getBreadcrumbSchema,
+} from "../utils/seo";
+import usImage from "../assets/images/img-Focus-Brisbane-Eye-ICL-Cronin-Gunn.webp";
+import { Image } from "astro:assets";
+
+const title = "Free Refractive Outcomes Analyzer | Focus Vision Brisbane";
+const description =
+	"Analyse your cataract surgery refractive outcomes, benchmark against ESCRS standards and optimise your IOL lens constants — free forever, from the surgeons at Focus Vision Brisbane.";
+const ogType = "website";
+
+const analyzerFeatures = [
+	{
+		title: "Benchmarks Accuracy",
+		text: "Benchmarks your refractive prediction accuracy against ESCRS 2024 standards",
+		icon: "target",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></g></svg>`,
+	},
+	{
+		title: "Key Metrics",
+		text: "Calculates mean absolute error (MAE), mean prediction error (MPE), and % within ±0.50 D and ±1.00 D",
+		icon: "activity",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg>`,
+	},
+	{
+		title: "Distribution Curves",
+		text: "Generates a cumulative UDVA distribution curve with Snellen equivalents",
+		icon: "chart-spline",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 16c.5-2 1.5-7 4-7c2 0 2 3 4 3c2.5 0 4.5-5 5-7"/></g></svg>`,
+	},
+	{
+		title: "Astigmatism Plots",
+		text: "Produces a double-angle astigmatism plot (power vector analysis)",
+		icon: "chart-scatter",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="18.5" cy="5.5" r=".5" fill="currentColor"/><circle cx="11.5" cy="11.5" r=".5" fill="currentColor"/><circle cx="7.5" cy="16.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="14.5" r=".5" fill="currentColor"/><path d="M3 3v16a2 2 0 0 0 2 2h16"/></g></svg>`,
+	},
+	{
+		title: "Formula Comparison",
+		text: "Compares IOL formula performance across Barrett Universal II, SRK/T, Kane, Holladay 2, and EVO",
+		icon: "sigma",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2"/></svg>`,
+	},
+	{
+		title: "Constant Optimisation",
+		text: "Optimises your IOL lens constants — A-constant, Lens Factor, Kane Constant, Surgeon Factor — to eliminate systematic refractive bias",
+		icon: "calculator",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8m0 8v4m0-8h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"/></g></svg>`,
+	},
+	{
+		title: "Performance Tracking",
+		text: "Tracks outcomes over time to detect learning curves and equipment changes",
+		icon: "history",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5m4-1v5l4 2"/></g></svg>`,
+	},
+	{
+		title: "Reporting & Export",
+		text: "Exports a full PDF outcomes report and CSV data file",
+		icon: "download",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M12 15V3m9 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10l5 5l5-5"/></g></svg>`,
+	},
+];
+
+const clinicalBenefits = [
+	{
+		title: "Identify Bias",
+		text: "Identify whether a mean prediction error exists in their dataset — the clearest signal that lens constant optimisation is needed",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><circle cx="12" cy="12" r="1"/><path d="M18.944 12.33a1 1 0 0 0 0-.66a7.5 7.5 0 0 0-13.888 0a1 1 0 0 0 0 .66a7.5 7.5 0 0 0 13.888 0"/></g></svg>`,
+	},
+	{
+		title: "Formula Performance",
+		text: "Detect formula-specific bias across the axial length range, particularly in long and short eyes where third- and fourth-generation formulas underperform",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m13 13.5l2-2.5l-2-2.5M21 21l-4.3-4.3M9 8.5L7 11l2 2.5"/><circle cx="11" cy="11" r="8"/></g></svg>`,
+	},
+	{
+		title: "Benchmark Performance",
+		text: "Benchmark performance against ESCRS published standards — 85% of eyes within ±0.50 D of target",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978m7-7.318v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978M18 9h1.5a1 1 0 0 0 0-5H18M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm0 0H4.5a1 1 0 0 1 0-5H6"/></g></svg>`,
+	},
+	{
+		title: "Track Improvements",
+		text: "Track improvement over time following equipment upgrades, formula changes, or surgical refinements",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></g></svg>`,
+	},
+	{
+		title: "Auditable Data",
+		text: "Generate auditable outcomes data for medico-legal documentation, credentialling, and professional development",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><circle cx="11.5" cy="14.5" r="2.5"/><path d="M13.3 16.3L15 18"/></g></svg>`,
+	},
+];
+
+const faqs = [
+	{
+		q: "Is the Focus Vision Refractive Outcomes Analyzer really free?",
+		a: "Yes — completely free, with no hidden costs, subscriptions, or registration required. Focus Vision has made this tool free as a contribution to the global ophthalmology community. It will remain free permanently. The only requirement is an internet connection to load the tool and a modern web browser (Chrome, Firefox, Safari, or Edge).",
+	},
+	{
+		q: "Do I need to install any software to use this tool?",
+		a: "No. The Focus Vision Refractive Outcomes Analyzer runs entirely in your web browser. There is nothing to install, no app to download, and no account to create. Simply open the web page and upload your Excel spreadsheet to begin.",
+	},
+	{
+		q: "Is my patient data secure when I use this tool?",
+		a: "Yes. All data processing occurs entirely within your browser — no patient data is ever transmitted to any external server, including Focus Vision's servers. The tool has been built with a strict Content Security Policy that explicitly blocks all outbound data connections. Your data never leaves your computer. We recommend de-identifying your data before upload as a best practice.",
+	},
+	{
+		q: "What file format does the analyzer accept?",
+		a: "The analyzer accepts .xlsx and .xls (Microsoft Excel) files. A free downloadable template is provided on the tool page. The template contains all required column headers, dropdown validations, and auto-calculated fields for spherical equivalent and prediction error.",
+	},
+	{
+		q: "How many eyes do I need for the analysis to be meaningful?",
+		a: "A minimum of 30 eyes is recommended for reliable outcomes benchmarking. For lens constant optimisation, the ESCRS recommends a minimum of 50 eyes per IOL model per formula. The analyzer will display a warning if your sample size falls below this threshold for any optimisation calculation.",
+	},
+	{
+		q: "What is refractive prediction error and why does it matter?",
+		a: "Refractive prediction error (PE) is the difference between the post-operative spherical equivalent refraction and the pre-operative target refraction calculated by the IOL power formula. It is the primary measure of IOL formula accuracy. A mean prediction error close to zero indicates no systematic bias; a non-zero mean PE indicates that lens constant optimisation may improve outcomes. The ESCRS benchmark is 85% of eyes within ±0.50 D of target.",
+	},
+	{
+		q: "What is lens constant optimisation and how does it improve outcomes?",
+		a: "Lens constant optimisation is the adjustment of a formula's IOL-specific constant — such as the A-constant (SRK/T), Lens Factor (Barrett Universal II), or Kane Constant — so that the mean prediction error in a surgeon's personal cohort is driven to zero. Manufacturer-supplied constants are derived from population averages and do not account for a surgeon's specific biometry equipment, surgical technique, or A-scan protocols. Optimising the constant to a surgeon's own data typically improves the proportion of patients achieving their target refraction by 5–15 percentage points.",
+	},
+	{
+		q: "Which IOL formulas does the lens constant optimiser support?",
+		a: "The Focus Vision Refractive Outcomes Analyzer supports lens constant optimisation for Barrett Universal II (Lens Factor), SRK/T (A-constant), Kane Formula (Kane Constant), Holladay 2 (Surgeon Factor), and EVO (EVO Constant). The correction factors applied are consistent with ESCRS published optimisation guidelines.",
+	},
+	{
+		q: "What is a double-angle plot (DAP) and what does it show?",
+		a: "A double-angle plot, also called a power vector or Alpins vector diagram, plots each eye's residual astigmatism as a point in a two-dimensional space (J0 vs J45 power vectors). The centroid of the distribution reveals systematic astigmatic bias — for example, a systematic against-the-rule shift in toric IOL alignment. It is the recommended method for astigmatism outcomes analysis by the ESCRS and Alpins methodology.",
+	},
+	{
+		q: 'What does "within ±0.50 D" mean and what is the ESCRS benchmark?',
+		a: "The proportion of eyes within ±0.50 D of the IOL target refraction is the primary global benchmark for IOL formula accuracy. The European Society of Cataract and Refractive Surgeons (ESCRS) published benchmark is 85% of eyes within ±0.50 D. High-performing formulas with optimised constants in experienced hands routinely achieve 90% or above. The analyzer displays your result with a colour-coded badge indicating whether you meet or fall below this standard.",
+	},
+	{
+		q: "How do I calculate spherical equivalent from a manifest refraction?",
+		a: "Spherical equivalent (SE) = Sphere + (Cylinder ÷ 2), using minus-cylinder convention. For example, a refraction of -0.25 / -0.50 × 90 has a spherical equivalent of -0.25 + (-0.50 ÷ 2) = -0.50 D. The Focus Vision template auto-calculates this column — you only need to enter sphere, cylinder, and axis.",
+	},
+	{
+		q: "What logMAR value corresponds to 6/6 Snellen vision?",
+		a: "6/6 Snellen (20/20 in US notation) corresponds to 0.00 logMAR. Other common equivalents: 6/9 = 0.18 logMAR, 6/12 = 0.30 logMAR, 6/18 = 0.48 logMAR, 6/60 = 1.00 logMAR. The analyzer's cumulative UDVA chart displays both logMAR values and Snellen equivalents on the x-axis.",
+	},
+	{
+		q: "Who built the Focus Vision Refractive Outcomes Analyzer?",
+		a: "The analyzer was designed and developed by Dr Brendan Cronin (FRANZCO, FWCRS) and Dr David Gunn (FRANZCO, CertLRS, FWCRS) of Focus Vision, Brisbane. Both surgeons hold international corneal and refractive surgery fellowship qualifications, are active researchers and international educators in the field.",
+	},
+	{
+		q: "Why is Focus Vision offering this tool for free?",
+		a: "Focus Vision's mission is world-class refractive outcomes — for our patients in Brisbane, and by extension, for patients of surgeons around the world who use our tools. We believe that better surgical analysis leads directly to better patient outcomes, and that access to this analysis should not be limited by geography, practice size, or budget. Sharing our expertise freely is a core part of how we operate.",
+	},
+	{
+		q: "Is this tool endorsed by the ESCRS or any professional body?",
+		a: "The Focus Vision Refractive Outcomes Analyzer has been designed in alignment with ESCRS published benchmarks and outcomes analysis guidelines. It is not formally endorsed by the ESCRS or any other professional body. Surgeons are encouraged to validate any optimised constants prospectively before routine clinical use, as recommended by ESCRS guidelines.",
+	},
+	{
+		q: "Can I use this tool for audit, credentialling, or medico-legal documentation?",
+		a: "The PDF export from the analyzer provides a formatted outcomes report suitable for personal audit and continuing professional development records. For formal credentialling or medico-legal purposes, surgeons should ensure their underlying data is accurate and complete, and should note that the tool provides statistical analysis — it does not constitute a regulatory audit nor do we guarantee that it is free from bug or errors. Always follow your jurisdiction's requirements for clinical data management.",
+	},
+];
+
+const graph = [
+	getMedicalClinicSchema(),
+	getMedicalWebPageSchema(
+		"/free-refractive-outcomes-analyzer",
+		title,
+		description,
+	),
+	getBreadcrumbSchema([
+		{
+			name: "Free Refractive Outcomes Analyzer",
+			item: "/free-refractive-outcomes-analyzer",
+		},
+	]),
+];
+---
+
+<BaseLayout
+	showCurve={false}
+	topColor="#f4f1ed"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+>
+	<Fragment slot="head-schema">
+		<Schema item={graph} />
+	</Fragment>
+
+	<Showcase
+		title="Free Refractive Outcomes Analyzer <span style='color: #437B8C;'>for Cataract and Lens Replacement</span>"
+		topText={[
+			"At Focus Vision, world-class refractive outcomes are not just our goal — they are our standard. Our surgeons, Dr David Gunn and Dr Brendan Cronin, have trained at the world's leading corneal and refractive surgery centres and have dedicated their careers to the pursuit of exceptional visual outcomes for every patient.",
+			"We built this free refractive outcomes analyzer because we believe every cataract and lens surgeon deserves access to the same rigorous analytical tools we use ourselves — regardless of the size of their practice or where in the world they operate.",
+		]}
+		bottomTextBold="This tool is free. It will always be free. No subscriptions. No Sign-up. No spam. No data uploads to a server. No registration required."
+		bottomTextRegular="Upload your surgical data, analyse your outcomes, and walk away with actionable insights — in minutes."
+		ctaText="Launch The Analyzer"
+		ctaHref="/refractive-outcomes-analyzer"
+	/>
+
+	<Section backgroundColor="#f4f1ed" paddingTop="med">
+		<h2 class="big-text">What the Analyzer Does</h2>
+
+		<CardGrid
+			backgroundColor="#f4f1ed"
+			cardBackgroundColor="#ffffff"
+			alignCards={true}
+		>
+			{
+				analyzerFeatures.map((feature) => (
+					<Card layout="icon">
+						<Fragment slot="image" set:html={feature.svg} />
+						<h3>{feature.title}</h3>
+						<p>{feature.text}</p>
+					</Card>
+				))
+			}
+		</CardGrid>
+	</Section>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="#C2DBE3"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+		padding="large"
+	>
+		<h2>All analysis runs entirely within your web browser.</h2>
+		<p>
+			<strong
+				>No patient data is ever transmitted to any server. Your data
+				remains yours.</strong
+			>
+		</p>
+		<Button
+			href="/refractive-outcomes-analyzer"
+			text="Start Your Analysis"
+		/>
+	</SimpleBanner>
+
+	<TwoColumnContent
+		imageSrc={usImage}
+		imageAlt="Dr Brendan Cronin and Dr David Gunn"
+		imagePosition="left"
+		backgroundColor="#1C2F49"
+		fullWidth={false}
+	>
+		<h2>Why Focus Vision Built This — Free, For the World</h2>
+		<p>
+			Focus Vision is Brisbane's premier refractive surgery clinic,
+			co-located with the Queensland Eye Institute — one of the largest
+			independent ophthalmology research groups in Australia. Our surgeons
+			have completed international corneal surgery fellowship training at
+			institutions including Bristol Eye Hospital (UK), Manchester Royal
+			Eye Hospital, the London Vision Clinic, and are among a select group
+			of Australians admitted as Fellows of the World College of
+			Refractive Surgery and Visual Sciences.
+		</p>
+
+		<p>
+			We regularly present research and teach at international
+			ophthalmology conferences, including the European Society of
+			Cataract and Refractive Surgeons (ESCRS). We understand, from direct
+			experience, that refractive outcomes analysis and IOL constant
+			optimisation are among the most clinically impactful things a
+			cataract surgeon can do — and yet the tools to do it properly have
+			historically been inaccessible, expensive, or technically demanding.
+		</p>
+
+		<p><strong>So we built one. And we made it free.</strong></p>
+
+		<p>
+			This analyzer embodies our belief that the pursuit of better
+			surgical outcomes should have no barriers. Whether you perform 50
+			cataract operations per year in a rural setting or 2,000 in a
+			metropolitan surgical centre, you deserve the same analytical rigour
+			that the world's best refractive surgeons apply to their own
+			practice.
+		</p>
+
+		<Button
+			href="/refractive-outcomes-analyzer"
+			text="Open Refractive Analyzer"
+			openInNewTab={false}
+		/>
+	</TwoColumnContent>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#ffffff"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h2>The Clinical Importance of Refractive Outcomes Analysis</h2>
+		<p>
+			Modern cataract surgery is, in essence, refractive surgery. Patients
+			who pay for premium intraocular lenses — whether multifocal, EDOF,
+			toric or toric-EDOF — have a right to expect spectacle independence,
+			and surgeons have a professional obligation to measure and improve
+			their results.
+		</p>
+
+		<p>Systematic refractive outcomes analysis enables surgeons to:</p>
+	</SimpleBanner>
+
+	<Section backgroundColor="#f4f1ed" paddingTop="none">
+		<CardGrid backgroundColor="#f4f1ed" cardBackgroundColor="#ffffff">
+			{
+				clinicalBenefits.map((benefit) => (
+					<Card layout="icon">
+						<Fragment slot="image" set:html={benefit.svg} />
+						<h3>{benefit.title}</h3>
+						<p>{benefit.text}</p>
+					</Card>
+				))
+			}
+		</CardGrid>
+	</Section>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#ffffff"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h2>About Lens Constant Optimisation</h2>
+		<p>
+			IOL manufacturers publish nominal lens constants derived from large,
+			heterogeneous populations. These constants are a starting point —
+			not an endpoint. Every surgeon, every biometer, every surgical
+			technique, and every A-scan measurement protocol introduces
+			systematic variations that cause a surgeon's real-world results to
+			deviate from the manufacturer's prediction.
+		</p>
+
+		<p>
+			Lens constant optimisation is the process of adjusting these
+			constants — the A-constant (SRK/T), Lens Factor (Barrett Universal
+			II), Kane Constant, or Surgeon Factor (Holladay 2) — so that the
+			mean prediction error in your specific cohort is driven to zero.
+			This single intervention, when performed on a dataset of 50 or more
+			eyes, reliably improves the proportion of patients achieving their
+			target refraction.
+		</p>
+
+		<p>
+			The Focus Vision Refractive Outcomes Analyzer performs this
+			optimisation automatically, applying the correct correction factor
+			for each supported formula, and presents the result with a 95%
+			confidence interval — so you know not just the optimised value, but
+			how precisely it has been determined from your data.
+		</p>
+
+		<Button
+			href="/refractive-outcomes-analyzer"
+			text="Optimise Your Constants"
+		/>
+	</SimpleBanner>
+
+	<Faq title="Frequently Asked Questions" faqs={faqs} style="eggshell" />
+
+	<Section backgroundColor="#C2DBE3">
+		<h2 class="big-text" style="color: #1C2F49;">
+			Why Your Vision Deserves Global-Standard Precision
+		</h2>
+		<div style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+			<p>
+				At Focus Vision, we believe that "good enough" isn't an option
+				when it comes to your sight. Modern cataract surgery is no
+				longer just about removing a cloudy lens; it is a refractive
+				procedure designed to give you the clearest vision possible,
+				often reducing or even eliminating the need for glasses.
+			</p>
+			<p>
+				To achieve this, our surgeons, Dr. Brendan Cronin and Dr. David
+				Gunn, use complex mathematical formulas to predict which
+				intraocular lens (IOL) power is perfect for your unique eye.
+				However, every surgeon and every piece of equipment is slightly
+				different. To reach the highest level of accuracy, these
+				formulas must be "fine-tuned" using real-world data.
+			</p>
+		</div>
+
+		<CardGrid
+			backgroundColor="#C2DBE3"
+			cardBackgroundColor="#ffffff"
+			textColor="#1C2F49"
+		>
+			<Card layout="icon">
+				<Fragment
+					slot="image"
+					set:html={`<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m15.477 12.89l1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526"/><circle cx="12" cy="8" r="6"/></g></svg>`}
+				/>
+				<h3>The Focus Vision Standard</h3>
+				<p>
+					We developed the Refractive Outcomes Analyzer—a
+					sophisticated tool used by eye surgeons worldwide—to ensure
+					our own surgical results meet the highest international
+					benchmarks.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Fragment
+					slot="image"
+					set:html={`<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18h8M3 22h18m-7 0a7 7 0 1 0 0-14h-1m-4 6h2m-2-2a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Zm3-6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg>`}
+				/>
+				<h3>Data-Driven Accuracy</h3>
+				<p>
+					By sharing this tool globally, we stay at the forefront of
+					ophthalmic research, ensuring that our Brisbane patients
+					benefit from the same rigorous data analysis used by the
+					world’s leading eye clinics.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Fragment
+					slot="image"
+					set:html={`<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M16 7h6v6"/><path d="m22 7l-8.5 8.5l-5-5L2 17"/></g></svg>`}
+				/>
+				<h3>Better Outcomes</h3>
+				<p>
+					Research shows that when surgeons "optimize" their data this
+					way, the percentage of patients achieving their target
+					vision significantly increases.
+				</p>
+			</Card>
+		</CardGrid>
+
+		<div style="text-align: center; margin-top: 40px; padding: 0 24px;">
+			<p>
+				<strong
+					>When you choose Focus Vision, you aren't just getting a
+					surgeon; <br /> you’re getting a team that literally wrote the
+					software for surgical perfection.</strong
+				>
+			</p>
+			<!-- <Button href="/contact" text="Book Your Assessment" /> -->
+		</div>
+	</Section>
+</BaseLayout>
+
+<style>
+	/* Targeting the primary color for Lucide icons */
+	.analyzer-icon {
+		color: #1c2f49; /* Matching the brand color */
+	}
+
+	.benefit-checkmark {
+		max-width: 60px;
+	}
+</style>

@@ -1,0 +1,143 @@
+---
+// src/components/ImageBanner.astro
+import type { ImageMetadata } from "astro";
+
+export interface Props {
+	backgroundImage: ImageMetadata | string;
+	textAlign?: "left" | "center" | "right";
+	headerTextColor?: string;
+	textColor?: string;
+	// UPDATED: The prop now accepts any string, allowing for pixel/percentage values.
+	mobileImagePosition?: string;
+}
+
+const {
+	backgroundImage,
+	textAlign = "center",
+	headerTextColor = "#FFFFFF",
+	textColor = "#FFFFFF",
+	mobileImagePosition = "center", // Default is still 'center'
+} = Astro.props;
+
+// Add a check to prevent the runtime error and provide a clear message
+if (!backgroundImage) {
+	throw new Error(
+		"[ImageBanner] The 'backgroundImage' prop is required and was not provided."
+	);
+}
+
+const backgroundImageUrl =
+	typeof backgroundImage === "string" ? backgroundImage : backgroundImage.src;
+const textAlignmentClass = `text-${textAlign}`;
+---
+
+<section
+	class="image-banner"
+	style={`background-image: url(${backgroundImageUrl}); --mobile-bg-position: ${mobileImagePosition};`}
+>
+	<div
+		class:list={["content-container", textAlignmentClass]}
+		style={`--header-color: ${headerTextColor}; --text-color: ${textColor};`}
+	>
+		<slot />
+	</div>
+</section>
+
+<style>
+	.image-banner {
+		position: relative;
+		width: 100%;
+		min-height: 700px;
+		background-size: cover;
+		background-position: center;
+		display: flex;
+		align-items: center; /* Vertically center the content container */
+	}
+
+	:global(.image-banner h2) {
+		font-size: 2.2rem;
+		margin-bottom: 0;
+		font-weight: 700;
+	}
+
+	@media (max-width: 800px) {
+		:global(.image-banner h2) {
+			font-size: 1.8rem;
+			margin-bottom: 0;
+		}
+	}
+
+	/* Lighter gradient overlay */
+	.image-banner::before {
+		content: "";
+		position: absolute;
+		inset: 0; /* A shorthand for top, right, bottom, left = 0 */
+		background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+		z-index: 1;
+	}
+
+	.content-container {
+		position: relative;
+		z-index: 2; /* Sits on top of the overlay */
+		width: 100%;
+		max-width: 800px; /* Limit the container's width */
+		color: var(--text-color); /* Use CSS variable for text color */
+		font-weight: 700; /* Bold text for all content */
+		padding: 64px 134px; /* Desktop padding */
+		display: flex;
+		flex-direction: column;
+	}
+
+	/* Text alignment classes now also control container margin */
+	.text-left {
+		margin-right: auto; /* Pushes container to the left */
+		align-items: flex-start;
+		text-align: left;
+	}
+	.text-center {
+		margin-inline: auto; /* Centers the container */
+		align-items: center;
+		text-align: center;
+	}
+	.text-right {
+		margin-left: auto; /* Pushes container to the right */
+		align-items: flex-end;
+		text-align: right;
+	}
+
+	/* Make all slotted headers uppercase and apply header color */
+	:global(.content-container h1),
+	:global(.content-container h2),
+	:global(.content-container h3),
+	:global(.content-container h4),
+	:global(.content-container h5),
+	:global(.content-container h6) {
+		text-transform: uppercase;
+		color: var(--header-color); /* Use CSS variable for header color */
+	}
+
+	:global(.image-banner p) {
+		letter-spacing: 0.9px;
+	}
+
+	/* Responsive padding */
+	@media (max-width: 1200px) {
+		.content-container {
+			padding: 48px 60px;
+		}
+	}
+
+	@media (max-width: 800px) {
+		.content-container {
+			padding: 40px 24px;
+			/* On mobile, always center container and text regardless of prop */
+			margin-inline: auto;
+			align-items: center;
+			text-align: center;
+		}
+		/* Apply the custom background position on mobile */
+		.image-banner {
+			background-position: var(--mobile-bg-position);
+		}
+	}
+</style>

@@ -1,0 +1,81 @@
+---
+// src/components/ContactLayout.astro
+// The mapPosition prop has been removed.
+---
+
+<section class="contact-layout-section">
+	<div class="container">
+		<div class="text-column">
+			<div class="text-wrapper">
+				<slot name="text" />
+			</div>
+		</div>
+		<div class="map-column">
+			<slot name="map" />
+		</div>
+	</div>
+</section>
+
+<style>
+	.contact-layout-section {
+		width: 100%;
+		background-color: #f4f1ed; /* Using a default background color */
+	}
+
+	.container {
+		display: grid;
+		/* Updated to a 30/70 split */
+		grid-template-columns: 3fr 7fr;
+	}
+
+	.text-column {
+		padding: 80px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.text-wrapper {
+		margin: 0 auto; /* Horizontally centers the content block */
+		max-width: 300px; /* Constrains the width of the text block */
+		width: 100%;
+		text-align: left; /* Ensures text inside is left-aligned */
+	}
+
+	/* The map column has no padding, allowing the map inside to be edge-to-edge */
+	.map-column {
+		/* No padding needed */
+	}
+
+	/* --- Styles for slotted content --- */
+	:global(.contact-layout-section h3) {
+		font-size: 2.25rem;
+		font-weight: 600;
+		color: #1c2f49;
+		margin-bottom: 1.5rem;
+	}
+
+	:global(.contact-layout-section p) {
+		font-size: 1rem;
+		font-weight: 300;
+		line-height: 1.8;
+		color: #333;
+	}
+
+	/* Responsive stacking for mobile */
+	@media (max-width: 800px) {
+		.container {
+			grid-template-columns: 1fr;
+		}
+		.text-column {
+			padding: 60px 24px;
+			order: 2; /* Ensures text is always below the map on mobile */
+		}
+		.map-column {
+			order: 1; /* Ensures map is always on top on mobile */
+		}
+		.text-wrapper {
+			text-align: center; /* Center-align the text on mobile */
+		}
+	}
+</style>

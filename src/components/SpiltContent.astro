@@ -1,0 +1,76 @@
+---
+// src/components/SpiltContent.astro
+export interface Props {
+	backgroundColor?: string;
+	titleColor?: string;
+	textColor?: string;
+}
+const {
+	backgroundColor = "transparent", // Default to a white background
+	titleColor = "#1C2F49", // Default to dark blue for titles (h3)
+	textColor = "#437B8C", // Default to lighter blue for text (p)
+} = Astro.props;
+---
+
+<section
+	class="spilt-content-section"
+	style={`background-color: ${backgroundColor}; --title-color: ${titleColor}; --text-color: ${textColor};`}
+>
+	<div class="grid-container">
+		<slot />
+	</div>
+</section>
+
+<style>
+	.spilt-content-section {
+		width: 100%;
+		max-width: 1200px;
+		margin: 64px auto;
+		padding: 0 24px;
+		text-align: center;
+	}
+
+	.grid-container {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 40px;
+	}
+
+	/* --- STYLES FOR SLOTTED CONTENT --- */
+	:global(.spilt-content-section img) {
+		width: 100%;
+		height: auto;
+		display: block;
+		aspect-ratio: 1 / 1;
+		object-fit: cover;
+		border-radius: 8px;
+		margin-bottom: 24px;
+	}
+
+	:global(.spilt-content-section h1),
+	:global(.spilt-content-section h2),
+	:global(.spilt-content-section h3),
+	:global(.spilt-content-section h4),
+	:global(.spilt-content-section h5),
+	:global(.spilt-content-section h6) {
+		font-size: 1.5rem;
+		font-weight: 600;
+		margin: 0;
+		color: var(--title-color); /* Use CSS variable */
+	}
+
+	:global(.spilt-content-section p) {
+		font-size: 1rem;
+		font-weight: 400;
+		color: var(--text-color); /* Use CSS variable */
+		margin: 8px 0 24px 0;
+		/* text-transform: uppercase; */
+	}
+
+	@media (max-width: 800px) {
+		.grid-container {
+			grid-template-columns: 1fr;
+			gap: 60px;
+		}
+	}
+</style>

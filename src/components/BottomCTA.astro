@@ -1,0 +1,105 @@
+---
+// src/components/BottomCTA.astro
+import SimpleBanner from "./SimpleBanner.astro";
+import Button from "./Button.astro";
+import siteData from "../data/site.json";
+
+export interface Props {
+	h2Text: string;
+	h3Text?: string;
+	buttonText?: string;
+	buttonHref?: string;
+	about: string;
+}
+
+const {
+	h2Text,
+	h3Text,
+	buttonText = "Schedule a Consultation",
+	buttonHref = "/contact",
+	about,
+} = Astro.props;
+---
+
+<div class="bottom-cta-wrapper">
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="#C2DBE3"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+		padding="notset"
+	>
+		<h2 class="cta-heading">{h2Text}</h2>
+		{h3Text && <h3 class="cta-subheading">{h3Text}</h3>}
+
+		<Button href={buttonHref} text={buttonText} openInNewTab={false} />
+
+		<p class="cta-paragraph">
+			For more information about {about} or to schedule a consultation, contact
+			us at <a href={`tel:${siteData.phoneNumber}`}
+				>{siteData.phoneNumberText}</a
+			> or
+			<a href={`mailto:${siteData.email}?subject=${about} Inquiry`}
+				>{siteData.email}</a
+			>.
+		</p>
+
+		<p class="cta-footer">
+			Our friendly staff are here to answer any questions you may have.
+		</p>
+	</SimpleBanner>
+</div>
+
+<style>
+	.bottom-cta-wrapper :global(.content-container) {
+		/* padding-top: 70px !important;
+		padding-bottom: 70px !important; */
+	}
+	.cta-heading {
+		margin-top: 100px;
+		font-size: 2.5rem !important;
+		margin-bottom: 0.5rem;
+		max-width: 900px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.cta-subheading {
+		font-size: 1.5rem !important;
+		font-weight: 400 !important;
+		margin-bottom: 2rem;
+	}
+	.cta-paragraph {
+		/* Inherits font size and color from parent SimpleBanner */
+		font-size: 0.95rem !important;
+		line-height: 1.8;
+		margin-top: 2rem;
+		max-width: 700px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.cta-footer {
+		font-size: 0.9rem !important;
+		font-style: italic;
+		margin-top: 1rem;
+	}
+
+	@media (max-width: 800px) {
+		.cta-heading {
+			font-size: 1.8rem !important;
+		}
+		.cta-subheading {
+			font-size: 1.2rem !important;
+		}
+	}
+
+	.cta-paragraph a {
+		color: #437b8c;
+		text-decoration: underline;
+		font-weight: 500;
+		transition: color 0.3s ease;
+	}
+	.cta-paragraph a:hover {
+		color: #1c2f49;
+	}
+</style>

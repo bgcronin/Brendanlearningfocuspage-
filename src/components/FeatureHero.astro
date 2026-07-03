@@ -1,0 +1,183 @@
+---
+// src/components/FeatureHero.astro
+import { type ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+export interface Props {
+	backgroundImage?: ImageMetadata | string;
+	textPosition?: "left" | "center" | "right";
+	textColor?: "light" | "dark";
+	bottomColor?: string; // Prop to control the curve's fill color
+	addOverlay?: boolean; // Prop to add a dark overlay
+	mobileImagePosition?: string; // New prop for mobile image focus
+}
+
+const {
+	backgroundImage,
+	textPosition = "center",
+	textColor = "light",
+	bottomColor = "#ffffff", // Default to white, matches the next section
+	addOverlay = false,
+	mobileImagePosition = "center", // Default is still 'center'
+} = Astro.props;
+
+// Map props to our own custom, defined CSS classes
+const textPositionClass = `position-${textPosition}`;
+const textColorClass = `text-${textColor}`;
+
+// Conditionally set the background style
+const backgroundStyle = backgroundImage
+	? `background-image: url(${typeof backgroundImage === "string" ? backgroundImage : backgroundImage.src});`
+	: `background: radial-gradient(circle, rgba(67, 123, 140, 1) 18%, rgba(36, 81, 104, 1) 55%, rgba(29, 54, 80, 1) 100%);`;
+
+// Conditionally set the min-height
+const heroHeightStyle = `min-height: ${backgroundImage ? "650px" : "400px"};`;
+---
+
+<section
+	class:list={["feature-hero", { "with-overlay": addOverlay }]}
+	style={`${backgroundStyle} ${heroHeightStyle}; --mobile-bg-position: ${mobileImagePosition};`}
+>
+	<div class:list={["content-container", textPositionClass, textColorClass]}>
+		<slot />
+	</div>
+
+	<!-- Updated Curve SVG -->
+	<div class="curve-wrapper">
+		<svg
+			class="curved-shape-svg"
+			viewBox="0 0 1440 118"
+			preserveAspectRatio="none"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				d="M0,50 C360,110 1080,110 1440,50 L1440,118 L0,118 Z"
+				style={`fill: ${bottomColor};`}
+			>
+			</path>
+			<path
+				class="svg-border-path"
+				d="M0,50 C360,110 1080,110 1440,50"
+				vector-effect="non-scaling-stroke"></path>
+		</svg>
+	</div>
+</section>
+
+<style>
+	.feature-hero {
+		position: relative;
+		width: 100%;
+		/* min-height is now handled by an inline style */
+		background-size: cover;
+		background-position: center;
+		display: flex;
+	}
+
+	/* This pseudo-element creates the dark overlay when the 'with-overlay' class is present */
+	.feature-hero.with-overlay::before {
+		content: "";
+		position: absolute;
+		inset: 0; /* A shorthand for top, right, bottom, left = 0 */
+		background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.2));
+
+		z-index: 0;
+
+		background: linear-gradient(
+			135deg,
+			rgba(66, 121, 139, 0.45) 0%,
+			rgba(32, 65, 90, 0.25) 100%
+		);
+
+		background: linear-gradient(
+			135deg,
+			rgba(66, 121, 139, 0.27) 0%,
+			rgba(32, 65, 90, 0.15) 100%
+		);
+	}
+
+	.content-container {
+		width: 100%;
+		max-width: 1440px;
+		margin: 0 auto;
+		padding: 64px 134px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center; /* Vertical centering */
+		z-index: 1;
+	}
+
+	/* Text color classes */
+	.text-light {
+		color: #ffffff;
+	}
+	.text-dark {
+		color: #1c2f49;
+	}
+
+	/* Text position classes for desktop */
+	.position-left {
+		align-items: flex-start;
+		text-align: left;
+	}
+	.position-center {
+		align-items: center;
+		text-align: center;
+	}
+	.position-right {
+		align-items: flex-end;
+		text-align: right;
+	}
+
+	/* --- Curve Styles --- */
+	.curve-wrapper {
+		--stroke-thickness: 8px;
+		position: absolute;
+		bottom: -1px;
+		left: 0;
+		width: 100%;
+		line-height: 0;
+	}
+
+	.curved-shape-svg {
+		width: 100%;
+		height: auto;
+		display: block;
+	}
+
+	.svg-border-path {
+		fill: none !important; /* Ensures this path is never filled */
+		stroke: #4b8796;
+		stroke-width: var(--stroke-thickness);
+	}
+
+	/* Responsive padding */
+	@media (max-width: 1200px) {
+		.content-container {
+			padding: 48px 60px;
+		}
+	}
+
+	@media (max-width: 800px) {
+		.content-container {
+			padding: 40px 24px;
+			align-items: center;
+			text-align: center;
+		}
+
+		/* NEW: Apply the custom background position on mobile */
+		.feature-hero {
+			background-position: var(--mobile-bg-position);
+		}
+
+		h1,
+		h2,
+		h3,
+		h4,
+		h5,
+		h6 {
+			overflow-wrap: break-word;
+			margin: 1.2rem 0;
+			text-wrap: balance;
+		}
+	}
+</style>

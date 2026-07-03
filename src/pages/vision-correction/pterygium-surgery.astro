@@ -1,0 +1,347 @@
+---
+import TreatmentLayout from "../../layouts/TreatmentLayout.astro";
+import { Image } from "astro:assets";
+import heroImage from "../../assets/images/hero/img-bestPterygiumsurgerybrisbane.jpg"; // Make sure to import your image
+import Button from "../../components/Button.astro";
+import Card from "../../components/Card.astro";
+import StyledList from "../../components/StyledList.astro";
+// Component imports will be added here
+import SimpleBanner from "../../components/SimpleBanner.astro";
+import CardGrid from "../../components/CardGrid.astro";
+import TwoColumnContent from "../../components/TwoColumnContent.astro";
+import Faq from "../../components/Faq.astro";
+import AboutUs from "../../components/AboutUs.astro";
+import BottomCTA from "../../components/BottomCTA.astro";
+import ReviewedBy from "../../components/ReviewedBy.astro";
+
+const faqs = [
+	{
+		q: "What is a pterygium and when does it need to be removed?",
+		a: "A pterygium is an abnormal wedge-shaped growth of tissue on the white of the eye (conjunctiva) that extends onto the cornea. It is caused by long-term exposure to UV light, wind, and dust — earning the common name 'surfer's eye'. Small pterygia that are not growing and not affecting vision can often be monitored with lubricating drops. Surgery is recommended when the pterygium is growing towards the centre of the cornea, causing persistent redness or irritation, distorting vision, or causing significant cosmetic concern.",
+	},
+	{
+		q: "What is the no-stitch pterygium surgery technique?",
+		a: "Focus Vision performs premium pterygium surgery using a conjunctival autograft technique with <strong>fibrin tissue-glue instead of sutures</strong>. A small graft of healthy conjunctival tissue is taken from under the eyelid and used to cover the area where the pterygium was removed, preventing regrowth. Attaching this graft with medical-grade fibrin glue — rather than stitches — significantly reduces post-operative discomfort, speeds up recovery, and produces a much better cosmetic result. Stitches on the eye surface are a primary cause of prolonged irritation after pterygium surgery.",
+	},
+	{
+		q: "Will my pterygium come back after surgery?",
+		a: "Pterygium recurrence is very rare with modern techniques – the rate is around 1 in 1000. The conjunctival autograft technique used at Focus Vision has significantly lower recurrence rates than older bare sclera techniques. Wearing UV-protective wraparound sunglasses after surgery and in everyday life is strongly recommended to reduce the risk of recurrence. Our internationally trained corneal subspecialists have extensive experience in pterygium surgery and achieving excellent long-term cosmetic and functional results.",
+	},
+	{
+		q: "How much does pterygium surgery cost in Brisbane?",
+		a: "The cost of pterygium surgery at Focus Vision depends on your private health insurance. Pterygium removal is a Medicare-covered procedure, and private health insurance with hospital cover will contribute to theatre and anaesthetic fees. A full written cost estimate is provided at your consultation before any decision is made. Please contact our team to discuss your specific situation.",
+	},
+	{
+		q: "Is pterygium surgery painful?",
+		a: "The procedure itself is completely pain-free — it is performed under local anaesthetic with sedation, so you are heavily sedated and will not feel anything during the surgery. In the days following the operation, some irritation, redness, and a foreign body sensation are normal and expected. Most patients find this very manageable with the prescribed eye drops and oral medication. Avoiding stitches by using tissue glue significantly reduces post-operative discomfort compared with traditional pterygium surgery.",
+	},
+	{
+		q: "How long is the recovery after pterygium surgery?",
+		a: "Most patients take 3 or 4 days off work after sutureless pterygium surgery. The eye will be red and may feel gritty for two to three weeks as it heals.",
+	},
+	{
+		q: "Why should I have my pterygium removed by a corneal specialist?",
+		a: "Pterygium surgery is performed on the cornea — the most optically critical surface of the eye. Choosing a corneal subspecialist rather than a general ophthalmologist means your surgeon has completed dedicated international fellowship training in corneal surgery. At Focus Vision, Dr Cronin and Dr Gunn are among the most experienced corneal surgeons in Queensland, and their subspecialty training means they are specifically equipped to handle complex cases, minimise scarring, and achieve the best possible cosmetic outcomes.",
+	},
+];
+
+const title = "Premium Pterygium Surgery | Focus Vision | Woolloongabba, QLD";
+const description = `Premium Pterygium Surgery at Focus Vision — a safe, no-stitches approach tailored to you. Using glue instead of sutures makes a big a difference for pterygyium surgery. Choosing Focus Vision for your premium ptryigum surgery in Brisbane means choosing to avoid sutures for your pterygium surgery.`;
+
+const author = "Dr Brendan Cronin";
+const authorUrl = "/about-dr-brendan-cronin";
+const lastReviewed = "2026-05-03T00:00:00Z";
+
+// Import the card images
+import card1 from "../../assets/images/pterygium-surgery/pterygium-surgery-reading-glasses-icon.webp";
+import card2 from "../../assets/images/pterygium-surgery/pterygium-no-stitches-glue-surgery-reading-glasses-icon.webp";
+import card3 from "../../assets/images/pterygium-surgery/pterygium-asleep-stitches-glue-surgery-reading-glasses-icon.webp";
+import card4 from "../../assets/images/pterygium-surgery/pterygium-experience-stitches-glue-surgery-reading-glasses-icon.webp";
+
+import twoColumnImageDrGunn from "../../assets/images/img-Dr2BGunn2BLaser2BSurgeon2BEye2BBrisbane.webp";
+import twoColumnImagePteryiguim from "../../assets/images/pterygium-surgery/pteryiguim-brisbane-vision-stitches.webp";
+
+import card02 from "../../assets/images/implantable-contact-lens/Focus+Vision+costs+of+Laser+Eye+Surgery+reading+glasses+copy.webp";
+import card01 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Laser+Eye+Surgery+ICL+implantable+contact+lenses+copy.webp";
+
+const ogType = "website";
+---
+
+<TreatmentLayout
+	showCurve={true}
+	topColor="#C2DBE3"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	title={title}
+	author={author}
+	authorUrl={authorUrl}
+	lastReviewed={lastReviewed}
+	pagePath="/vision-correction/pterygium-surgery"
+	procedureName="Pterygium Surgery"
+	procedureDescription="Pterygium removal using a premium, suture-avoiding approach for comfort and cosmesis."
+	faqs={faqs}
+	backgroundImage={heroImage}
+	textPosition="left"
+	textColor="light"
+	heroBottomColor="#FFFFFF"
+	mobileImagePosition="70% 0%"
+	addOverlay={true}
+>
+	<Fragment slot="hero-content">
+		<h2>Look & Feel Your Best</h2>
+		<h1>Premium Pterygium Removal in Queensland</h1>
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h4>
+			Pterygium treatment is a life-changing procedure that not only
+			removes your pterygium but also improves how your eyes look and
+			feel. This surgical removal offers rapid recovery and can prevent
+			pterygium recurrence.
+		</h4>
+		<h3>
+			Choosing Focus Vision, means a no-stitches approach for your
+			pterygium surgery.
+		</h3>
+	</SimpleBanner>
+
+	<div class="basic-section" style="background-color: #f4f1ed">
+		<h3 class="big-text">Advantages of “Premium” Pterygium Surgery</h3>
+		<h4>
+			Premium Pterygium Surgery offers several key advantages over
+			traditional pterygium surgery:
+		</h4>
+
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#FFFFFF">
+			<Card layout="icon">
+				<Image
+					src={card1}
+					alt="Blue before-and-after eye icon representing premium pterygium surgery in Brisbane with no-stitches approach"
+				/>
+				<h3>Improved Appearance</h3>
+				<p>
+					Premium pterygium surgery can remove redness in your eyes so
+					you can look and feel your best. Often its a benigh growth
+					onto the cornea that was caused by too much UV light.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card2}
+					alt="Blue icon representing no-stitches approach in premium pterygium surgery"
+				/>
+				<h3>No Stitches</h3>
+				<p>
+					Standard pterygium surgery uses stitches on your eye, making
+					the recovery long and painful. Our surgical procedures use
+					glue for reduced recovery time.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card3}
+					alt="Blue icon indicating patient will be asleep during premium pterygium surgery"
+				/>
+				<h3>You'll be Asleep</h3>
+				<p>
+					At Focus Vision, you can relax in the comfort of knowing
+					your surgery will be performed with you heavily sedated and
+					essentially asleep.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card4}
+					alt="Blue icon representing experienced surgeon for premium pterygium surgery"
+				/>
+				<h3>Experienced Surgeons</h3>
+				<p>
+					All our surgeons at Focus Vision are internationally trained
+					corneal subspecialists. This means they have extra training
+					and expertise in operating on the part of your eye where the
+					pterygium is.
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<TwoColumnContent
+		imageSrc={twoColumnImageDrGunn}
+		imageAlt="Dr. David Gunn operating a machine for premium pterygium surgery in Brisbane with no-stitches approach"
+		imagePosition="left"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h2>Pterygium Removal</h2>
+		<p>
+			Pterygium excision is performed to remove abnormal tissue that forms
+			on the conjunctiva , often caused by <b>long-term exposure</b>
+			to UV light, wind, or dust. It is often called surfer's eye and can affect
+			vision.
+		</p>
+
+		<p>
+			Unlike cataract surgery, which involves the internal lens of the
+			eye, pterygium surgery targets the eye's surface. A <strong
+				>conjunctival graft</strong
+			> is placed to cover the area where the growth was removed, and with
+			modern <strong>no-stitches techniques</strong>, <strong
+				>tissue glue</strong
+			> is used instead of sutures, offering faster recovery and lower recurrence
+			rates.
+		</p>
+
+		<Button
+			href="/about-focus-vision"
+			text="Read more about the Focus Team"
+			openInNewTab={false}
+		/>
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#C2DBE3"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h2>Pterygium Removed Using Glue</h2>
+		<p>
+			<strong
+				>Choosing Focus Vision for your premium pterygium surgery in
+				Brisbane, means choosing to avoid sutures in a no-stitches
+				approach.</strong
+			> During pterygium excision, a graft of tissue is taken from under the
+			eye lid. This graft is then placed over the area where the pterygium
+			was removed to stop it from growing back.
+		</p>
+
+		<p>
+			The most modern and refined technique is to use fibrin glue to
+			attach this graft and avoid the irritation caused by stitches. This
+			leads to less pain, shorter recovery and often improved cosmetic
+			outcomes.
+		</p>
+	</SimpleBanner>
+
+	<TwoColumnContent
+		imageSrc={twoColumnImagePteryiguim}
+		imageAlt="Close-up of eyes before pterygium surgery with no-stitches approach"
+		imagePosition="right"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h3>Are You a Candidate for Premium Pterygium Surgery?</h3>
+		<p>
+			Pterygium is very common in Queensland - we have some of the highest
+			rates in the world due to our levels of UV light exposure.
+		</p>
+
+		<p>
+			Premium Pterygium Surgery is ideal for individuals who have noticed:
+		</p>
+
+		<StyledList position="left">
+			<li>
+				Their pterygium tissue is growing larger and they cannot wear
+				contact lenses.
+			</li>
+			<li>
+				The fleshy growth has a red appearance that you find
+				cosmetically unappealing.
+			</li>
+			<li>There is irritation or dryness from the pterygium.</li>
+			<li>
+				Their vision is being affected or their glasses prescription is
+				getting stronger from the pterygium.
+			</li>
+		</StyledList>
+
+		<br />
+
+		<Button
+			href="/contact"
+			text="Schedlue a Consultation"
+			openInNewTab={false}
+		/>
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<div class="basic-section" style="background-color: #f4f1ed">
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#f4f1ed">
+			<Card layout="icon">
+				<Image
+					src={card01}
+					alt="Blue icon of eyes showing pterygium for no-stitches pterygium surgery"
+				/>
+				<h3>The Premium Pterygium Surgery Procedure</h3>
+				<p>
+					Premium Pterygium Surgery is a safe and effective treatment
+					that typically takes less than 20 minutes per eye. AYour
+					operation will be performed in an accredited day hospital
+					with a team of nurses and doctors looking after you. The
+					procedure is performed under local anaesthetic and sedation
+					which means you will be heavily sedated.
+				</p>
+
+				<p>
+					During the procedure, the pterygium is carefully removed
+					from the front of your eye and a graft of skin is collected
+					and then secured with fibrin glue.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card02}
+					alt="Blue medical billing icon representing cost and financing for no-stitches pterygium surgery"
+				/>
+				<h3>
+					Cost and Financing Options for Premium Pterygium Surgery
+				</h3>
+				<p>
+					The cost of Premium Pterygium Surgery can vary depending on
+					your insurance level. If you have held private hospital
+					insurance that covers pterygium surgery (Item numbers 42686
+					and 42641) for at least 12 months you will be able to use
+					this to fund some of your treatment. Our practice offers
+					transparent pricing and flexible financing options to make
+					Premium Pterygium Surgery accessible to all patients. During
+					your consultation, we will provide you with a detailed cost
+					estimate based on your specific needs.
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<Faq
+		title="Common questions about Premium Pterygium Surgery:"
+		faqs={faqs}
+	/>
+
+	<AboutUs backgroundColor="#F4F1ED" stylePreset="Eggshell" />
+
+	<ReviewedBy
+		author={author}
+		authorUrl={authorUrl}
+		lastReviewed={lastReviewed}
+	/>
+
+	<BottomCTA
+		h2Text="Ready to enjoy clear vision, clear eyes and improved quality of life?"
+		h3Text="Schedule a consultation with our experts today."
+		about="Premium Pterygium Surgery"
+	/>
+</TreatmentLayout>

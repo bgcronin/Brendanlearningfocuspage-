@@ -1,0 +1,117 @@
+---
+// src/components/AccreditationTable.astro
+const accreditations = [
+	{
+		standard: "Day hospital accreditation",
+		status: "South Brisbane Day Hospital — ACHS accredited",
+	},
+	{
+		standard: "Specialist registration",
+		status: "AHPRA — both surgeons registered",
+	},
+	{
+		standard: "Specialist college",
+		status: "RANZCO Fellows (both surgeons)",
+	},
+	{
+		standard: "International societies",
+		status: "ESCRS, ISRS, Cornea Society members",
+	},
+	{
+		standard: "Health fund recognition",
+		status: "Bupa, Medibank, HCF, Defence Health, Navy Health",
+	},
+	{
+		standard: "Co-location",
+		status: "Queensland Eye Institute",
+	},
+];
+---
+
+<div class="accreditation-card">
+	<div class="table-header">
+		<span class="col-1">Standard</span>
+		<span class="col-2">Body / Status</span>
+	</div>
+	<div class="table-body">
+		{
+			accreditations.map((item) => (
+				<div class="table-row">
+					<span class="col-1">{item.standard}</span>
+					<span class="col-2">{item.status}</span>
+				</div>
+			))
+		}
+	</div>
+</div>
+
+<style>
+	.accreditation-card {
+		background-color: #ffffff;
+		border: 1px solid #e2e8f0;
+		border-radius: 24px;
+		overflow: hidden;
+		max-width: 1000px;
+		margin: 0 auto;
+		text-align: left;
+	}
+
+	.table-header {
+		display: grid;
+		grid-template-columns: 1fr 1.5fr;
+		padding: 24px 40px;
+		border-bottom: 1px solid #f1f5f9;
+		background-color: #f8fafc;
+	}
+
+	.table-header span {
+		font-weight: 700;
+		color: #1c2f49;
+		font-size: 1rem;
+	}
+
+	.table-row {
+		display: grid;
+		grid-template-columns: 1fr 1.5fr;
+		padding: 24px 40px;
+		border-bottom: 1px solid #f1f5f9;
+	}
+
+	.table-row:last-child {
+		border-bottom: none;
+	}
+
+	.col-1 {
+		font-weight: 600;
+		color: #1c2f49;
+	}
+
+	.col-2 {
+		color: #475569;
+	}
+
+	@media (max-width: 768px) {
+		.table-header {
+			display: none;
+		}
+
+		.table-row {
+			grid-template-columns: 1fr;
+			gap: 8px;
+			padding: 20px;
+		}
+
+		.col-1 {
+			font-size: 0.9rem;
+			color: #64748b;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+		}
+
+		.col-2 {
+			font-size: 1.1rem;
+			color: #1c2f49;
+			font-weight: 500;
+		}
+	}
+</style>

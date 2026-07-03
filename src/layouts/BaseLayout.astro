@@ -1,0 +1,125 @@
+---
+import siteInfo from "../data/site.json";
+import Seo from "../components/Seo.astro";
+import { getImage } from "astro:assets";
+import Navigation from "../components/Navigation.astro";
+import Footer from "../components/Footer.astro";
+import "../styles/reset.css";
+import "../styles/global.css";
+import { Font, Image } from "astro:assets";
+import HealthEngineWidget from "../components/HealthEngineWidget.astro";
+import GoogleTag from "../components/GoogleTag.astro";
+import FacebookPixel from "../components/FacebookPixel.astro";
+
+// In your main layout file
+const pathname = Astro.url.pathname;
+// Gets the last part of the URL, e.g., "about-us" from "/about-us/"
+const slug = pathname.split("/").filter(Boolean).pop() || "home";
+
+interface Props {
+	title?: string;
+	showCurve?: boolean;
+	topColor?: string;
+	bottomColor?: string;
+	direction?: "down" | "up";
+	bodyClass?: string;
+	description: string;
+	author?: string;
+	datePublished?: Date;
+	dateModified?: Date;
+	ogType?: "website" | "article";
+	ogImage?: ImageMetadata;
+	noindex?: boolean;
+}
+
+const {
+	title: customTitle,
+	showCurve,
+	topColor,
+	bottomColor,
+	direction,
+	bodyClass,
+	description,
+	author,
+	datePublished,
+	dateModified,
+	ogType,
+	ogImage,
+	noindex,
+} = Astro.props;
+
+let processedOgImage = undefined;
+if (ogImage) {
+	processedOgImage = await getImage({
+		src: ogImage,
+		width: 1200,
+		height: 630,
+		format: "jpg",
+	});
+}
+
+// Formats the slug into a nice title, e.g., "About Us"
+const generatedTitle =
+	!slug || slug === "index"
+		? "Home"
+		: slug
+				.replace(/-/g, " ")
+				.replace(/\b\w/g, (char) => char.toUpperCase());
+
+const title = customTitle || generatedTitle;
+---
+
+<!doctype html>
+<html lang="en-AU">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+		<link rel="icon" type="image/png" href="/favicon.png" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		<Seo
+			title={title}
+			description={description}
+			ogType={ogType}
+			ogImage={processedOgImage}
+			noindex={noindex}
+		/>
+		<Font cssVariable="--font-poppins" preload />
+		<slot name="head-schema" />
+		<!-- <GoogleTag /> -->
+		<slot name="googleTags" />
+		<FacebookPixel />
+		<script
+			defer
+			src="https://cloud.umami.is/script.js"
+			data-website-id="3363d9e7-f01f-47fa-b3a8-2d5c04eb4ec9"></script>
+		<link rel="preconnect" href="https://healthengine.com.au" crossorigin />
+		<title>{title} | Focus Vision | Woolloongabba, QLD</title>
+	</head>
+	<body class:list={[bodyClass]}>
+		<slot name="bodyStart" />
+
+		<!-- Meta Pixel Code -->
+		<noscript>
+			<img
+				height="1"
+				width="1"
+				style="display:none"
+				src="https://www.facebook.com/tr?id=1954468922154379&ev=PageView&noscript=1"
+				alt=""
+			/>
+		</noscript>
+		<!-- End Meta Pixel Code -->
+		<Navigation />
+		<div role="main">
+			<slot />
+		</div>
+		<Footer
+			showCurve={showCurve}
+			topColor={topColor}
+			direction={direction}
+			bottomColor={bottomColor}
+		/>
+		<HealthEngineWidget />
+	</body>
+</html>

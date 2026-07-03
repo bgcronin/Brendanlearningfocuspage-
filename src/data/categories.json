@@ -1,0 +1,10 @@
+{
+  "items": [
+    { "label": "Cataract Surgery", "value": "cataract-surgery" },
+    { "label": "Corneal Diseases", "value": "corneal-diseases" },
+    { "label": "Innovation & Research", "value": "innovation-research" },
+    { "label": "Keratoconus", "value": "keratoconus" },
+    { "label": "Laser Eye Surgery", "value": "laser-eye-surgery" },
+    { "label": "Patient Information", "value": "patient-information" }
+  ]
+}

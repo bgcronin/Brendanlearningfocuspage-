@@ -1,0 +1,263 @@
+:root {
+  --dark-blue-color: #1c2f49;
+}
+
+/* General Body & Font Setup */
+body {
+  margin: 0;
+  /* font-family: "Poppins", sans-serif; */
+  /* font-family: var(--font-poppins); */
+  font-family:
+    var(--font-poppins),
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+  /* -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale; */
+  background-color: #fff;
+  overflow-x: hidden;
+  /* 4. Add accessible line-height */
+  line-height: 1.5;
+  /* 5. Improve text rendering */
+  -webkit-font-smoothing: antialiased;
+}
+
+.center-content-wrap {
+  padding: 100px 0;
+  text-align: center;
+}
+
+/* Used as a wrap for the cardgrid, named stupidly */
+.basic-section {
+  padding: 100px 0;
+  text-align: center;
+}
+
+.basic-section .big-text {
+  color: var(--dark-blue-color);
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+/* Button Stack on mobile but next to each other on desktop */
+
+.button-stack-wrap {
+  display: inline-block;
+  padding: 20px 10px 0 0;
+}
+
+/* .button-stack-wrap {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap: 15px;
+  grid-row-gap: 30px;
+}
+
+@media (max-width: 600px) {
+  .highlighted-header {
+    font-size: 2rem !important;
+  }
+} */
+
+/* 1. Use a more-intuitive box-sizing model */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+* {
+  margin: 0;
+}
+
+/* 3. Enable keyword animations */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    interpolate-size: allow-keywords;
+  }
+}
+
+/* 6. Improve media defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* 7. Inherit fonts for form controls */
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+/* 8. Avoid text overflows */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+  margin: 1.5rem 0;
+  text-wrap: balance;
+}
+
+.feature-hero .content-container h1,
+.feature-hero .content-container h2 {
+  text-transform: capitalize;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  font-size: 2.3rem;
+}
+
+.feature-hero .content-container h2 {
+  font-size: 2rem;
+  font-style: italic;
+}
+
+/* https://www.focusvision.com.au/laser-eye-surgery/ has a button and need padding */
+.feature-hero .content-container .custom-button {
+  margin-top: 30px;
+}
+
+.feature-hero .text-dark h1 {
+  text-shadow: none;
+}
+
+/* 9. Improve line wrapping */
+p {
+  text-wrap: pretty;
+}
+
+/*
+  10. Create a root stacking context
+*/
+#root,
+#__next {
+  isolation: isolate;
+}
+
+p {
+  margin: 1.5rem 0;
+}
+
+.global-box-content {
+  text-align: left;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.pricing-card-wrapper .text-wrapper {
+  padding: 0px 10px 50px 10px !important;
+}
+
+.global-box-content-small {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 50px 20px 100px;
+}
+
+.thankyou-page .content-small {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0px 20px 100px;
+}
+
+b,
+strong {
+  font-weight: bold;
+}
+
+.highlighted-header {
+  font-size: 5rem !important;
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  padding: 15px;
+  /* border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px; */
+}
+
+@media (max-width: 1200px) {
+  .pricing-card-wrapper .card-grid-container {
+    padding: 45px 3% !important;
+    gap: 0px !important;
+  }
+
+  .pricing-card {
+    padding: 20px 20px 50px 20px;
+  }
+
+  .pricing-card .card-content {
+    padding-bottom: 20px;
+  }
+
+  .feature-hero .content-container h1 {
+    font-size: 2.1rem;
+  }
+
+  .feature-hero .content-container h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .highlighted-header {
+    font-size: 2rem !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .pricing-card-wrapper .text-wrapper {
+    padding: 0px 10px 0px 10px !important;
+  }
+
+  .thankyou-page .content-small {
+    padding: 0px 0px 70px;
+  }
+
+  .pricing-card-wrapper .card-grid-container {
+    padding: 15px 0px !important;
+  }
+
+  .pricing-card-wrapper .global-box-content {
+    padding: 0;
+  }
+
+  .basic-section .big-text {
+    font-size: 2.2rem;
+    margin: 0 10px;
+  }
+
+  .site-footer .footer-middle {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .contact .feature-hero {
+    min-height: auto !important;
+  }
+
+  .feature-hero .content-container h1 {
+    font-size: 1.8rem;
+  }
+
+  .feature-hero .content-container h2 {
+    font-size: 1.6rem;
+  }
+}
+
+.text-wrapper .custom-button {
+  margin-top: auto; /* pushes it to the bottom */
+  align-self: center;
+}

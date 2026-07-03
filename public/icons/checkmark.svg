@@ -1,0 +1,6 @@
+<svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- The light blue background circle -->
+  <circle cx="50" cy="50" r="50" fill="#B2C7D0"/>
+  <!-- The dark blue checkmark path -->
+  <path d="M28 51.5L44 67.5L72 39.5" stroke="#2D3E50" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

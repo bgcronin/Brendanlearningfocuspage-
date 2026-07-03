@@ -1,0 +1,38 @@
+---
+//https://www.focusvision.com.au/thank-you
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "../components/Button.astro";
+import SimpleBanner from "../components/SimpleBanner.astro";
+const title = "Error 404";
+const description = `Error 404`;
+const ogType = "website";
+---
+
+<BaseLayout
+	showCurve={false}
+	topColor="#ffffff"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+>
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<div class="center-content-wrap">
+			<h1>Oops! Error 404.</h1>
+
+			<p>
+				The page you are trying to reach may no longer exist, or has a
+				missing link.
+			</p>
+
+			<Button href="/" text="Head back to the Home Page" />
+		</div>
+	</SimpleBanner>
+</BaseLayout>

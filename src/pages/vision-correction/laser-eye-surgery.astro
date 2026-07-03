@@ -1,0 +1,390 @@
+---
+import TwoColumnContent from "../../components/TwoColumnContent.astro";
+import { Image } from "astro:assets";
+import AboutUs from "../../components/AboutUs.astro";
+import TreatmentLayout from "../../layouts/TreatmentLayout.astro";
+import YouTubeSection from "../../components/YouTubeSection.astro";
+import SimpleBanner from "../../components/SimpleBanner.astro";
+import Button from "../../components/Button.astro";
+import BottomCTA from "../../components/BottomCTA.astro";
+import Faq from "../../components/Faq.astro";
+import ReviewedBy from "../../components/ReviewedBy.astro";
+
+const faqs = [
+	{
+		q: "How much does laser eye surgery cost in Brisbane in 2026?",
+		a: "At Focus Vision in Brisbane, laser eye surgery starts from <strong>$3,500 per eye</strong> for TransPRK (no-touch surface laser) and <strong>$4,250 per eye</strong> for LASIK and CLEAR/SMILE. All prices are all-inclusive — there are no hidden costs for higher prescriptions, and every package includes all pre-operative assessments, the procedure itself, and one full year of aftercare appointments. Interest-free payment plans are available from as little as <strong>$34 per week</strong>. For a full price comparison with other Brisbane clinics, see our <a href='/costs'>Costs page</a>.",
+	},
+	{
+		q: "What is the difference between LASIK and SMILE laser eye surgery?",
+		a: "The main difference is that LASIK involves creating a corneal flap, while SMILE (performed as <strong>CLEAR</strong> at Focus Vision) is a flapless, 'keyhole' procedure. CLEAR is often preferred for patients with dry eyes or those playing contact sports, as it preserves more corneal stability. Both achieve excellent visual outcomes.",
+	},
+	{
+		q: "What is Ray Tracing LASIK?",
+		a: "Ray Tracing LASIK is a fully customized laser treatment that uses wavefront data to correct higher-order aberrations for superior night vision and contrast. Focus Vision is currently the only clinic in Queensland offering this technology.",
+	},
+	{
+		q: "Am I a suitable candidate for laser eye surgery?",
+		a: "Most people over 18 with a stable glasses prescription are suitable candidates. The key factors are: a stable prescription for at least 12 months, healthy corneas with adequate thickness, no active eye disease, and not currently pregnant or breastfeeding. Patients with thin corneas, high prescriptions, or dry eyes may be better suited to TransPRK or ICL surgery instead. The best way to find out is to take our <a href='/laser-suitability-test'>free laser suitability test online</a>, or book a free assessment with our optometrist team at Focus Vision in Woolloongabba.",
+	},
+	{
+		q: "Is laser eye surgery painful?",
+		a: "The procedure itself is painless — anaesthetic eye drops are applied before treatment, so you feel no sharp pain. You may be aware of a light pressure sensation for approximately 20 seconds during LASIK flap creation. After LASIK or CLEAR, most patients experience a gritty or watery feeling for a few hours, which settles overnight. TransPRK patients experience 3 to 5 days of moderate discomfort as the corneal surface heals, which is managed with prescribed drops and pain relief.",
+	},
+	{
+		q: "How long is the recovery after laser eye surgery?",
+		a: "<ul><li><strong>LASIK/CLEAR:</strong> 24-hour vision improvement; return to work in 1–2 days.</li><li><strong>TransPRK:</strong> 3–5 days of discomfort; return to work in 7-10 days.</li><li><strong>ICL/Cataract:</strong> Dramatic improvement within 24 hours; return to work in 2–4 days.</li></ul>",
+	},
+	{
+		q: "Does Medicare or private health insurance cover laser eye surgery in Australia?",
+		a: "Medicare does not cover elective laser vision correction, including LASIK, CLEAR/SMILE, or TransPRK. However, some private health insurance funds — including BUPA, Medibank Private, Navy Health, and Defence Health — may provide a partial benefit for certain procedures under extras cover. Focus Vision will check your specific entitlements as part of your free assessment. Interest-free payment plans are available to make surgery accessible regardless of insurance status.",
+	},
+	{
+		q: "Why should I choose Focus Vision for laser eye surgery in Brisbane?",
+		a: "Focus Vision is co-founded and led by two internationally fellowship-trained corneal subspecialists — Dr Brendan Cronin and Dr David Gunn — who trained at the Manchester Royal Eye Hospital and Bristol Eye Hospital in the UK respectively. We are the only laser eye surgery clinic in Queensland to offer Ray Tracing LASIK, and our laser suite is housed inside the South Brisbane Day Hospital — one of the very few accredited private day hospitals in Australia where laser eye surgery is performed. This means the safety, hygiene, and monitoring standards of a fully accredited hospital apply to every procedure.",
+	},
+	{
+		q: "What is TransPRK and how is it different from standard PRK?",
+		a: "Both are surface laser techniques with no corneal flap. In standard PRK the epithelium is removed manually; in TransPRK the laser removes it in a single no-touch step before seamlessly reshaping the cornea. Each has advantages. At Focus Vision we always select the technique best suited to your individual eyes based on the detailed measurements taken at your assessment.",
+	},
+	{
+		q: "Can I have laser eye surgery if I am pregnant or breastfeeding?",
+		a: "No. You should wait three to six months after you have finished breastfeeding before undergoing surgery. Pregnancy and nursing cause hormonal changes that can temporarily alter your corneal shape and prescription. Waiting ensures your results are based on a stable, permanent measurement.",
+	},
+	{
+		q: "What happens if I blink or move my eye during the procedure?",
+		a: "You cannot 'ruin' the surgery by moving. We use a gentle device to keep your eyelids open, preventing blinking. Additionally, our advanced lasers use active eye-trackers that monitor your eye position 1,000+ times per second, automatically pausing the laser if you move outside a microscopic range.",
+	},
+	{
+		q: "Will I be awake during the surgery? Does it hurt?",
+		a: "Generally you are awake, however as our laser is in a hospital you can have CLEAR performed while you sleep. We are the only laser eye clinic in Brisbane that is able to offer laser eye surgery while you sleep.",
+	},
+	{
+		q: "Can I drive myself home after the procedure?",
+		a: "No. You must arrange for a friend or carer to drive you home. While your vision improves rapidly, your eyes will be sensitive to light and you may be mildly sedated. Most patients are cleared to drive themselves to their follow-up appointment the next morning.",
+	},
+	{
+		q: "Is laser eye surgery permanent, or will I need it again in 10 years?",
+		a: "The reshaping of your cornea is permanent. However, laser surgery does not stop the natural aging of the eye. While your distance vision remains corrected, most people will still develop presbyopia (the need for reading glasses) in their mid-40s or 50s as a separate age-related change.",
+	},
+	{
+		q: "Will I have issues with night vision, such as halos or glare?",
+		a: "Temporary halos are a normal part of the healing process and usually resolve within weeks. Modern Ray Tracing LASIK specifically targets the microscopic imperfections that cause glare, meaning most patients actually experience sharper night vision after surgery than they did with glasses or contacts.",
+	},
+	{
+		q: "I was told my corneas are too thin for LASIK—do I have other options?",
+		a: "Yes. If your corneas are too thin for LASIK, you may be an ideal candidate for TransPRK (a surface-based laser) or ICL (Implantable Contact Lens) surgery. These procedures provide the same high-quality visual results without the need to remove significant corneal tissue.",
+	},
+];
+
+const title = "LASIK Brisbane | Focus Vision";
+const description = `Experience clearer vision with advanced LASIK surgery at Focus Vision. Safe, precise, and effective. Contact us today to book your consultation`;
+
+const author = "Dr Brendan Cronin";
+const authorUrl = "/about-dr-brendan-cronin";
+const lastReviewed = "2026-05-03T00:00:00Z";
+
+// cards
+
+import CardGrid from "../../components/CardGrid.astro";
+import Card from "../../components/Card.astro";
+
+// Import the card images
+import card1 from "../../assets/images/laser-eye-surgery/img-Dr-Brendan-Cronin-Ophthalmologist-Queensland-Eye-Institute-Brisbane-Laser.jpg";
+import card2 from "../../assets/images/laser-eye-surgery/img-Focus-Vision-Bris-Laser-Eye-Surgery-ICL-Brendan-Cronin-David-Gunn.jpg";
+import card3 from "../../assets/images/laser-eye-surgery/img-Brisbane-Focus-Vision-Laser-Eye-Surgery-ICL-Brendan-Cronin-David-Gunn.jpg";
+
+// Import the Two col images
+import col1 from "../../assets/images/laser-eye-surgery/img-Laser-Surgeon-Vision-LASIK-Eye-ICL-Cronin-Gunn.jpg";
+import col2 from "../../assets/images/img-DrBrendanCroninBrisbaneLaser.jpg";
+import col3 from "../../assets/images/laser-eye-surgery/img-Focus-Laser-Surgeons-Queensland-Ophthalmology.jpg";
+import col4 from "../../assets/images/laser-eye-surgery/img-Best-eye2C-Vision-Brisbane-premier-for-eye-LASI.jpg";
+
+// images
+import heroImage from "../../assets/images/hero/img-FocusVisionLaserEyeSurgeryBr.jpg"; // Make sure to import your image
+
+const ogType = "website";
+---
+
+<TreatmentLayout
+	showCurve={true}
+	topColor="#C2DBE3"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	title={title}
+	author={author}
+	authorUrl={authorUrl}
+	lastReviewed={lastReviewed}
+	pagePath="/vision-correction/laser-eye-surgery"
+	procedureName="Laser Eye Surgery (LASIK, PRK, Lenticule Extraction)"
+	procedureDescription="Laser vision correction reshapes the cornea using advanced techniques such as LASIK, PRK, or lenticule extraction to reduce dependence on glasses or contact lenses."
+	faqs={faqs}
+	backgroundImage={heroImage}
+	textPosition="right"
+	textColor="light"
+	heroBottomColor="#FFFFFF"
+	addOverlay={true}
+>
+	<Fragment slot="hero-content">
+		<h1>Find out if you can be glasses free today</h1>
+		<Button
+			href="/laser-suitability-test"
+			text="Take the laser eye surgery suitability test"
+			openInNewTab={false}
+		/>
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h2>Imagine life without glasses and contact lenses</h2>
+		<p>
+			Over the past 25 years, LASIK has become the most popular and
+			widespread procedure to remove the need for glasses and contact
+			lenses. It is one of the most successful elective medical procedures
+			ever invented.
+		</p>
+		<h3>
+			Experience the freedom of life without glasses or contact lenses
+			with LASIK
+		</h3>
+		<p>
+			Welcome to a world of crystal-clear vision with laser eye surgery at
+			Focus Vision. As a leading provider of LASIK in Brisbane, we are
+			committed to delivering personalised, advanced vision correction.
+			Our highly experienced team of internationally trained cornea
+			specialists utilize cutting-edge technology to ensure optimal
+			outcomes for our patients.
+		</p>
+	</SimpleBanner>
+
+	<div class="basic-section" style="background-color: #F4F1ED;">
+		<h2 class="big-text">Our Patient Journey</h2>
+
+		<CardGrid
+			alignCards={true}
+			backgroundColor="#F4F1ED"
+			cardBackgroundColor="#F4F1ED"
+		>
+			<Card layout="imageBottom">
+				<div slot="image">
+					<Image
+						src={card1}
+						alt="Dr Brendan Cronin in a suit sits beside an ophthalmology slit lamp microscope in a medical office, smiling at the camera—symbolizing expertise in advanced LASIK and commitment to better vision."
+					/>
+				</div>
+				<h2>1. Assessment</h2>
+				<p>
+					You will meet our friendly team who will examine you and
+					take detailed measurements of your eyes. LASIK might not be
+					right for everyone, so it is essential to have a thorough
+					consultation and assessment with out team at Focus Vision to
+					see if you’re a good candidate. For most people, LASIK is a
+					fantastic option to achieve better vision and a more
+					carefree lifestyle!
+				</p>
+			</Card>
+
+			<Card layout="imageBottom">
+				<div slot="image">
+					<Image
+						src={card2}
+						alt="Two male medical professionals (Dr Brendan Cronin & Dr David Gunn) in blue scrubs and caps stand next to advanced LASIK equipment in a clean, modern clinic room. A stool and computer monitor are also visible in the background, highlighting a setting dedicated to clearer vision."
+					/>
+				</div>
+				<h2>2. Meet your Surgeon</h2>
+				<p>
+					At your initial assessment a customised treatment plan will
+					be developed for you. After this, you will meet your laser
+					eye surgeon who will thoroughly examine your eyes, discuss
+					your eye sight concerns and talk through your options.
+				</p>
+			</Card>
+
+			<Card layout="imageBottom">
+				<div slot="image">
+					<Image
+						src={card3}
+						alt="A smiling man gives a piggyback ride to a woman outdoors. They both look happy, enjoying the greenery and hills in the background—perhaps celebrating the joy of clearer vision after LASIK surgery."
+					/>
+				</div>
+				<h2>3. Enjoy a life free from glasses and contact lenses</h2>
+				<p>
+					Your quick and easy procedure will be performed and an
+					exciting new chapter of your life will begin!
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<YouTubeSection
+		videoId="4TmKuMtdv_M"
+		title="Preparing for your laser eye surgery assessment"
+		heading="Preparing for Your Assessment"
+		text="This video will help you to prepare for your appointment with your doctor at Focus Vision."
+	>
+		<Button href="/contact" text="Book A Free Assessment today" />
+	</YouTubeSection>
+
+	<TwoColumnContent
+		imageSrc={col1}
+		imageAlt="High-tech laser equipment used in eye surgery."
+		imagePosition="right"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h2>Reasons for LASIK</h2>
+		<p>
+			Safety: Focus Vision uses the latest laser technology performed only
+			by highly trained corneal specialists Amazing vision: Focus Vision
+			offers the latest Ray Tracing LASIK technology which offers
+			exceptional visual outcomes. Fast: Each eye only takes a few minutes
+			to treat. Comfortable: LASIK is comfortable and painless. Minimal
+			downtime: Recovery is comfortable and fast with minimal time off
+			work and study. Established: Over 30 million patients have had LASIK
+			worldwide.
+		</p>
+
+		<h3>Ray Tracing LASIK</h3>
+		<p>
+			Focus Vision are proud to offer the latest form of PRK known as
+			Transepithlial PRK or “TransPRK”. TransPRK offers an excellent
+			alternative to LASIK for patients requiring a different approach to
+			vision correction. Its benefits include:
+		</p>
+
+		<Button
+			href="/ray-tracing-lasik"
+			text="Read more about Ray Tracing LASIK Technology"
+			openInNewTab={false}
+		/>
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<TwoColumnContent
+		imageSrc={col2}
+		imageAlt="A man and woman in golf attire comparing LASIK and PRK laser eye surgery procedures on a smartphone."
+		imagePosition="left"
+		backgroundColor="#F4F1ED"
+		stylePreset="Eggshell"
+	>
+		<h2>LASIK vs PRK</h2>
+		<p>
+			While LASIK is a popular choice for vision correction,
+			Photorefractive Keratectomy (PRK) is another effective option,
+			especially for patients with thinner corneas or certain lifestyle
+			considerations. The key difference is in how the cornea is prepared
+			for the laser treatment. Unlike LASIK, which creates a thin flap in
+			the cornea, PRK removes the outer layer of the cornea, which
+			naturally regenerates after surgery. PRK has a longer visual
+			recovery with some discomfort for a few days and so it is usually
+			reserved for patients who are poor candidates for LASIK. Each
+			procedure has its advantages, and our team at Focus Vision is
+			dedicated to guiding you towards the best choice for your eyes.
+		</p>
+
+		<h3>TransPRK</h3>
+		<p>
+			Focus Vision are proud to offer the latest form of PRK known as
+			Transepithlial PRK or “TransPRK”. TransPRK offers an excellent
+			alternative to LASIK for patients requiring a different approach to
+			vision correction. Its benefits include:
+		</p>
+		<ul>
+			<li>
+				A “no-touch” technique where the laser does all the treatment
+				without any contact.
+			</li>
+			<li>
+				Suitability for patients with thin corneas or other corneal
+				issues.
+			</li>
+			<li>Elimination of risks associated with creation corneal flap.</li>
+			<li>High success rates in achieving clear vision.</li>
+		</ul>
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<TwoColumnContent
+		imageSrc={col3}
+		imageAlt="Clear vision achieved through laser eye surgery"
+		imagePosition="right"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h3>What is LALEX (SMILE/CLEAR/SmartSight/SILK)</h3>
+		<p>
+			Lenticule extraction procedures change the shape of the cornea by
+			removing a disc of tissue through a keyhole type approach. There are
+			a number of brand names for lenticule type procedure such as CLEAR,
+			SMILE, SmartSight and SILK. These all fall under the general term of
+			LALEX which stands for Laser Assisted Lenticule Extraction. LALEX
+			has a number of potential benefits, but also some drawbacks
+			particularly in cetain prescriptions (such as astigmatism or
+			hyperopia). LALEX has been increasing in popularity in recent years
+			and at Focus Vision we are proud to offer the CLEAR procedure by
+			Ziemer. At your assessment you will be presented with the full range
+			of laser vision correction options and if you are a candidate for
+			LALEX we will discuss it with you in detail.
+		</p>
+
+		<Button
+			href="/blog/lenticule-extraction-clear"
+			text="Learn more about the CLEAR Procedure"
+			openInNewTab={false}
+		/>
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<TwoColumnContent
+		imageSrc={col4}
+		imageAlt="Young woman considering laser eye surgery for vision improvement"
+		imagePosition="right"
+		backgroundColor="#FFFFFF"
+		stylePreset="Lightblue"
+	>
+		<h3>Am I a Candidate for LASIK?</h3>
+		<p>
+			Are you considering LASIK or PRK for vision correction? The ideal
+			candidate for these procedures is someone with a stable
+			prescription, healthy eyes, and is not pregnant or breastfeeding.
+			Factors like age, lifestyle, and overall eye health play a crucial
+			role in determining your suitability. We invite you to schedule a
+			comprehensive consultation at FOCUS VISION to evaluate your
+			candidacy and explore your options.
+		</p>
+
+		<Button
+			href="/contact"
+			text="Book A Free Assessment today"
+			openInNewTab={false}
+		/>
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<Faq
+		title="Frequently Asked Questions about Laser Eye Surgery:"
+		faqs={faqs}
+	/>
+
+	<AboutUs />
+
+	<ReviewedBy
+		author={author}
+		authorUrl={authorUrl}
+		lastReviewed={lastReviewed}
+	/>
+
+	<BottomCTA
+		h2Text="Ready to take the first step towards a life with enhanced vision?"
+		h3Text="Book Your Consultation Today and discover how LASIK or PRK can change your life."
+		buttonText="Book Your Free Assessment Today"
+		about="LASIK or PRK vision correction"
+	/>
+</TreatmentLayout>

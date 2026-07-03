@@ -1,0 +1,38 @@
+{
+  "name": "Focus Vision",
+  "description": "Enhancing Your World Through Advanced Eye Care.",
+  "author": "Focus Vision Team",
+  "phoneNumberText": "(07) 3239 5005",
+  "phoneNumber": "0732395005",
+  "faxNumberText": "(07) 2142 5959",
+  "email": "hello@focusvision.com.au",
+  "ahpraNumber": "MED0001213291",
+  "facebookUrl": "https://www.facebook.com/focusvisionclinic/",
+  "instagramUrl": "https://www.instagram.com/focusvisionclinic/",
+  "linkedinUrl": "https://www.linkedin.com/company/focus-vision-clinic/",
+  "youtubeUrl": "http://www.youtube.com/@FocusVisionClinic",
+  "tiktokUrl": "https://www.tiktok.com/@focusvisionclinic",
+  "whatsappUrl": "https://wa.me/+61488847466",
+  "treatments": [
+    { "name": "TransPRK", "price": "$3500 per eye" },
+    { "name": "LASIK", "price": "$4250 per eye" },
+    {
+      "name": "CLEAR / KLex Small Incision Lenticule Extraction",
+      "price": "$4250 per eye"
+    },
+    {
+      "name": "Implantable Contact Lens Surgery",
+      "price": "$7000 per eye (including the anaesthetist)"
+    },
+    { "name": "Refractive Lens Exchange", "price": "$6000 per eye" }
+  ],
+  "location": {
+    "latitude": "-27.4911391",
+    "longitude": "153.034733",
+    "streetAddress": "87 Ipswich Road",
+    "locality": "Woolloongabba",
+    "region": "QLD",
+    "postalCode": "4102",
+    "countryName": "Australia"
+  }
+}

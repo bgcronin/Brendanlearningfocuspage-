@@ -1,0 +1,56 @@
+---
+// src/components/StyledList.astro
+export interface Props {
+	position?: "left" | "center" | "right";
+}
+const { position = "center" } = Astro.props;
+
+// Map the position prop to a flexbox justification class
+const positionClass = `justify-${position}`;
+---
+
+<div class:list={["list-wrapper", positionClass]}>
+	<ul>
+		<slot />
+	</ul>
+</div>
+
+<style>
+	.list-wrapper {
+		width: 100%;
+		/* Use Flexbox for alignment */
+		display: flex;
+	}
+
+	/* --- NEW: Flexbox Position Classes --- */
+	/* This controls the horizontal position of the <ul> inside the wrapper */
+	.justify-left {
+		justify-content: flex-start;
+	}
+	.justify-center {
+		justify-content: center;
+	}
+	.justify-right {
+		justify-content: flex-end;
+	}
+
+	ul {
+		/* The ul is now a flex item, so it doesn't need to be inline-block */
+		text-align: left;
+		padding-left: 0;
+		margin: 0;
+		list-style-position: inside;
+	}
+
+	/* Style the list items that are passed into the component's slot */
+	:global(.list-wrapper li) {
+		color: inherit; /* This makes the text take on the parent's color style */
+		padding-left: 0.5em; /* Adds a small space between the bullet and the text */
+		margin-bottom: 0.5em;
+	}
+
+	/* Style the bullet points with your brand color */
+	:global(.list-wrapper li::marker) {
+		color: #437b8c;
+	}
+</style>

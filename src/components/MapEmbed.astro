@@ -1,0 +1,20 @@
+---
+// src/components/MapEmbed.astro
+// A simple wrapper for a responsive Google Maps embed.
+
+export interface Props {
+	width?: string | number;
+	height?: string | number;
+}
+
+const { width = "100%", height = 450 } = Astro.props;
+---
+
+<iframe
+	src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7078.759733465351!2d153.0320935112787!3d-27.49159501754113!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b915a6bc80a1b9d%3A0x9d8d480b7c5c5af1!2s87%20Ipswich%20Rd%2C%20Woolloongabba%20QLD%204102%2C%20Australia!5e0!3m2!1sen!2snz!4v1759128626451!5m2!1sen!2snz"
+	width={width}
+	height={height}
+	style="border:0;"
+	allowfullscreen=""
+	loading="lazy"
+	referrerpolicy="no-referrer-when-downgrade"></iframe>

@@ -1,0 +1,96 @@
+---
+// src/components/PartnerLogos.astro
+// This is a one-off component, so no props are needed.
+import { Image } from "astro:assets";
+// Import the logo images with the new file names
+import escrsLogo from "../assets/images/partnerlogos/img-European-society-of-Cataract-Refractive-Surgeons.jpg";
+import ranzcoLogo from "../assets/images/partnerlogos/img-The-Royal-Australian-New-Zealand-College-of-Ophthamologists.jpg";
+import isrsLogo from "../assets/images/partnerlogos/img-ISRS.jpg";
+import corneaSocietyLogo from "../assets/images/partnerlogos/img-Cornea-Society.jpg";
+import qeiLogo from "../assets/images/partnerlogos/img-Queensland-Eye-Institute-Laser-copy.jpg";
+---
+
+<section class="partner-logos-section">
+	<div class="logos-container">
+		<Image
+			src={escrsLogo}
+			alt={`European Society of Cataract & Refractive Surgeons Logo`}
+		/>
+		<Image src={qeiLogo} alt={`Queensland Eye Institute Laser Logo`} />
+		<Image
+			src={ranzcoLogo}
+			alt={`The Royal Australian & New Zealand College of Ophthamologists Logo`}
+		/>
+		<Image
+			src={isrsLogo}
+			alt={`International Society of Refractive Surgery Logo`}
+		/>
+		<Image src={corneaSocietyLogo} alt={`Cornea Society Logo`} />
+	</div>
+</section>
+
+<style>
+	.partner-logos-section {
+		width: calc(100% - 40px);
+		padding: 20px 20px;
+		background-color: #ffffff;
+	}
+
+	.logos-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 40px;
+		/* max-width has been removed to allow the container to be full-width */
+		margin: 0 auto;
+	}
+
+	.logos-container img {
+		/* Flex properties allow logos to grow and shrink */
+		flex: 1 1 150px;
+		max-height: 100px;
+		/* max-width is now more flexible */
+		max-width: 220px;
+		width: auto;
+		object-fit: contain;
+		opacity: 0.7;
+		transition: all 0.3s ease-in-out;
+	}
+
+	.logos-container img:hover {
+		opacity: 1;
+		transform: scale(1.05);
+	}
+
+	/* Adjustments for tablet screens */
+	@media (max-width: 1200px) {
+		.logos-container {
+			justify-content: flex-start; /* Align logos to the left */
+		}
+		.logos-container img {
+			opacity: 1;
+			max-height: 80px; /* Make logos smaller */
+		}
+	}
+
+	/* Adjustments for smaller screens */
+	@media (max-width: 800px) {
+		.partner-logos-section {
+			width: 100%;
+			padding: 20px 2px;
+		}
+
+		.logos-container {
+			gap: 10px 0;
+			align-items: center;
+			/* justify-content will be inherited from the 1200px breakpoint */
+		}
+		.logos-container img {
+			max-height: auto; /* Make logos even smaller on mobile */
+			max-width: 50%;
+			/* On mobile, give a more specific flex-basis */
+			flex-basis: 120px;
+		}
+	}
+</style>

@@ -1,0 +1,18 @@
+import rss from "@astrojs/rss";
+import { getCollection } from "astro:content";
+
+export async function GET(context) {
+  const blog = await getCollection("blog");
+  return rss({
+    title: "Focus Vision Blog",
+    description:
+      "Stay informed with our eye health blogs covering laser eye surgery, LASIK, and vision care tips.",
+    site: context.site,
+    items: blog.map((post) => ({
+      title: post.data.title,
+      pubDate: post.data.datePublished,
+      description: post.data.description,
+      link: `/blog/${post.id.replace(/\.[^/.]+$/, "")}/`,
+    })),
+  });
+}

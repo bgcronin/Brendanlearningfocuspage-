@@ -1,0 +1,78 @@
+---
+// src/components/ContactSection.astro
+// A two-column layout component for the contact page.
+---
+
+<section class="contact-section">
+	<div class="container">
+		<div class="text-column">
+			<slot name="text" />
+		</div>
+		<div class="form-column">
+			<slot name="form" />
+		</div>
+	</div>
+</section>
+
+<style>
+	.contact-section {
+		background-color: #f4f1ed; /* Eggshell background */
+		padding: 80px 24px;
+	}
+
+	.container {
+		max-width: 1600px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 60px;
+		align-items: start; /* Aligns columns to the top */
+	}
+
+	/* The right column for the form has a white background and padding */
+	.form-column {
+		/* background-color: #ffffff; */
+		/* padding: 40px; */
+		border-radius: 12px;
+	}
+
+	/* --- Styles for slotted content --- */
+	:global(.contact-section h2) {
+		font-size: 2rem;
+		font-weight: 600;
+		color: #1c2f49;
+		margin-bottom: 1.5rem;
+	}
+
+	:global(.contact-section p) {
+		font-size: 1rem;
+		line-height: 1.8;
+		color: #333;
+		margin-bottom: 1rem;
+	}
+
+	/* Responsive stacking for mobile */
+	@media (max-width: 800px) {
+		.container {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.contact-section {
+			background-color: #f4f1ed; /* Eggshell background */
+			padding: 80px 0px;
+		}
+
+		.text-column {
+			padding: 0 24px;
+		}
+
+		.form-column {
+			border-radius: 0px;
+			background-color: #ffffff;
+			padding: 30px 15px;
+		}
+	}
+</style>

@@ -1,0 +1,214 @@
+---
+// src/components/Showcase.astro
+import Button from "./Button.astro";
+import { Image } from "astro:assets";
+import dashboardImage from "../assets/images/dashboard.png";
+
+export interface Props {
+	title: string;
+	topText: string[];
+	bottomTextBold: string;
+	bottomTextRegular: string;
+	ctaText: string;
+	ctaHref: string;
+}
+
+const { title, topText, bottomTextBold, bottomTextRegular, ctaText, ctaHref } =
+	Astro.props;
+---
+
+<section class="showcase">
+	<div class="container">
+		<div class="content-top">
+			<h1 set:html={title} />
+			{topText.map((text) => <p>{text}</p>)}
+		</div>
+
+		<div class="browser-mockup">
+			<div class="browser-header">
+				<div class="dots">
+					<span class="dot red"></span>
+					<span class="dot yellow"></span>
+					<span class="dot green"></span>
+				</div>
+				<div class="address-bar">
+					https://www.focusvision.com.au/refractive-outcomes-analyzer/
+				</div>
+			</div>
+			<div class="browser-content">
+				<Image
+					src={dashboardImage}
+					alt="Refractive Outcomes Analyzer Dashboard"
+					class="dashboard-image"
+				/>
+			</div>
+		</div>
+
+		<div class="content-bottom">
+			<p><strong>{bottomTextBold}</strong></p>
+			<p>{bottomTextRegular}</p>
+			<div class="cta-wrapper">
+				<Button href={ctaHref} text={ctaText} />
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.showcase {
+		background-color: #ffffff;
+		padding: 100px 0 80px;
+		color: #1c2f49;
+	}
+
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 24px;
+		text-align: center;
+	}
+
+	.content-top {
+		margin-bottom: 50px;
+		max-width: 1200px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	h1 {
+		color: #1c2f49;
+		font-size: 3rem;
+		font-weight: 700;
+		margin-bottom: 30px;
+		line-height: 1.1;
+	}
+
+	h1 :global(span.highlight) {
+		color: #437b8c !important;
+	}
+
+	p {
+		font-size: 1.15rem;
+		line-height: 1.6;
+		margin-bottom: 20px;
+		font-weight: 300;
+	}
+
+	/* Browser Mockup Styles */
+	.browser-mockup {
+		background: #ffffff;
+		border-radius: 12px;
+		box-shadow:
+			0 30px 60px -12px rgba(50, 50, 93, 0.25),
+			0 18px 36px -18px rgba(0, 0, 0, 0.3);
+		overflow: hidden;
+		border: 1px solid #e2e8f0;
+		margin-bottom: 60px;
+		text-align: left;
+	}
+
+	.browser-header {
+		background: #f1f5f9;
+		padding: 12px 20px;
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	.dots {
+		display: flex;
+		gap: 8px;
+	}
+
+	.dot {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+	}
+
+	.red {
+		background: #ff5f56;
+	}
+	.yellow {
+		background: #ffbd2e;
+	}
+	.green {
+		background: #27c93f;
+	}
+
+	.address-bar {
+		background: #ffffff;
+		border-radius: 6px;
+		padding: 6px 16px;
+		font-size: 13px;
+		color: #64748b;
+		flex-grow: 1;
+		max-width: 500px;
+		text-align: center;
+		font-family:
+			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+			"Liberation Mono", "Courier New", monospace;
+		border: 1px solid #e2e8f0;
+	}
+
+	.browser-content {
+		height: auto;
+		background: #ffffff;
+		position: relative;
+		overflow: hidden;
+		line-height: 0;
+	}
+
+	.dashboard-image {
+		width: 100%;
+		height: auto;
+		display: block;
+		object-fit: contain;
+	}
+
+	.content-bottom {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.content-bottom p {
+		margin-bottom: 16px;
+	}
+
+	.cta-wrapper {
+		margin-top: 40px;
+	}
+
+	@media (max-width: 900px) {
+		h1 {
+			font-size: 2.25rem;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.showcase {
+			padding: 50px 0;
+		}
+
+		h1 {
+			font-size: 1.85rem;
+		}
+
+		.top-stats {
+			display: none;
+		}
+
+		.main-panel {
+			padding: 16px;
+		}
+
+		.browser-header {
+			padding: 10px 12px;
+		}
+
+		.address-bar {
+			display: none;
+		}
+	}
+</style>

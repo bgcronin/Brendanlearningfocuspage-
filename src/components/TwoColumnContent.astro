@@ -1,0 +1,232 @@
+---
+// src/components/TwoColumnContent.astro
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+// Define the new, more complex props for the component
+interface Props {
+	imageSrc: ImageMetadata;
+	imageAlt: string;
+	imagePosition?: "left" | "right";
+	stylePreset?: "Eggshell" | "White" | "Lightblue";
+	fullWidth?: boolean;
+	backgroundColor?: string; // Primarily for fullWidth mode
+}
+
+const {
+	imageSrc,
+	imageAlt,
+	imagePosition = "left",
+	stylePreset = "Eggshell",
+	fullWidth = false,
+	backgroundColor = "#FFFFFF", // Default background for full-width mode
+} = Astro.props;
+
+// Define the color mappings for our presets
+const colorPresets = {
+	Eggshell: { bg: "#F4F1ED", header: "#4C8897" },
+	White: { bg: "#FFFFFF", header: "#4C8897" },
+	Lightblue: { bg: "#C2DBE3", header: "#1C2F49" },
+};
+
+// Determine the final colors and styles to apply
+const isFullWidth = fullWidth;
+const finalBgColor = isFullWidth
+	? backgroundColor
+	: colorPresets[stylePreset].bg;
+const finalHeaderColor = isFullWidth
+	? "#FFFFFF"
+	: colorPresets[stylePreset].header;
+const finalTextColor = isFullWidth ? "#FFFFFF" : "hsl(215 44% 19% / 1)";
+---
+
+<section
+	class:list={[
+		"two-col-section",
+		{ "full-width-mode": isFullWidth },
+		`preset-${stylePreset.toLowerCase()}`,
+	]}
+	style={`--bg-color: ${finalBgColor}; --text-color: ${finalTextColor}; --header-color: ${finalHeaderColor};`}
+>
+	<div
+		class:list={[
+			"content-wrapper",
+			{ "image-right": imagePosition === "right" },
+		]}
+	>
+		<div class="image-col">
+			<Image
+				src={imageSrc}
+				alt={imageAlt}
+				width={imageSrc.width}
+				height={imageSrc.height}
+				loading="lazy"
+				decoding="async"
+			/>
+		</div>
+		<div class="text-col accent-container">
+			<slot />
+		</div>
+	</div>
+</section>
+
+<style>
+	/* src/styles/components/TwoColumnContent.css */
+
+	.two-col-section {
+		background-color: var(--bg-color);
+		color: var(--text-color);
+		font-weight: 300;
+	}
+
+	/* Apply header color to all heading levels within the text column */
+	.text-col h1,
+	.text-col h2,
+	.text-col h3,
+	.text-col h4,
+	.text-col h5,
+	.text-col h6 {
+		color: var(--header-color);
+	}
+
+	.text-col :global(h2) {
+		font-size: 3rem;
+		line-height: 1.1;
+		margin-bottom: 1.5rem;
+		margin-top: 0;
+	}
+
+	.text-col :global(h3) {
+		font-size: 1.9rem;
+		line-height: 1.2;
+		margin-bottom: 1rem;
+		margin-top: 1.5rem;
+	}
+
+	.content-wrapper {
+		display: grid;
+		gap: 60px;
+		align-items: center;
+	}
+
+	/* --- STANDARD (NON-FULL-WIDTH) STYLES --- */
+	.two-col-section:not(.full-width-mode) .content-wrapper {
+		grid-template-columns: 1fr 1fr;
+		max-width: 1440px;
+		margin: 0 auto;
+		padding: 130px 134px;
+	}
+
+	.two-col-section:not(.full-width-mode) .image-col img {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1 / 1;
+		object-fit: cover;
+		object-position: center;
+		max-width: 620px;
+		margin-inline: auto;
+	}
+
+	/* --- FULL-WIDTH MODE STYLES --- */
+	.full-width-mode .content-wrapper {
+		grid-template-columns: 1fr 1fr;
+		max-width: none;
+		gap: 0;
+		align-items: stretch; /* This will make both columns stretch to the same height */
+	}
+
+	.full-width-mode .text-col {
+		padding: 100px;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		text-align: center;
+	}
+
+	.full-width-mode .image-col img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		aspect-ratio: auto;
+	}
+
+	/* --- GENERAL LAYOUT & RESPONSIVE --- */
+	.image-col {
+		order: 1;
+	}
+
+	.text-col {
+		order: 2;
+	}
+
+	.content-wrapper.image-right .image-col {
+		order: 2;
+	}
+
+	.content-wrapper.image-right .text-col {
+		order: 1;
+	}
+
+	/* Tablet and smaller desktops */
+	@media (max-width: 1200px) {
+		.two-col-section:not(.full-width-mode) .content-wrapper {
+			padding: 48px 60px;
+		}
+	}
+
+	/* Mobile styles */
+	@media (max-width: 800px) {
+		.text-col :global(h2) {
+			font-size: 2.25rem;
+		}
+
+		.text-col :global(h3) {
+			font-size: 1.5rem;
+		}
+
+		.two-col-section:not(.full-width-mode) .content-wrapper {
+			padding: 40px 24px;
+		}
+
+		/* This group selector will override both desktop rules to enforce a single column */
+		.two-col-section:not(.full-width-mode) .content-wrapper,
+		.full-width-mode .content-wrapper {
+			grid-template-columns: 1fr;
+			gap: 30px;
+		}
+
+		.full-width-mode .text-col {
+			padding: 60px 24px; /* Reduced padding on mobile for full-width */
+		}
+
+		/* On mobile, always show image on top for both modes */
+		.image-col,
+		.content-wrapper.image-right .image-col {
+			order: 1;
+		}
+
+		.text-col,
+		.content-wrapper.image-right .text-col {
+			order: 2;
+		}
+	}
+
+	/* Use the child selector to reach inside the container */
+	.accent-container :global(h2:first-of-type) {
+		position: relative;
+		padding-top: 25px;
+		display: block; /* Ensures the padding and absolute positioning behave */
+	}
+
+	.accent-container :global(h2:first-of-type::before) {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 60px;
+		height: 3px;
+		background-color: #3b6275;
+	}
+</style>

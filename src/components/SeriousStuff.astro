@@ -1,0 +1,65 @@
+---
+// src/components/SeriousStuff.astro
+// A simple content wrapper for legal pages like Terms, Privacy Policy, etc.
+---
+
+<article class="serious-stuff-container">
+	<slot />
+</article>
+
+<style>
+	.serious-stuff-container {
+		max-width: 1200px; /* Constrains the width for readability */
+		margin: 0 auto;
+		padding: 64px 24px; /* Vertical and horizontal padding */
+	}
+
+	/* --- STYLES FOR SLOTTED CONTENT --- */
+	/* These global styles will apply to the HTML you pass into the component */
+
+	:global(.serious-stuff-container h1) {
+		font-size: 2.5rem;
+		font-weight: 700;
+		color: #1c2f49;
+		margin-bottom: 2rem;
+	}
+
+	:global(.serious-stuff-container h2) {
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: #1c2f49;
+		margin-top: 2.5rem;
+		margin-bottom: 1rem;
+	}
+
+	:global(.serious-stuff-container h3) {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: #1c2f49;
+		margin-top: 2rem;
+		margin-bottom: 1rem;
+	}
+
+	:global(.serious-stuff-container p) {
+		font-size: 1rem;
+		font-weight: 300;
+		line-height: 1.8;
+		color: #333;
+		margin-bottom: 1.5rem;
+	}
+
+	:global(.serious-stuff-container a) {
+		color: #437b8c;
+		text-decoration: underline;
+	}
+
+	:global(.serious-stuff-container a:hover) {
+		color: #1c2f49;
+	}
+
+	:global(.serious-stuff-container ul),
+	:global(.serious-stuff-container ol) {
+		padding-left: 24px;
+		margin-bottom: 1.5rem;
+	}
+</style>

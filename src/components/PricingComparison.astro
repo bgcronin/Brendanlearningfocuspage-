@@ -1,0 +1,351 @@
+---
+// PricingComparison.astro
+const treatments = [
+	{
+		name: "Blade free LASIK",
+		focus: "$4,250",
+		vson: "$4,712.49",
+		vei: "Treatment not offered",
+		qld: "Treatment not offered",
+	},
+	{
+		name: "PRK",
+		focus: "$3,500",
+		vson: "$2,376.00",
+		vei: "$2,995",
+		qld: "$2,800",
+	},
+	{
+		name: "TransPRK",
+		focus: "$3,500",
+		vson: "$3,711.89",
+		vei: "Treatment not offered",
+		qld: "Treatment not offered",
+	},
+	{
+		name: "CLEAR / SMILE / SmartSight",
+		focus: "$4,250",
+		vson: "$5,183.74",
+		vei: "Treatment not offered",
+		qld: "Treatment not offered",
+	},
+	{
+		name: "Implantable Collamer (Contact) Lenses",
+		focus: "$7,000",
+		focusNote: "including anaesthetist",
+		vson: "$7,262.40",
+		vsonNote: "NOT including anaesthetist",
+		vei: "Treatment not offered",
+		qld: "$6,850",
+		qldNote: "NOT including anaesthetist",
+	},
+	{
+		name: "Refractive Lens Exchange / Replacement",
+		focus: "$6,000",
+		focusNote: "including anaesthetist",
+		vson: "$7,556.06",
+		vsonNote: "NOT including anaesthetist",
+		vei: "N/A",
+		qld: "$6,850",
+	},
+];
+---
+
+<section class="pricing-container">
+	<div class="intro-text">
+		<p>
+			We keep our pricing as simple, transparent and straight forward as
+			possible. There is one cost per treatment – We don’t charge more for
+			higher prescriptions. We want you to have the best treatment for
+			your eyes. LASIK, CLEAR, Ray tracing LASIK are the same price – we
+			want you to have what’s BEST for you, not what is cheapest for you.
+		</p>
+	</div>
+
+	<h2>Treatment cost per eye:</h2>
+	<p>
+		We keep our pricing as simple, transparent and straight forward as
+		possible. There is one cost per treatment – We don’t charge more for
+		higher prescriptions.
+	</p>
+
+	<p>
+		We want you to have the best treatment for your eyes. LASIK, CLEAR, Ray
+		tracing LASIK are the same price – we want you to have what’s BEST for
+		you, not what is cheapest for you.
+	</p>
+
+	<p></p>
+
+	<div class="desktop-table-wrapper">
+		<table>
+			<thead>
+				<tr>
+					<th>Treatment cost per eye</th>
+					<th class="highlight-col">Focus*</th>
+					<th>VSON</th>
+					<th>Vision Eye Institute</th>
+					<th>Qld laser Vision</th>
+				</tr>
+			</thead>
+			<tbody>
+				{
+					treatments.map((item) => (
+						<tr>
+							<td class="treatment-name">{item.name}</td>
+							<td class="highlight-col">
+								<span class="price">{item.focus}</span>
+								{item.focusNote && (
+									<span class="note">{item.focusNote}</span>
+								)}
+							</td>
+							<td>
+								<span class="price">{item.vson}</span>
+								{item.vsonNote && (
+									<span class="note">{item.vsonNote}</span>
+								)}
+							</td>
+							<td>
+								<span class="price">{item.vei}</span>
+							</td>
+							<td>
+								<span class="price">{item.qld}</span>
+								{item.qldNote && (
+									<span class="note">{item.qldNote}</span>
+								)}
+							</td>
+						</tr>
+					))
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="mobile-cards-wrapper">
+		{
+			treatments.map((item) => (
+				<div class="card">
+					<h3 class="card-title">{item.name}</h3>
+					<div class="card-grid">
+						<div class="card-row focus-row">
+							<span class="label">Focus*</span>
+							<div class="value-group">
+								<span class="price">{item.focus}</span>
+								{item.focusNote && (
+									<span class="note">{item.focusNote}</span>
+								)}
+							</div>
+						</div>
+						<div class="card-row">
+							<span class="label">VSON</span>
+							<div class="value-group">
+								<span class="price">{item.vson}</span>
+								{item.vsonNote && (
+									<span class="note">{item.vsonNote}</span>
+								)}
+							</div>
+						</div>
+						<div class="card-row">
+							<span class="label">Vision Eye Inst.</span>
+							<span class="price">{item.vei}</span>
+						</div>
+						<div class="card-row">
+							<span class="label">Qld Laser Vision</span>
+							<div class="value-group">
+								<span class="price">{item.qld}</span>
+								{item.qldNote && (
+									<span class="note">{item.qldNote}</span>
+								)}
+							</div>
+						</div>
+					</div>
+				</div>
+			))
+		}
+	</div>
+
+	<div class="disclaimer">
+		<p>*Prices do not include any post-operative medications.</p>
+		<p>All information and fees are current as of January 17th 2026</p>
+	</div>
+</section>
+
+<style>
+	/* Using CSS Variables to match global.css 
+     --dark-blue-color should be defined in your global.css
+  */
+	:root {
+		/* Fallback if variable is missing, matching global.css value */
+		--fv-navy: var(--dark-blue-color, #1c2f49);
+		--fv-teal: #009ca6; /* Focus Vision Brand Teal */
+		--fv-light: #f4f8fa;
+		--fv-border: #d1d9e0;
+		--fv-white: #ffffff;
+	}
+
+	.pricing-container {
+		width: 100%; /* Full width as requested */
+		margin: 0;
+		padding: 0; /* Let parent padding handle spacing */
+		/* Fonts inherited from body */
+	}
+
+	.intro-text p {
+		font-size: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	h2 {
+		font-size: 1.75rem;
+		color: var(--fv-navy);
+		margin-bottom: 1.5rem;
+		font-weight: 700;
+	}
+
+	/* Utility */
+	.price {
+		display: block;
+		font-weight: 600;
+	}
+	.note {
+		display: block;
+		font-size: 0.75rem;
+		font-style: italic;
+		color: #666;
+	}
+
+	/* --- Desktop Table Styles --- */
+	.desktop-table-wrapper {
+		display: none;
+		width: 100%;
+		overflow-x: auto;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		border: 1px solid var(--fv-border);
+	}
+
+	th,
+	td {
+		padding: 15px;
+		text-align: left;
+		border-bottom: 1px solid var(--fv-border);
+		vertical-align: top;
+	}
+
+	th {
+		background-color: var(--fv-navy);
+		color: var(--fv-white);
+		font-weight: 600;
+	}
+
+	/* Highlight the "Focus" column */
+	th.highlight-col {
+		background-color: var(--fv-teal);
+		position: relative;
+	}
+	td.highlight-col {
+		background-color: #f0fbff;
+		font-weight: 700;
+		border-left: 2px solid var(--fv-teal);
+		border-right: 2px solid var(--fv-teal);
+	}
+
+	tr:nth-child(even) {
+		background-color: #fafafa;
+	}
+
+	.treatment-name {
+		font-weight: 700;
+		color: var(--fv-navy);
+		width: 25%;
+	}
+
+	/* --- Mobile Card Styles --- */
+	.mobile-cards-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		width: 100%;
+	}
+
+	.card {
+		border: 1px solid var(--fv-border);
+		border-radius: 8px;
+		background: var(--fv-white);
+		overflow: hidden;
+		box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+	}
+
+	.card-title {
+		background-color: var(--fv-navy);
+		color: var(--fv-white);
+		padding: 15px;
+		margin: 0;
+		font-size: 1.1rem;
+	}
+
+	.card-grid {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.card-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 12px 15px;
+		border-bottom: 1px solid #eee;
+	}
+
+	.card-row:last-child {
+		border-bottom: none;
+	}
+
+	.card-row .label {
+		font-weight: 600;
+		color: #555;
+		flex: 1;
+	}
+
+	.card-row .value-group,
+	.card-row .price {
+		text-align: right;
+		flex: 1;
+	}
+
+	/* Highlight Focus Row in Mobile */
+	.focus-row {
+		background-color: #e0f7fa;
+		border-left: 4px solid var(--fv-teal);
+	}
+	.focus-row .label {
+		color: var(--fv-navy);
+		font-weight: 800;
+	}
+	.focus-row .price {
+		color: var(--fv-teal);
+		font-weight: 800;
+		font-size: 1.1rem;
+	}
+
+	.disclaimer {
+		margin-top: 2rem;
+		font-size: 0.85rem;
+		color: #777;
+		border-top: 1px solid #eee;
+		padding-top: 1rem;
+	}
+
+	/* Breakpoint for switching views */
+	@media (min-width: 768px) {
+		.mobile-cards-wrapper {
+			display: none;
+		}
+		.desktop-table-wrapper {
+			display: block;
+		}
+	}
+</style>

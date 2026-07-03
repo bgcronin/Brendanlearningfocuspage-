@@ -1,0 +1,421 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Seo from "../components/Seo.astro";
+import { Image } from "astro:assets";
+import { getEntry, type CollectionEntry } from "astro:content";
+import categoriesData from "../data/categories.json";
+import tagsData from "../data/tags.json";
+import Schema from "../components/Schema.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import Faq from "../components/Faq.astro";
+import { getBlogSchema, getBreadcrumbSchema } from "../utils/seo";
+
+interface Props {
+	frontmatter: CollectionEntry<"blog">["data"];
+	allPosts: CollectionEntry<"blog">[];
+	slug: string;
+}
+
+const { frontmatter, allPosts, slug } = Astro.props;
+
+const author = frontmatter.author
+	? await getEntry("authors", frontmatter.author)
+	: undefined;
+
+// Find the index of the current post
+const currentIndex = allPosts.findIndex((post) => post.id === slug);
+
+const category = categoriesData.items.find(
+	(c) => c.value === frontmatter.category,
+);
+
+const tags = frontmatter.tags
+	? tagsData.items.filter((t) => frontmatter.tags?.includes(t.value))
+	: [];
+
+// Get the previous and next posts
+const prevPost = allPosts[currentIndex + 1]; // Because we sorted descending
+const nextPost = allPosts[currentIndex - 1];
+
+const datePublished = new Date(frontmatter.datePublished);
+const dateModified = frontmatter.dateModified
+	? new Date(frontmatter.dateModified)
+	: undefined;
+
+// Only show updated if modified is > 24 hours after published
+const isUpdated =
+	dateModified &&
+	dateModified.getTime() - datePublished.getTime() > 24 * 60 * 60 * 1000;
+
+const breadcrumbs = [
+	{ name: "Blog", item: "/blog" },
+	{ name: frontmatter.title, item: Astro.url.pathname },
+];
+
+const schemaArray: any[] = [
+	getBlogSchema(
+		{ data: frontmatter },
+		Astro.url.pathname,
+		frontmatter.coverImage?.src,
+		author,
+	),
+	getBreadcrumbSchema(breadcrumbs),
+];
+---
+
+<BaseLayout
+	showCurve={false}
+	description={frontmatter.description || ""}
+	author={author ? author.data.name : (frontmatter.author as string)}
+	datePublished={datePublished}
+	dateModified={dateModified}
+	ogType="article"
+	ogImage={frontmatter.coverImage}
+>
+	<Fragment slot="head-schema">
+		<Schema item={schemaArray} />
+	</Fragment>
+
+	<article class="blog-post">
+		<Breadcrumbs variant="blog" />
+		<header class="post-header">
+			<h1 class="title">{frontmatter.title}</h1>
+			<div class="post-meta">
+				<span class="publish-date">
+					Last reviewed:
+					<time
+						datetime={(dateModified || datePublished).toISOString()}
+					>
+						{
+							(dateModified || datePublished).toLocaleDateString(
+								"en-us",
+								{
+									year: "numeric",
+									month: "long",
+								},
+							)
+						}
+					</time>
+				</span>
+				{
+					author && (
+						<>
+							<span class="separator">by</span>
+							<span class="author-name">
+								<a
+									href={`/blog/author/${author.id.replace(/\.[^/.]+$/, "")}/`}
+								>
+									{author.data.name}
+								</a>
+								, FRANZCO
+							</span>
+						</>
+					)
+				}
+			</div>
+		</header>
+
+		{
+			frontmatter.coverImage && (
+				<Image
+					src={frontmatter.coverImage}
+					alt={`Featured image for ${frontmatter.title}`}
+					width={1200}
+					height={600}
+					class="hero-image"
+					loading="eager"
+				/>
+			)
+		}
+		<div class="post-content">
+			<slot />
+		</div>
+
+		<div class="post-taxonomy">
+			{
+				category && (
+					<div class="post-category">
+						<span class="label">Category:</span>
+						<a
+							href={`/blog/category/${category.value}/`}
+							class="category-link"
+						>
+							{category.label}
+						</a>
+					</div>
+				)
+			}
+			{
+				tags.length > 0 && (
+					<div class="post-tags">
+						<span class="label">Tags:</span>
+						<div class="tags-list">
+							{tags.map((tag) => (
+								<a
+									href={`/blog/tag/${tag.value}/`}
+									class="tag-link"
+								>
+									{tag.label}
+								</a>
+							))}
+						</div>
+					</div>
+				)
+			}
+		</div>
+
+		{
+			frontmatter.faqs && frontmatter.faqs.length > 0 && (
+				<Faq
+					title="Frequently Asked Questions"
+					faqs={frontmatter.faqs}
+					variant="blog"
+				/>
+			)
+		}
+
+		<footer class="post-footer">
+			<nav class="post-navigation">
+				{
+					prevPost ? (
+						<a href={`/blog/${prevPost.id}/`} class="nav-link prev">
+							<span>&larr; Previous Post</span>
+							<span class="post-title">
+								{prevPost.data.title}
+							</span>
+						</a>
+					) : (
+						<div />
+					)
+				}
+				{
+					nextPost ? (
+						<a href={`/blog/${nextPost.id}/`} class="nav-link next">
+							<span>Next Post &rarr;</span>
+							<span class="post-title">
+								{nextPost.data.title}
+							</span>
+						</a>
+					) : (
+						<div />
+					)
+				}
+			</nav>
+		</footer>
+	</article>
+</BaseLayout>
+<style>
+	.blog-post {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 32px 24px 64px;
+	}
+	.post-header {
+		margin-bottom: 2rem;
+	}
+	.title {
+		font-size: 2.5rem;
+		color: #1c2f49;
+		margin-bottom: 0.5rem;
+		line-height: 1.2;
+	}
+	.post-meta {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		color: #437b8c;
+		margin-bottom: 2rem;
+		font-size: 1rem;
+	}
+	.author-name a {
+		color: #1c2f49;
+		text-decoration: none;
+		font-weight: 500;
+		border-bottom: 1px solid transparent;
+		transition: border-color 0.2s ease;
+	}
+	.author-name a:hover {
+		border-bottom-color: #1c2f49;
+	}
+	.separator {
+		color: #a0a0a0;
+	}
+	.hero-image {
+		width: 100%;
+		height: auto;
+		border-radius: 8px;
+		margin-bottom: 2rem;
+	}
+	.post-content {
+		font-size: 1.125rem;
+		line-height: 1.8;
+		color: #333;
+	}
+	.post-content :global(h2) {
+		font-size: 1.75rem;
+		margin-top: 2.5rem;
+		margin-bottom: 1rem;
+		color: #1c2f49;
+	}
+	.post-content :global(p) {
+		margin-bottom: 1.5rem;
+	}
+
+	/* --- NEW STYLES FOR RESPONSIVE TABLES --- */
+
+	/* 1. Style for the wrapper that provides the scrollbar */
+	.post-content :global(.table-wrapper) {
+		overflow-x: auto;
+		margin-bottom: 1.5rem;
+		border: 1px solid #e0dcd7;
+		border-radius: 8px;
+	}
+
+	/* 2. Base styles for the table itself */
+	.post-content :global(table) {
+		width: 100%;
+		border-collapse: collapse;
+		min-width: 600px; /* Force scroll on smaller screens */
+	}
+
+	/* 3. Styles for table headers and cells */
+	.post-content :global(th),
+	.post-content :global(td) {
+		padding: 12px 16px;
+		text-align: left;
+		border-bottom: 1px solid #e0dcd7;
+	}
+
+	/* 4. Style for the table header */
+	.post-content :global(thead) {
+		background-color: #f4f1ed;
+	}
+	.post-content :global(th) {
+		font-weight: 600;
+		color: #1c2f49;
+	}
+
+	/* --- END OF TABLE STYLES --- */
+
+	/* --- NEW STYLES FOR IN-CONTENT IMAGES --- */
+	.post-content :global(img) {
+		/* Make the image responsive so it never overflows its container */
+		max-width: 100%;
+		/* Maintain the image's aspect ratio */
+		height: auto;
+		/* Add some nice styling */
+		border-radius: 8px;
+		margin: 2rem 0; /* Add some vertical space around the image */
+	}
+
+	.post-taxonomy {
+		margin-top: 3rem;
+		padding: 2rem;
+		background-color: #f4f1ed;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.post-taxonomy .label {
+		font-weight: 600;
+		color: #1c2f49;
+		margin-right: 0.5rem;
+		min-width: 80px;
+	}
+	.post-category,
+	.post-tags {
+		display: flex;
+		align-items: center;
+	}
+	.category-link {
+		color: white;
+		background-color: #437b8c;
+		padding: 4px 12px;
+		border-radius: 50px;
+		text-decoration: none;
+		font-size: 0.875rem;
+		font-weight: 500;
+		transition: background-color 0.2s ease;
+	}
+	.category-link:hover {
+		background-color: #1c2f49;
+	}
+	.tags-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.tag-link {
+		color: #437b8c;
+		background-color: white;
+		border: 1px solid #437b8c;
+		padding: 2px 10px;
+		border-radius: 4px;
+		text-decoration: none;
+		font-size: 0.8125rem;
+		transition: all 0.2s ease;
+	}
+	.tag-link:hover {
+		background-color: #437b8c;
+		color: white;
+	}
+
+	.post-footer {
+		border-top: 1px solid #e0dcd7;
+		margin-top: 4rem;
+		padding-top: 2rem;
+	}
+	.post-navigation {
+		display: flex;
+		justify-content: space-between;
+		gap: 2rem;
+	}
+	.nav-link {
+		display: flex;
+		flex-direction: column;
+		text-decoration: none;
+		color: #1c2f49;
+		max-width: 45%;
+	}
+	.nav-link:hover .post-title {
+		color: #437b8c;
+	}
+	.nav-link span:first-child {
+		font-size: 0.875rem;
+		color: #666;
+	}
+	.nav-link.next {
+		text-align: right;
+	}
+	.post-title {
+		font-weight: 500;
+		margin-top: 0.5rem;
+		transition: color 0.3s ease;
+	}
+</style>
+
+<!-- This script has been optimized to only run when necessary -->
+<script>
+	// Find all tables inside the main blog post content area
+	const tables = document.querySelectorAll(".post-content table");
+
+	// THE OPTIMIZATION: Only run the rest of the script if tables actually exist on the page.
+	if (tables.length > 0) {
+		tables.forEach((table) => {
+			const parent = table.parentNode;
+			if (!parent) return;
+
+			// Create a new div element that will act as the scrollable wrapper
+			const wrapper = document.createElement("div");
+			wrapper.className = "table-wrapper";
+
+			// Insert the wrapper into the DOM right before the table
+			parent.insertBefore(wrapper, table);
+
+			// Move the table inside the new wrapper
+			wrapper.appendChild(table);
+		});
+	}
+</script>

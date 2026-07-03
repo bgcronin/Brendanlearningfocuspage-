@@ -1,0 +1,34 @@
+---
+// src/components/Schema.astro
+import type { Thing } from "schema-dts";
+
+export interface Props {
+	item: Thing | Thing[];
+}
+
+const { item } = Astro.props;
+
+const schemaArray = Array.isArray(item) ? item : [item];
+
+// Filter out null/undefined schemas safely
+const cleanedGraph = schemaArray.filter(Boolean);
+
+// Ensure every item has a @context if we are outputting a direct array
+const payload = cleanedGraph.map((item) => {
+	const { "@context": context, ...rest } = item as any;
+	return {
+		"@context": "https://schema.org",
+		...rest,
+	};
+});
+---
+
+{
+	payload.length > 0 && (
+		<script
+			type="application/ld+json"
+			is:inline
+			set:html={JSON.stringify(payload)}
+		/>
+	)
+}

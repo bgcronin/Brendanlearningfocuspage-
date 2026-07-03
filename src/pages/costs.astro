@@ -1,0 +1,375 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FeatureHero from "../components/FeatureHero.astro";
+import heroImage from "../assets/images/hero/bg-FocusVisionBrisbaneLaserEyeSu.jpg"; // Make sure to import your image
+import PricingCard from "../components/PricingCard.astro";
+import placeholder from "../assets/images/placeholder.png";
+import BannerImgOne from "../assets/images/img-FOCUSVISIONBrisbanseQLDLaser.jpg";
+import BannerImgTwo from "../assets/images/bg-GettyImages-825083304.webp";
+
+import PricingComparison from "../components/PricingComparison.astro";
+
+import Button from "../components/Button.astro";
+import Card from "../components/Card.astro";
+// Component imports will be added here
+import CardGrid from "../components/CardGrid.astro";
+import ImageBanner from "../components/ImageBanner.astro";
+import AboutUs from "../components/AboutUs.astro";
+import Faq from "../components/Faq.astro";
+
+// Schema
+import Schema from "../components/Schema.astro";
+import {
+	getMedicalClinicSchema,
+	getMedicalWebPageSchema,
+	getBreadcrumbSchema,
+} from "../utils/seo";
+
+const faqs = [
+	{
+		q: "How much does laser eye surgery cost at Focus Vision in Brisbane in 2026?",
+		a: "Focus Vision's 2026 all-inclusive laser eye surgery prices are: <strong>TransPRK from $3,500 per eye</strong> ($34/week); <strong>LASIK and Ray Tracing LASIK from $4,250 per eye</strong> ($41/week); <strong>CLEAR/SMILE lenticule extraction from $4,250 per eye</strong> ($41/week); <strong>ICL surgery from $7,000 per eye</strong> including anaesthetist ($68/week); <strong>Refractive Lens Exchange from $6,000 per eye</strong> including anaesthetist ($58/week). All prices include pre-operative assessments, the procedure, and one year of follow-up appointments. We do not charge more for higher prescriptions.",
+	},
+	{
+		q: "Why does laser eye surgery cost so much?",
+		a: "The cost reflects the $2M+ investment in hospital-grade diagnostic and laser technology, combined with high per-eye licensing fees and the safety standards of an accredited private day hospital. Our all-inclusive pricing ensures patients face no hidden fees for high prescriptions or aftercare.",
+	},
+	{
+		q: "Is Focus Vision cheaper than other laser eye surgery clinics in Brisbane?",
+		a: "On a like-for-like comparison, Focus Vision is competitively priced and in several procedures meaningfully less expensive than competitors when all fees are included. For ICL surgery: Focus Vision charges $7,000 per eye including the anaesthetist — VSON charges $7,262.40 per eye not including the anaesthetist. For CLEAR/SMILE: Focus Vision charges $4,250 per eye — VSON charges $5,183.74 per eye. For LASIK: $4,250 at Focus Vision versus $4,712.49 at VSON. A full comparison table is published on our Costs page and updated regularly.",
+	},
+	{
+		q: "Can I pay for laser eye surgery in instalments?",
+		a: "Yes. Focus Vision offers 24-month interest-free payment plans for all elective procedures. The weekly repayments are: TransPRK from $34/week; LASIK and CLEAR from $41/week; ICL from $68/week; RLE from $58/week. Please speak to our team at your free assessment for details on financing options and eligibility.",
+	},
+	{
+		q: "Does private health insurance cover laser eye surgery in Australia?",
+		a: "Standard elective laser vision correction (LASIK, TransPRK, CLEAR/SMILE, ICL for refractive purposes) is not covered by Medicare. However, some private health fund extras policies may contribute to laser vision correction — particularly BUPA, Medibank Private, Navy Health, and Defence Health. For cataract surgery and clinically indicated pterygium removal, Medicare and private health hospital cover do apply. Our team will check your specific entitlements as part of your free assessment.",
+	},
+	{
+		q: "Are Focus Vision's prices all-inclusive or are there hidden extras?",
+		a: "Focus Vision's prices are fully all-inclusive. Your quoted price covers: all pre-operative assessments and eye measurements, the surgical procedure itself, the intraocular or corneal lens where applicable, hospital and theatre fees, anaesthetist fees (for ICL, RLE, and cataract surgery), all prescribed eye drops for the post-operative period, and all follow-up appointments for one full year. We do not charge more for higher prescriptions, and we do not charge more for choosing the most advanced technology within a procedure category.",
+	},
+	{
+		q: "Is laser eye surgery a good investment?",
+		a: "The average Australian spends $500–$1,000 or more annually on glasses, contact lenses, and solutions — $10,000 to $20,000 over 20 years. Laser eye surgery eliminates or dramatically reduces this ongoing cost. Most patients also report significant improvements in quality of life, confidence, and daily freedom beyond the financial calculation.",
+	},
+];
+
+const title = "Costs";
+const description = `Vision Correction Prices at Focus Vision. Join over 40 million people worldwide who live a life free of glasses and contact lenses.`;
+
+const graph = [
+	getMedicalClinicSchema(),
+	getMedicalWebPageSchema("/costs", title, description),
+	getBreadcrumbSchema([{ name: "Costs", item: "/costs" }]),
+];
+
+const ogType = "website";
+---
+
+<BaseLayout
+	showCurve={false}
+	topColor="#ffffff"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+>
+	<Fragment slot="head-schema">
+		<Schema item={graph} />
+	</Fragment>
+	<FeatureHero
+		backgroundImage={heroImage}
+		textPosition="left"
+		textColor="light"
+		bottomColor="#FFFFFF"
+		mobileImagePosition="75% 0%"
+		addOverlay={true}
+	>
+		<h1>What is the Cost of Laser Eye <br /> Surgery in Brisbane?</h1>
+	</FeatureHero>
+
+	<div
+		class="basic-section pricing-card-wrapper"
+		style="background-color: #FFFFFF"
+	>
+		<h2 class="big-text">Vision Correction Prices at Focus Vision</h2>
+
+		<p>
+			Join over 40 million people worldwide who now live free of glasses
+			and corrective lenses thanks to LASIK laser eye surgery and other
+			advanced procedures.
+		</p>
+
+		<CardGrid backgroundColor="#FFFFFF" cardBackgroundColor="#FFFFFF">
+			<Card layout="icon">
+				<PricingCard
+					title="All-Laser Femto LASIK"
+					price="$41"
+					pricePeriod="/week"
+					features={[
+						"LASIK cost per eye with a 24-month interest-free payment plan or $4,250 per eye",
+						"New Ray tracing laser treatment included if you're a candidate",
+						"All pre-operative assessments and initial surgery tests",
+						"All aftercare, follow up appointments, and postoperative visits for one year",
+					]}
+					buttonText="LEARN MORE ABOUT LASIK"
+					buttonLink="/vision-correction/laser-eye-surgery"
+				>
+					<p>
+						Please ask our staff regarding payment options. This
+						surgical procedure is ideal for treating refractive
+						errors and offers precise corneal flap creation using
+						the latest technology.
+					</p>
+				</PricingCard>
+			</Card>
+			<Card layout="icon">
+				<PricingCard
+					title="PRK & TransPRK"
+					price="$34"
+					pricePeriod="/week"
+					features={[
+						"Cost per eye with a 24-month interest-free plan or $3,500 per eye",
+						"No-touch transepithelial PRK (TransPRK) included",
+						"All pre-operative assessments and laser eye health tests",
+						"All aftercare and follow up visits for one year",
+					]}
+					buttonText="Learn more about PRK"
+					buttonLink="/vision-correction/laser-for-reading-glasses"
+				>
+					<p>
+						PRK eye surgery is recommended for many patients who may
+						not qualify for LASIK. It reshapes the corneal tissue
+						without cutting a flap, making it a safer option for
+						some.
+					</p>
+				</PricingCard>
+			</Card>
+			<Card layout="icon">
+				<PricingCard
+					title="Lenticule Extraction"
+					price="$41"
+					pricePeriod="/week"
+					features={[
+						"Cost per eye with a 24-month interest-free plan or $4,250 per eye",
+						"Flapless Lenticule CLEAR laser eye surgery",
+						"All assessments and required eye drops before the procedure",
+						"Full aftercare and postoperative appointments for one year",
+					]}
+					buttonText="Learn more about CLEAR"
+					buttonLink="/vision-correction/laser-for-reading-glasses"
+				>
+					<p>
+						CLEAR is a cutting-edge surgical technique that corrects
+						vision while preserving more of the natural lens
+						structure.
+					</p>
+				</PricingCard>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<!-- NEW  -->
+
+	<div
+		class="basic-section pricing-card-wrapper"
+		style="background-color: #f4f1ed"
+	>
+		<h2 class="big-text">Lens Surgery Prices in Brisbane</h2>
+		<div class="global-box-content">
+			<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#F4F1ED">
+				<Card layout="icon">
+					<PricingCard
+						title="Implantable Contact Lens (ICL)"
+						price="$68"
+						pricePeriod="/week"
+						features={[
+							"Cost per eye with a 24-month interest-free plan or $7,000 per eye",
+							"Includes full pre-operative assessments and surgical procedure preparation",
+							"All hospital and anaesthetic fees",
+							"Customised lenses included without hidden costs",
+							"Aftercare and follow up appointment included",
+						]}
+						buttonText="Learn More About ICL"
+						buttonLink="/vision-correction/implantable-contact-lens"
+					>
+						<p>
+							ICL surgery enhances focusing power and is ideal for
+							severe refractive errors not suitable for
+							traditional laser eye treatments.
+						</p>
+					</PricingCard>
+				</Card>
+
+				<Card layout="icon">
+					<PricingCard
+						title="Refractive Lens Exchange (RLE)"
+						price="$58"
+						pricePeriod="/week"
+						features={[
+							"Cost per eye with a 24-month interest-free payment plan or $6,000 per eye",
+							"Includes all pre-operative assessments",
+							"Hospital and anaesthetic costs included",
+							"Premium lens options included under one plan",
+							"All aftercare and laser eye clinic follow up visits included",
+						]}
+						buttonText="Learn More About RLE"
+						buttonLink="/vision-correction/refractive-lens-exchange"
+					>
+						<p>
+							This laser treatment replaces the natural lens to
+							treat high refractive errors, much like cataract
+							treatment.
+						</p>
+					</PricingCard>
+				</Card>
+			</CardGrid>
+
+			<div style="padding:0 10px;">
+				<h2 style="color:var(--dark-blue-color, #1c2f49);">
+					Premium cataract surgery*
+				</h2>
+
+				<p>
+					Cataract surgery fees range from $2,500–$5,500 per eye,
+					depending on your private health insurance policies and lens
+					selection. Due to Medicare and health fund regulations,
+					cataract treatment pricing is not bundled. A transparent
+					quote, including theatre fees, will be provided during your
+					free assessment.
+				</p>
+
+				<PricingComparison />
+			</div>
+		</div>
+	</div>
+
+	<ImageBanner
+		backgroundImage={BannerImgOne}
+		textAlign="right"
+		mobileImagePosition="40% 0%"
+	>
+		<h2>EYE LASER SURGERY</h2>
+		<p>
+			Explore your suitability for laser procedures with a comprehensive,
+			face-to-face consultation at our laser eye clinic. We offer free
+			consultations and assessments to determine the most suitable medical
+			procedure for your eyes.
+		</p>
+		<div>
+			<Button
+				href="/contact"
+				text="Book Your Free Assessment"
+				openInNewTab={false}
+			/>
+		</div>
+		<br />
+		<Button
+			href="/laser-suitability-test"
+			text="Take the laser suitability test"
+			openInNewTab={false}
+		/>
+	</ImageBanner>
+
+	<div class="basic-section" style="background-color: #f4f1ed">
+		<h2 class="big-text">
+			Why does laser eye surgery cost as much as it does?
+		</h2>
+		<p>
+			Even though LASIK is a quick surgical procedure, lasting about 15
+			minutes, many wonder how much does laser eye surgery really cost.
+			Below are the key factors that influence the overall price.
+		</p>
+
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#FFFFFF">
+			<Card layout="icon">
+				<h3>Investment in Advanced Diagnostics</h3>
+				<p>
+					A modern laser eye clinic like Focus Vision invests heavily
+					in advanced diagnostic tools to protect your eye health. Our
+					diagnostic equipment alone is valued at over $700,000,
+					ensuring we deliver the safest and most accurate laser eye
+					procedures. We also include follow up care after eye
+					surgery.
+				</p>
+			</Card>
+			<Card layout="icon">
+				<h3>High-Tech Laser Equipment</h3>
+				<p>
+					LASIK and PRK eye surgery require multiple lasers. A
+					femtosecond laser can cost up to $1 million and incurs use
+					fees of $450–$600 per eye. Excimer lasers used for reshaping
+					corneal tissue add another $400,000–$800,000 in equipment
+					costs. We use the latest technology to ensure premium
+					results and no hidden costs.
+				</p>
+			</Card>
+			<Card layout="icon">
+				<h3>The Laser Environment</h3>
+				<p>
+					Maintaining these devices requires a stable operating
+					environment. Our purpose-built theatre, in a private day
+					hospital, ensures the correct humidity and temperature. This
+					investment in the right environment and theatre fees plays a
+					crucial role in ensuring optimal outcomes for your eye laser
+					surgery.
+				</p>
+			</Card>
+			<Card layout="icon">
+				<h3>Surgeon's Expertise</h3>
+				<p>
+					Becoming a qualified laser eye surgeon in Australia involves
+					about 15 years of training. Our team includes corneal
+					subspecialists who have undergone overseas fellowships.
+					Surgeon experience and surgeon's skill directly impact the
+					results of your laser treatment.
+				</p>
+			</Card>
+			<Card layout="icon">
+				<h3>Operational Costs</h3>
+				<p>
+					Running a world-class laser refractive surgery clinic
+					involves ongoing expenses, including premises, highly
+					trained staff, insurance, and more.
+				</p>
+			</Card>
+			<Card layout="icon">
+				<h3>Investing in your vision</h3>
+				<p>
+					Focus Vision is committed to transparent pricing and
+					clarity. Whether you choose LASIK, PRK, or cataract
+					treatment, our packages include all consultations, eye
+					drops, surgical techniques, and follow-up care. With
+					interest free payment plans and various payment options
+					available, we help you invest in lasting eye health with
+					confidence tailored to your particular circumstances and
+					needs.
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<ImageBanner
+		backgroundImage={BannerImgTwo}
+		textAlign="left"
+		mobileImagePosition="70% 0%"
+	>
+		<h2>Free Consultation</h2>
+		<p>
+			Not ready to book yet? Take our laser suitability test and receive a
+			completely free information pack tailored to your situation. After
+			the initial consultation we will explain the eye surgery cost.
+		</p>
+		<Button
+			href="/laser-suitability-test"
+			text="TAKE THE LASER SUITABILITY TEST"
+			openInNewTab={false}
+		/>
+	</ImageBanner>
+
+	<Faq title="Frequently Asked Questions about Costs:" faqs={faqs} />
+
+	<AboutUs backgroundColor="#F4F1ED" stylePreset="Eggshell" />
+</BaseLayout>

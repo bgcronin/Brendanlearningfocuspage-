@@ -1,0 +1,127 @@
+---
+import { Image } from "astro:assets";
+import heroImage from "../assets/images/woman-with-long-brown-hair-and-light-eyes-smiles-hero-image.webp";
+---
+
+<section class="hero-container">
+	<Image
+		src={heroImage}
+		alt="Brisbane patient enjoying glasses-free vision after laser eye surgery at Focus Vision"
+		aria-hidden="true"
+		loading="eager"
+		fetchpriority="high"
+		decoding="async"
+		widths={[768, 1024, 1440, 1920, 2560]}
+		sizes="(max-width: 768px) 1200px, 100vw"
+		class="hero-bg"
+		format="webp"
+		quality={85}
+		background="auto"
+		preload
+		priority
+	/>
+
+	<div class="text-content">
+		<h1>Laser Eye Surgery Brisbane - LASIK, PRK & Lenticule Extraction</h1>
+		<p>
+			Live a life free of glasses & contact lenses, with laser eye surgery
+			cost starting from $29/week
+		</p>
+	</div>
+</section>
+
+<style>
+	.hero-container {
+		position: relative;
+		display: grid;
+		grid-template-columns: 8fr 6fr;
+		align-items: center;
+		text-align: left;
+		width: 100%;
+		min-height: 100vh;
+		color: white;
+		padding: 2rem 4rem;
+		overflow: hidden;
+	}
+
+	.hero-container::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			135deg,
+			rgba(66, 121, 139, 0.25) 0%,
+			rgba(32, 65, 90, 0.15) 100%
+		);
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	.hero-bg {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center;
+		z-index: -1;
+	}
+
+	.text-content {
+		grid-column: 2 / 3;
+		max-width: 550px;
+		text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+		position: relative;
+		z-index: 1;
+	}
+
+	.text-content h1 {
+		font-size: 2.75rem;
+		font-weight: 600;
+		margin-bottom: 1rem;
+		line-height: 1.2;
+	}
+
+	.text-content p {
+		font-size: 1.5rem;
+		line-height: 1.6;
+		font-weight: 300;
+	}
+
+	@media (max-width: 992px) {
+		.hero-container {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			padding: 0 1.5rem;
+			min-height: 500px;
+		}
+
+		.hero-bg {
+			object-position: center top;
+		}
+
+		.text-content {
+			max-width: 36rem;
+		}
+	}
+
+	@media (max-width: 576px) {
+		.hero-container {
+			min-height: 420px;
+		}
+
+		.hero-bg {
+			object-position: 50% 15%;
+		}
+
+		.text-content h1 {
+			font-size: 2rem;
+		}
+
+		.text-content p {
+			font-size: 1.125rem;
+		}
+	}
+</style>

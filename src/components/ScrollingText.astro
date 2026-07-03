@@ -1,0 +1,73 @@
+---
+// src/components/ScrollingText.astro
+// Props have been removed for a simpler, one-off component.
+const text = 'Laser Eye Surgery Brisbane';
+---
+
+<div class="scrolling-text-section">
+  <div class="scrolling-text-container">
+    <div class="scrolling-text-content">
+      <!-- The content is duplicated to create a seamless loop -->
+      <span>{text}</span>
+      <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 6L2 4L4 6L6 8L8 6L10 4L12 6L14 8L16 6L18 4L20 6L22 8L24 6" stroke="#6A5ACD" stroke-width="2"/></svg>
+      <span>{text}</span>
+       <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 6L2 4L4 6L6 8L8 6L10 4L12 6L14 8L16 6L18 4L20 6L22 8L24 6" stroke="#6A5ACD" stroke-width="2"/></svg>
+      <span>{text}</span>
+       <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 6L2 4L4 6L6 8L8 6L10 4L12 6L14 8L16 6L18 4L20 6L22 8L24 6" stroke="#6A5ACD" stroke-width="2"/></svg>
+      <span>{text}</span>
+       <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 6L2 4L4 6L6 8L8 6L10 4L12 6L14 8L16 6L18 4L20 6L22 8L24 6" stroke="#6A5ACD" stroke-width="2"/></svg>
+    </div>
+    <div class="scrolling-text-content" aria-hidden="true">
+      <!-- This is the duplicated content for the seamless animation -->
+      <span>{text}</span>
+      <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 6L2 4L4 6L6 8L8 6L10 4L12 6L14 8L16 6L18 4L20 6L22 8L24 6" stroke="#6A5ACD" stroke-width="2"/></svg>
+      <span>{text}</span>
+      <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 6L2 4L4 6L6 8L8 6L10 4L12 6L14 8L16 6L18 4L20 6L22 8L24 6" stroke="#6A5ACD" stroke-width="2"/></svg>
+      <span>{text}</span>
+      <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 6L2 4L4 6L6 8L8 6L10 4L12 6L14 8L16 6L18 4L20 6L22 8L24 6" stroke="#6A5ACD" stroke-width="2"/></svg>
+      <span>{text}</span>
+      <svg width="24" height="12" viewBox="0 0 24 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 6L2 4L4 6L6 8L8 6L10 4L12 6L14 8L16 6L18 4L20 6L22 8L24 6" stroke="#6A5ACD" stroke-width="2"/></svg>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+  }
+
+  .scrolling-text-section {
+    width: 100%;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    background-color: #FFFFFF; /* Hardcoded background color */
+    color: #1C2F49;      /* Hardcoded text color */
+  }
+
+  .scrolling-text-container {
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    white-space: nowrap;
+  }
+
+  .scrolling-text-content {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    animation: scroll 50s linear infinite;
+  }
+  
+  .scrolling-text-content span {
+    font-size: 1.6rem; /* 32px */
+    font-weight: 300;
+    padding: 0 40px;
+  }
+
+  .scrolling-text-content svg {
+    flex-shrink: 0; /* Prevents the SVG from shrinking */
+  }
+</style>
+

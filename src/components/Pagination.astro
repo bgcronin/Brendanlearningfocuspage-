@@ -1,0 +1,45 @@
+---
+const { page } = Astro.props; // `page` is a prop passed by Astro's pagination
+---
+
+<nav class="pagination" aria-label="Blog pages">
+	{
+		page.url.prev ? (
+			<a href={page.url.prev} class="nav-link prev">
+				&larr; Newer Posts
+			</a>
+		) : (
+			<div />
+		)
+	}
+	{
+		page.url.next ? (
+			<a href={page.url.next} class="nav-link next">
+				Older Posts &rarr;
+			</a>
+		) : (
+			<div />
+		)
+	}
+</nav>
+
+<style>
+	.pagination {
+		display: flex;
+		justify-content: space-between;
+		margin-top: 4rem;
+	}
+	.nav-link {
+		display: inline-block;
+		padding: 12px 24px;
+		background-color: #f4f1ed;
+		color: #1c2f49;
+		text-decoration: none;
+		border-radius: 8px;
+		font-weight: 500;
+		transition: background-color 0.3s ease;
+	}
+	.nav-link:hover {
+		background-color: #e0dcd7;
+	}
+</style>

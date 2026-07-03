@@ -1,0 +1,138 @@
+---
+// https://www.focusvision.com.au/all-ophthalmology
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FeatureHero from "../components/FeatureHero.astro";
+import heroImage from "../assets/images/dr-brendan-cronin-brisbane-laser-eye-surgery-focus-vision-brisbane-queensland-laser-ophthalmology.webp"; // Make sure to import your image
+import placeholder from "../assets/images/placeholder.png";
+import { Image } from "astro:assets";
+import Button from "../components/Button.astro";
+import Card from "../components/Card.astro";
+// Component imports will be added here
+import CardGrid from "../components/CardGrid.astro";
+
+// Import the card icon images
+import lasikIcon from "../assets/images/cards/FocusVisionLaserEyeSurgeryLASIKP.png";
+import iclIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryIC.png";
+import readingIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryre.png";
+import rleIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryRefractiveLens.png";
+import cataractIcon from "../assets/images/cards/img-FocusVisionCataractEyeSurger.png";
+import costIcon from "../assets/images/cards/Focus-Vision-costs-of-Laser-Eye-Surgery-reading-glasses.webp";
+
+const title = "All Ophthalmology | Focus Vision | Woolloongabba, QLD";
+const description = `Focus Vision offers comprehensive ophthalmology services, from advanced eye treatments to surgical care. Contact us today to schedule your consultation!`;
+const ogType = "website";
+---
+
+<BaseLayout
+	showCurve={false}
+	topColor="#ffffff"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+>
+	<FeatureHero
+		backgroundImage={heroImage}
+		textPosition="center"
+		textColor="light"
+		bottomColor="#FFFFFF"
+		addOverlay={true}
+	>
+		<h1>FOCUS Vision: Laser Eye Surgery</h1>
+	</FeatureHero>
+
+	<CardGrid
+		backgroundColor="#FFF"
+		textColor="#1C2F49"
+		cardBackgroundColor="#F4F1ED"
+	>
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={lasikIcon} alt="Laser Eye Surgery Icon" />
+			</div>
+			<h3>Laser Eye Surgery (LASIK/PRK/Lenticule Extraction)</h3>
+			<p>
+				Enjoy a new life of freedom from glasses and contact lenses with
+				laser eye surgery.
+			</p>
+			<Button
+				href="/vision-correction/laser-eye-surgery"
+				text="Learn More"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={iclIcon} alt="Implantable Contact Lens Icon" />
+			</div>
+			<h3>Implantable Contact Lens (ICL)</h3>
+			<p>
+				ICL technology is a great treatment for high prescriptions or
+				those not suitable for laser eye surgery.
+			</p>
+			<Button
+				href="/vision-correction/implantable-contact-lens"
+				text="Learn More"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={readingIcon} alt="Laser for Reading Glasses Icon" />
+			</div>
+			<h3>Laser for Reading Glasses</h3>
+			<p>
+				Suddenly can't read your phone? Laser Blended Vision is a great
+				solution to remove reading glasses.
+			</p>
+			<Button
+				href="/vision-correction/laser-for-reading-glasses"
+				text="Learn More"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={rleIcon} alt="Refractive Lens Exchange Icon" />
+			</div>
+			<h3>Refractive Lens Exchange</h3>
+			<p>
+				As you get older, or for certain prescriptions, RLE can be the
+				best option to improve vision by replacing your natural lens.
+			</p>
+			<Button
+				href="/vision-correction/refractive-lens-exchange"
+				text="Learn More"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={cataractIcon} alt="Premium Cataract Surgery Icon" />
+			</div>
+			<h3>Premium Cataract Surgery</h3>
+			<p>
+				At Focus Vision we offer premium cataract surgery to not only
+				remove the cataract but also to reduce your need for distance
+				and reading glasses.
+			</p>
+			<Button
+				href="/vision-correction/cataract-surgery"
+				text="Learn More"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={costIcon} alt="Cost of Surgery Icon" />
+			</div>
+			<h3>Costs of Surgery</h3>
+			<p>
+				At Focus Vision we are fully transparent about the costs of
+				surgery. Financing options are available so you can stop renting
+				and start owning your vision today!
+			</p>
+			<Button href="/costs" text="Learn More" />
+		</Card>
+	</CardGrid>
+</BaseLayout>

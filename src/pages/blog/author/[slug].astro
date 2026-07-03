@@ -1,0 +1,337 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import { marked } from "marked";
+import Schema from "../../../components/Schema.astro";
+import Breadcrumbs from "../../../components/Breadcrumbs.astro";
+import { getProfilePageSchema } from "../../../utils/seo";
+
+export async function getStaticPaths() {
+	const authors = await getCollection("authors");
+	return authors.map((author) => {
+		const slug = author.id.replace(/\.[^/.]+$/, "");
+		return {
+			params: { slug },
+			props: { author },
+		};
+	});
+}
+
+const { author } = Astro.props;
+
+const allPosts = await getCollection("blog");
+// Sort by datePublished from frontmatter
+const authorPosts = allPosts
+	.filter((post) => post.data.author === author.id.replace(/\.[^/.]+$/, ""))
+	.sort(
+		(a, b) =>
+			new Date(b.data.datePublished).valueOf() -
+			new Date(a.data.datePublished).valueOf(),
+	);
+
+const schemaArray = [getProfilePageSchema(Astro.url.pathname, author)];
+---
+
+<BaseLayout description={author.data.bio || ""}>
+	<Fragment slot="head-schema">
+		<Schema item={schemaArray} />
+	</Fragment>
+	<section class="author-profile">
+		<div class="container">
+			<Breadcrumbs variant="blog" />
+			<header class="profile-header">
+				<div class="profile-avatar">
+					{
+						author.data.avatar ? (
+							<Image
+								src={author.data.avatar}
+								alt={author.data.name}
+								width={200}
+								height={200}
+							/>
+						) : (
+							<div class="avatar-placeholder">
+								{author.data.name.charAt(0)}
+							</div>
+						)
+					}
+				</div>
+				<div class="profile-title">
+					<h1>{author.data.name}</h1>
+					<p class="credentials">{author.data.credentials}</p>
+					<div class="social-links">
+						{
+							author.data.social.facebook && (
+								<a
+									href={author.data.social.facebook}
+									aria-label="Facebook"
+								>
+									<Image
+										src="/icons/facebook-f-brands-solid-full.svg"
+										width="24"
+										height="24"
+										alt=""
+									/>
+								</a>
+							)
+						}
+						{
+							author.data.social.instagram && (
+								<a
+									href={author.data.social.instagram}
+									aria-label="Instagram"
+								>
+									<Image
+										src="/icons/instagram-brands-solid-full.svg"
+										width="24"
+										height="24"
+										alt=""
+									/>
+								</a>
+							)
+						}
+						{
+							author.data.social.linkedin && (
+								<a
+									href={author.data.social.linkedin}
+									aria-label="LinkedIn"
+								>
+									<Image
+										src="/icons/linkedin-in-brands-solid-full.svg"
+										width="24"
+										height="24"
+										alt=""
+									/>
+								</a>
+							)
+						}
+						{
+							author.data.social.youtube && (
+								<a
+									href={author.data.social.youtube}
+									aria-label="YouTube"
+								>
+									<Image
+										src="/icons/youtube-brands-solid-full.svg"
+										width="24"
+										height="24"
+										alt=""
+									/>
+								</a>
+							)
+						}
+					</div>
+				</div>
+			</header>
+
+			<div
+				class={`profile-content ${author.data.affiliations.length > 0 ? "has-aside" : ""}`}
+			>
+				<div class="bio-section">
+					<h2>About {author.data.name}</h2>
+					<div
+						class="full-bio"
+						set:html={marked.parse(
+							author.body || author.data.bio || "",
+						)}
+					/>
+				</div>
+
+				{
+					author.data.affiliations.length > 0 && (
+						<aside class="affiliations-section">
+							<h2>Affiliations & Research</h2>
+							<ul>
+								{author.data.affiliations.map((aff: any) => (
+									<li>
+										<a
+											href={aff.url}
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											{aff.name}
+										</a>
+									</li>
+								))}
+							</ul>
+						</aside>
+					)
+				}
+			</div>
+
+			<div class="author-posts">
+				<h2>Articles by {author.data.name}</h2>
+				<div class="posts-grid">
+					{
+						authorPosts.map((post) => {
+							const slug = post.id.replace(/\.[^/.]+$/, "");
+							return (
+								<a href={`/blog/${slug}/`} class="post-card">
+									{post.data.coverImage && (
+										<Image
+											src={post.data.coverImage}
+											alt={post.data.title}
+											width={400}
+											height={250}
+										/>
+									)}
+									<div class="post-card-content">
+										<h3>{post.data.title}</h3>
+										<p>{post.data.description}</p>
+									</div>
+								</a>
+							);
+						})
+					}
+				</div>
+			</div>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.author-profile {
+		padding: 60px 20px;
+		background-color: #fff;
+	}
+	.container {
+		max-width: 1000px;
+		margin: 0 auto;
+	}
+	.profile-header {
+		display: flex;
+		gap: 40px;
+		align-items: center;
+		margin-bottom: 60px;
+		border-bottom: 1px solid #eee;
+		padding-bottom: 40px;
+	}
+	@media (max-width: 768px) {
+		.profile-header {
+			flex-direction: column;
+			text-align: center;
+		}
+	}
+	.profile-avatar :global(img),
+	.avatar-placeholder {
+		width: 180px;
+		height: 180px;
+		border-radius: 50%;
+		object-fit: cover;
+		border: 5px solid var(--color-accent, #f4f1ed);
+	}
+	.avatar-placeholder {
+		background: var(--dark-blue-color);
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 5rem;
+	}
+	.profile-title h1 {
+		margin: 0;
+		font-size: 2.5rem;
+		color: var(--dark-blue-color);
+	}
+	.credentials {
+		font-size: 1.1rem;
+		color: #666;
+		margin-top: 5px;
+	}
+	.social-links {
+		display: flex;
+		gap: 15px;
+		margin-top: 20px;
+	}
+	@media (max-width: 768px) {
+		.social-links {
+			justify-content: center;
+		}
+	}
+	.social-links a {
+		color: var(--dark-blue-color);
+		transition: opacity 0.2s;
+	}
+	.social-links a:hover {
+		opacity: 0.7;
+	}
+	.profile-content {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+		margin-bottom: 80px;
+	}
+	.profile-content.has-aside {
+		display: grid;
+		grid-template-columns: 2fr 1fr;
+		gap: 60px;
+	}
+	@media (max-width: 768px) {
+		.profile-content.has-aside {
+			grid-template-columns: 1fr;
+		}
+	}
+	.bio-section h2,
+	.affiliations-section h2,
+	.author-posts h2 {
+		color: var(--dark-blue-color);
+		margin-bottom: 25px;
+		font-size: 1.8rem;
+	}
+	.full-bio {
+		line-height: 1.8;
+		font-size: 1.1rem;
+		color: #333;
+	}
+	.affiliations-section ul {
+		list-style: none;
+		padding: 0;
+	}
+	.affiliations-section li {
+		margin-bottom: 15px;
+	}
+	.affiliations-section a {
+		color: var(--dark-blue-color);
+		text-decoration: underline;
+		font-weight: 500;
+	}
+	.posts-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+		gap: 30px;
+	}
+	.post-card {
+		text-decoration: none;
+		color: inherit;
+		border: 1px solid #eee;
+		border-radius: 12px;
+		overflow: hidden;
+		transition: transform 0.2s;
+	}
+	.post-card:hover {
+		transform: translateY(-5px);
+	}
+	.post-card img {
+		width: 100%;
+		height: 200px;
+		object-fit: cover;
+	}
+	.post-card-content {
+		padding: 20px;
+	}
+	.post-card-content h3 {
+		margin: 0 0 10px 0;
+		font-size: 1.2rem;
+		color: var(--dark-blue-color);
+	}
+	.post-card-content p {
+		font-size: 0.9rem;
+		color: #666;
+		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+</style>

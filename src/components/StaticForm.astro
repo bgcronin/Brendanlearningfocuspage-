@@ -1,0 +1,118 @@
+---
+// src/components/StaticForm.astro
+export interface Props {
+	accessKey: string; // Your access key from staticforms.xyz
+}
+const { accessKey } = Astro.props;
+---
+
+<iframe
+	src="https://api.leadconnectorhq.com/widget/form/wqNNViib00p0YDTYqxuP"
+	style="width:100%;height:100%;border:none;border-radius:3px"
+	id="inline-wqNNViib00p0YDTYqxuP"
+	data-layout="{'id':'INLINE'}"
+	data-trigger-type="alwaysShow"
+	data-trigger-value=""
+	data-activation-type="alwaysActivated"
+	data-activation-value=""
+	data-deactivation-type="neverDeactivate"
+	data-deactivation-value=""
+	data-form-name="(Website Only) General Enquiries Form Focus Vision - 10/10"
+	data-height="628"
+	data-layout-iframe-id="inline-wqNNViib00p0YDTYqxuP"
+	data-form-id="wqNNViib00p0YDTYqxuP"
+	title="(Website Only) General Enquiries Form Focus Vision - 10/10"
+>
+</iframe>
+<script src="https://link.msgsndr.com/js/form_embed.js"></script>
+
+<style>
+	.static-form {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
+	}
+	.field-group {
+		display: flex;
+		flex-direction: column;
+	}
+	.field-group label {
+		font-size: 0.9rem;
+		font-weight: 500;
+		color: #1c2f49;
+		margin-bottom: 0.5rem;
+	}
+	.field-group .required {
+		font-weight: 300;
+		color: #666;
+	}
+	.field-group input,
+	.field-group textarea {
+		background-color: #f4f1ed;
+		border: 1px solid transparent;
+		border-radius: 9999px;
+		padding: 12px 20px;
+		font-size: 1rem;
+		transition: border-color 0.3s ease;
+	}
+	.field-group textarea {
+		border-radius: 24px;
+	}
+	.field-group input:focus,
+	.field-group textarea:focus {
+		outline: none;
+		border-color: #437b8c;
+	}
+	.name-fields {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+	}
+	.consent-group {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.75rem;
+		margin-top: 1rem;
+	}
+	.consent-group input[type="checkbox"] {
+		margin-top: 5px;
+		flex-shrink: 0;
+	}
+	.consent-group label {
+		font-size: 0.9rem;
+		font-weight: 300;
+		color: #333;
+		line-height: 1.6;
+	}
+	.consent-group a {
+		color: #437b8c;
+		text-decoration: underline;
+	}
+	.submit-button {
+		background: linear-gradient(
+			28deg,
+			rgba(67, 123, 140, 1) 18%,
+			rgba(36, 81, 104, 1) 55%,
+			rgba(29, 54, 80, 1) 100%
+		);
+		color: white;
+		font-weight: 500;
+		letter-spacing: 0.32px;
+		text-transform: uppercase;
+		border: none;
+		border-radius: 9999px;
+		padding: 14px 28px;
+		cursor: pointer;
+		transition: opacity 0.3s ease;
+		align-self: flex-start;
+	}
+	.submit-button:hover {
+		opacity: 0.9;
+	}
+
+	@media (max-width: 600px) {
+		.name-fields {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

@@ -1,0 +1,213 @@
+---
+// src/components/PhilosophySection.astro
+---
+
+<section class="philosophy-section">
+	<div class="container">
+		<div class="content-col">
+			<h2 class="title">Our Clinical Philosophy</h2>
+			<p class="description">
+				Refractive surgery is elective. That means every patient who
+				walks through our door has a choice — and our job is to give you
+				the information, candour, and care that lets you make the right
+				one for you.
+			</p>
+
+			<blockquote class="quote">
+				"We say no to procedures more often than most clinics. If we
+				don't think laser eye surgery is the right option for you, we
+				will tell you, and we will recommend an alternative — even if it
+				means we don't perform the surgery."
+			</blockquote>
+
+			<p class="description">
+				Our reputation depends on long-term outcomes, not short-term
+				volume. We are doctors, not sales people. We are not employees
+				and we have no "sales targets" or "quotas". We will give you an
+				honest medical opinion as if you were our own family.
+			</p>
+		</div>
+
+		<div class="assessment-col">
+			<div class="assessment-card">
+				<h3 class="assessment-title">The Focus Vision Assessment</h3>
+
+				<div class="assessment-list">
+					<div class="assessment-item">
+						<span class="number">01</span>
+						<div class="item-text">
+							<h4>Listen first</h4>
+							<p>
+								What matters to you in your daily vision?
+								Glasses-free swimming? Reading menus without
+								readers? Driving at night without halos? Your
+								goals shape your treatment plan.
+							</p>
+						</div>
+					</div>
+
+					<div class="assessment-item">
+						<span class="number">02</span>
+						<div class="item-text">
+							<h4>Measure thoroughly</h4>
+							<p>
+								A typical assessment includes corneal
+								topography, OCT, biometry, pupillometry, and a
+								comprehensive medical history review. We don't
+								skip steps.
+							</p>
+						</div>
+					</div>
+
+					<div class="assessment-item">
+						<span class="number">03</span>
+						<div class="item-text">
+							<h4>Explain plainly</h4>
+							<p>
+								No jargon, no salespeak. We tell you what we'd
+								do if you were our brother, sister, or parent.
+								Just an honest medical opinion.
+							</p>
+						</div>
+					</div>
+
+					<div class="assessment-item">
+						<span class="number">04</span>
+						<div class="item-text">
+							<h4>Follow through</h4>
+							<p>
+								Post-operative care matters as much as the
+								procedure itself. Every patient has direct
+								contact with their surgeon during recovery.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.philosophy-section {
+		background-color: #0f172a; /* Very dark navy */
+		color: #ffffff;
+		padding: 100px 24px;
+	}
+
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 80px;
+		align-items: center;
+	}
+
+	.content-col {
+		text-align: left;
+	}
+
+	.title {
+		font-size: 3.5rem;
+		font-weight: 700;
+		margin: 0 0 32px 0;
+		line-height: 1.1;
+	}
+
+	.description {
+		font-size: 1.125rem;
+		line-height: 1.6;
+		color: #cbd5e1;
+		margin-bottom: 32px;
+	}
+
+	.quote {
+		border-left: 4px solid #3b82f6;
+		padding-left: 24px;
+		margin: 40px 0;
+		font-style: italic;
+		font-size: 1.25rem;
+		line-height: 1.6;
+		color: #ffffff;
+	}
+
+	.assessment-card {
+		background-color: #1e293b; /* Slightly lighter navy */
+		border-radius: 40px;
+		padding: 60px;
+		text-align: left;
+	}
+
+	.assessment-title {
+		color: #3b82f6;
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin: 0 0 48px 0;
+	}
+
+	.assessment-list {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+	}
+
+	.assessment-item {
+		display: flex;
+		gap: 24px;
+	}
+
+	.number {
+		font-size: 2.5rem;
+		font-weight: 800;
+		color: #ffffff;
+		opacity: 0.1;
+		line-height: 1;
+		flex-shrink: 0;
+		min-width: 60px;
+	}
+
+	.item-text h4 {
+		font-size: 1.25rem;
+		font-weight: 700;
+		margin: 0 0 12px 0;
+		color: #ffffff;
+	}
+
+	.item-text p {
+		font-size: 1rem;
+		line-height: 1.5;
+		color: #94a3b8;
+		margin: 0;
+	}
+
+	@media (max-width: 1024px) {
+		.container {
+			grid-template-columns: 1fr;
+			gap: 60px;
+		}
+
+		.title {
+			font-size: 2.5rem;
+		}
+
+		.assessment-card {
+			padding: 40px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.philosophy-section {
+			padding: 60px 20px;
+		}
+
+		.assessment-card {
+			padding: 30px 20px;
+		}
+
+		.number {
+			font-size: 2rem;
+			min-width: 45px;
+		}
+	}
+</style>

@@ -1,0 +1,342 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Hero from "../components/Hero.astro";
+import TwoColumnContent from "../components/TwoColumnContent.astro";
+import usImage from "../assets/images/img-Focus-Brisbane-Eye-ICL-Cronin-Gunn.webp";
+import scapeImage from "../assets/images/img-woolloongabbabrisbanelaserey.webp";
+import SimpleBanner from "../components/SimpleBanner.astro";
+import Button from "../components/Button.astro";
+import ScrollingText from "../components/ScrollingText.astro";
+import PartnerLogos from "../components/PartnerLogos.astro";
+import { Image } from "astro:assets";
+
+// Schemas
+import Schema from "../components/Schema.astro";
+import { getWebSiteSchema, getMedicalClinicSchema } from "../utils/seo";
+
+const graph = [getWebSiteSchema(), getMedicalClinicSchema()];
+
+import ogImage from "../assets/images/img-Focus-Brisbane-Eye-ICL-Cronin-Gunn.webp";
+
+import ImageBanner from "../components/ImageBanner.astro";
+import ImageBannerOne from "../assets/images/img-FOCUSVISIONBrisbanseQLDLaser.jpg"; // Import your background image
+import ImageBannerTwo from "../assets/images/img-FocusVisionBrisbaneLaserEYeS.jpg"; // Import your background image
+
+// cards
+
+import CardGrid from "../components/CardGrid.astro";
+import Card from "../components/Card.astro";
+
+// Import the card icon images
+import lasikIcon from "../assets/images/cards/FocusVisionLaserEyeSurgeryLASIKP.png";
+import iclIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryIC.png";
+import readingIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryre.png";
+import rleIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryRefractiveLens.png";
+import cataractIcon from "../assets/images/cards/img-FocusVisionCataractEyeSurger.png";
+import pterygiumIcon from "../assets/images/cards/img-FocusVisionPterygiumSurgeryR.png";
+
+// Import the icon images
+import latestTechIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+Laser.png";
+import corneaSpecialistsIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin.png";
+import worldClassFacilitiesIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+QEI.png";
+import personalisedCareIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+patients.png";
+import costsOfSurgeryIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+Cost.png";
+
+const title = "Focus Vision";
+const description = `Focus Vision provides expert ophthalmology services, including, LASIK laser eye surgery, refractive lens exchange and premium pterygium surgery. Contact us today for personalised eye care solutions in Brisbane!`;
+const ogType = "website";
+---
+
+<BaseLayout
+	title="Laser Eye Surgery Brisbane"
+	showCurve={false}
+	topColor="#ffffff"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	ogImage={ogImage}
+>
+	<Fragment slot="head-schema">
+		<Schema item={graph} />
+	</Fragment>
+
+	<Hero />
+
+	<!-- This will create a light blue banner with centered, dark blue text -->
+	<SimpleBanner textAlign="center" textWeight="700">
+		<p>LATEST TECHNOLOGY MEETS PERSONALISED CARE</p>
+		<h2>Eye Surgery Solutions and Free Assessment</h2>
+	</SimpleBanner>
+
+	<CardGrid
+		backgroundColor="#FFF"
+		textColor="#1C2F49"
+		cardBackgroundColor="#F4F1ED"
+	>
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={lasikIcon} alt={`Laser Eye Surgery Icon`} />
+			</div>
+			<h3>Laser Eye Surgery (LASIK/PRK/Lenticule Extraction)</h3>
+			<p>
+				Enjoy a new life of freedom from glasses and contact lenses with
+				laser eye surgery.
+			</p>
+			<Button
+				href="/vision-correction/laser-eye-surgery"
+				text="Laser Eye Surgery"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={iclIcon} alt={`Implantable Contact Lens Icon`} />
+			</div>
+			<h3>Implantable Contact Lens (ICL)</h3>
+			<p>
+				ICL technology is a great treatment for high prescriptions or
+				those not suitable for laser eye surgery.
+			</p>
+			<Button
+				href="/vision-correction/implantable-contact-lens"
+				text="Implantable Contact Lens"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image
+					src={readingIcon}
+					alt={`Laser for Reading Glasses Icon`}
+				/>
+			</div>
+			<h3>Laser for Reading Glasses</h3>
+			<p>
+				Suddenly can't read your phone? Laser Blended Vision is a great
+				solution to remove reading glasses.
+			</p>
+			<Button
+				href="/vision-correction/laser-for-reading-glasses"
+				text="Laser Blended Vision"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={rleIcon} alt={`Refractive Lens Exchange Icon`} />
+			</div>
+			<h3>Refractive Lens Exchange</h3>
+			<p>
+				As you get older, or for certain prescriptions, RLE can be the
+				best option to improve vision by replacing your natural lens.
+			</p>
+			<Button
+				href="/vision-correction/refractive-lens-exchange"
+				text="Refractive Lens Exchange"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image
+					src={cataractIcon}
+					alt={`Premium Cataract Surgery Icon`}
+				/>
+			</div>
+			<h3>Premium Cataract Surgery</h3>
+			<p>
+				At Focus Vision we offer premium cataract surgery to not only
+				remove the cataract but also to reduce your need for distance
+				and reading glasses.
+			</p>
+			<Button
+				href="/vision-correction/cataract-surgery"
+				text="Premium Cataract Surgery"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image
+					src={pterygiumIcon}
+					alt={`Premium Pterygium Surgery Icon`}
+				/>
+			</div>
+			<h3>Premium Pterygium Surgery</h3>
+			<p>
+				Choosing Focus Vision for your premium pterygium surgery in
+				Brisbane, means choosing to avoid sutures.
+			</p>
+			<Button
+				href="/vision-correction/pterygium-surgery"
+				text="Premium Pterygium Surgery"
+			/>
+		</Card>
+	</CardGrid>
+
+	<ImageBanner
+		backgroundImage={ImageBannerOne}
+		textAlign="right"
+		mobileImagePosition="36% 0%"
+	>
+		<h2>FIND YOUR FOCUS</h2>
+		<p>
+			Explore your suitability for laser vision correction with a
+			comprehensive face-to-face assessment with one of our optometrists.
+		</p>
+		<Button
+			href="/contact"
+			text="Book Your Free Assessment"
+			openInNewTab={false}
+		/>
+	</ImageBanner>
+
+	<TwoColumnContent
+		imageSrc={usImage}
+		imageAlt="Dr Brendan Cronin and Dr David Gunn in suits standing and smiling behind a marble reception desk with a computer, in front of the FOCUS VISION logo and modern wood paneling. Green plants decorate the area, reflecting their commitment to quality eye care Brisbane."
+		imagePosition="left"
+		stylePreset="Eggshell"
+		fullWidth={false}
+		backgroundColor="#1C2F49"
+	>
+		<h2>The Focus Vision Difference</h2>
+		<p>
+			Welcome to laser eye surgery Brisbane. The premier destination for
+			vision correction by a laser eye surgeon. Our Brisbane clinics has a
+			team of corneal specialists who provide laser eye surgery using an
+			excimer laser or a femtosecond laser. This eye surgery in Brisbane
+			can help fix your long sightedness and short sightedness. These
+			procedures offers payment plans and provide the best quality of
+			Lasik. We offer post operative care and also accept private health
+			insurance.
+		</p>
+
+		<Button
+			href="/about-focus-vision"
+			text="Read More About Us"
+			openInNewTab={false}
+		/>
+
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<ImageBanner
+		backgroundImage={ImageBannerTwo}
+		textAlign="left"
+		mobileImagePosition="76% 0%"
+	>
+		<h2>ARE YOU A CANDIDATE FOR LASER EYE SURGERY?</h2>
+		<p>
+			Not quite ready to book an appointment yet? Take the laser
+			suitability test and we will send you an information pack customised
+			to your vision.
+		</p>
+		<Button
+			href="/laser-suitability-test"
+			text="TAKE THE LASER SUITABILITY TEST"
+			openInNewTab={false}
+		/>
+	</ImageBanner>
+
+	<div class="basic-section">
+		<h2 class="big-text">Why Choose Focus?</h2>
+
+		<CardGrid backgroundColor="#FFFFFF" cardBackgroundColor="#F4F1ED">
+			<Card layout="icon">
+				<Image
+					src={latestTechIcon}
+					alt={`Icon of a stylized eye with crosshairs, representing focus or vision.`}
+				/>
+				<h3>Latest Technology</h3>
+				<p>
+					Focus Vision offers the latest TransPRK, Lentcule Extraction
+					and Ray Tracing LASIK procedures (the only clinic in
+					Queensland)
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={corneaSpecialistsIcon}
+					alt={`Icon of a Cornea Specialists professional wearing a mask and cap.`}
+				/>
+				<h3>Only Cornea Specialists</h3>
+				<p>
+					At Focus Vision, your surgery will be performed only by
+					surgeons who have completed international cornea surgery
+					fellowship training.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={worldClassFacilitiesIcon}
+					alt={`Icon of a clipboard with checkmarks representing our World-Class Facilities and a blue spiral swirl on a light blue circle background. `}
+				/>
+				<h3>World-Class Facilities</h3>
+				<p>
+					Focus Vision is co-located with the Queensland Eye Institute
+					and the South Brisbane Day Hospital - the premier private
+					eye surgery and research facilities in Queensland
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={personalisedCareIcon}
+					alt={`Personalised Care A blue icon depicting two stylized hands surrounding a person on a light blue circle background.`}
+				/>
+				<h3>Personalised Care</h3>
+				<p>
+					Every patient and every eye is different. Focus Vision
+					offers customised bespoke treatments at a level unavailable
+					elsewhere in Queensland. Your vision and your needs come
+					first.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={costsOfSurgeryIcon}
+					alt={`Costs of Surgery Icon an Icon of medical document with cross and money, symbolizing healthcare costs.`}
+				/>
+				<h3>Costs of Surgery</h3>
+				<p>
+					At Focus Vision we are fully transparent about the costs of
+					surgery. Financing options are available so you can stop
+					renting and start owning your vision today!
+				</p>
+			</Card>
+		</CardGrid>
+
+		<Button href="/contact" text="Book Your Free Assessment" />
+	</div>
+
+	<TwoColumnContent
+		imageSrc={scapeImage}
+		imageAlt="Aerial view of Brisbane cityscape with skyscrapers, river, suburban housing, and a sports stadium under a partly cloudy sky."
+		imagePosition="right"
+		stylePreset="Eggshell"
+		fullWidth={true}
+		backgroundColor="#04838C"
+	>
+		<h2>The Focus Vision Difference</h2>
+		<p>
+			Focus Vision is co-located with the prestigious Queensland Eye
+			Institute and the South Brisbane Day Hospital in one of the largest
+			private eye health facilities in Australia. You can rest assured of
+			safety as our laser facilities have undergone the rigorous hygiene
+			and health accreditation standards required of an Australian private
+			day hospital. There are only a handful of facilities in Australia
+			where you can have your laser eye surgery performed in a facility
+			that has reached such high ongoing accreditation standards.
+		</p>
+
+		<Button href="/contact" text="View Our Location" openInNewTab={false} />
+
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<PartnerLogos />
+</BaseLayout>

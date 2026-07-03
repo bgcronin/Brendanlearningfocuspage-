@@ -1,0 +1,579 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FeatureHero from "../components/FeatureHero.astro";
+import heroImage from "../assets/images/hero/img-FocusVisionBrisbaneLaserEyeS.jpg"; // Make sure to import your image
+import PartnerLogos from "../components/PartnerLogos.astro";
+import placeholder from "../assets/images/placeholder.png";
+import ImageBannerImageOne from "../assets/images/bg-GettyImages-825083304.webp";
+import SpiltContent from "../components/SpiltContent.astro";
+import DrGunn from "../assets/images/img-Dr2BGunn2BLaser2BSurgeon2BEye2BBrisbane.webp";
+import { Image } from "astro:assets";
+
+// Schemas
+import Schema from "../components/Schema.astro";
+import {
+	getMedicalClinicSchema,
+	getAboutPageSchema,
+	getBreadcrumbSchema,
+} from "../utils/seo";
+
+const title = "About Focus Vision | Ophthalmologist | Woolloongabba, QLD";
+const description = `Focus Vision offers expert eye care led by experienced ophthalmologists, providing advanced treatments and personalized care. Contact us today to find out more.`;
+
+const graph = [
+	getMedicalClinicSchema(),
+	getAboutPageSchema("/about-focus-vision", title, description),
+	getBreadcrumbSchema([{ name: "About", item: "/about-focus-vision" }]),
+];
+
+import drGunnImage from "../assets/images/dr-david-gunn.jpg";
+import drCroninImage from "../assets/images/dr-brendan-cronin.jpg";
+import drCroninAndDrGunn from "../assets/images/dr-cronin-and-dr-gunn.jpg";
+
+import Button from "../components/Button.astro";
+import Card from "../components/Card.astro";
+import InfoCard from "../components/InfoCard.astro";
+import PhilosophySection from "../components/PhilosophySection.astro";
+import AccreditationTable from "../components/AccreditationTable.astro";
+import ConditionsAndProcedures from "../components/ConditionsAndProcedures.astro";
+import VisitBanner from "../components/VisitBanner.astro";
+import Section from "../components/Section.astro";
+// Component imports will be added here
+import TwoColumnContent from "../components/TwoColumnContent.astro";
+import CardGrid from "../components/CardGrid.astro";
+import ImageBanner from "../components/ImageBanner.astro";
+
+import ImageGallery from "../components/ImageGallery.astro";
+import galleryImage1 from "../assets/images/about-images-collection/focusvision-office (1).webp";
+import galleryImage2 from "../assets/images/about-images-collection/focusvision-office (2).webp";
+import galleryImage3 from "../assets/images/about-images-collection/focusvision-office (3).webp";
+import galleryImage4 from "../assets/images/about-images-collection/focusvision-office (4).webp";
+import galleryImage5 from "../assets/images/about-images-collection/focusvision-office (5).webp";
+import galleryImage6 from "../assets/images/about-images-collection/focusvision-office (6).webp";
+import galleryImage7 from "../assets/images/about-images-collection/focusvision-office (7).webp";
+import galleryImage8 from "../assets/images/about-images-collection/focusvision-office (8).webp";
+
+// Import the icon images
+import HighlyTrainedSurgeonIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin.png";
+import PatientCenteredCareIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+patients.png";
+import RaTracingLASIKIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+Laser.png";
+import DayHospitalIcon from "../assets/images/cards/img-FOCUS-Vision-Laser-Eye-LASIK-Brisbane-David-Gunn.png";
+import CentreOfExcellenceIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+QEI.png";
+import AffordableCareIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+Cost.png";
+
+const ogType = "website";
+---
+
+<BaseLayout
+	showCurve={false}
+	topColor="#ffffff"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	ogImage={heroImage}
+>
+	<Fragment slot="head-schema">
+		<Schema item={graph} />
+	</Fragment>
+
+	<FeatureHero
+		backgroundImage={heroImage}
+		textPosition="left"
+		textColor="light"
+		bottomColor="#F4F1ED"
+		mobileImagePosition="73% 0%"
+	>
+		<h1>About Focus Vision Brisbane</h1>
+	</FeatureHero>
+
+	<div class="basic-section" style="background-color: #F4F1ED">
+		<p
+			style="color: #437B8C; font-weight: 700; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;"
+		>
+			Medical Excellence
+		</p>
+		<h2 class="big-text" style="font-size: 3.5rem; margin-bottom: 30px;">
+			What makes Focus Vision different?
+		</h2>
+		<p
+			style="max-width: 800px; margin: 0 auto 50px; font-size: 1.25rem; color: #1C2F49; line-height: 1.6;"
+		>
+			A surgical philosophy built on transparency, international
+			technology, and a commitment to patient-first medical ethics over
+			commercial targets.
+		</p>
+
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#F4F1ED">
+			<InfoCard title="Surgeon-only consultations" iconBgColor="#2563EB">
+				<svg
+					slot="icon"
+					width="24"
+					height="24"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					><g
+						fill="none"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						><path
+							d="m16 11l2 2l4-4m-6 12v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"
+						></path><circle cx="9" cy="7" r="4"></circle></g
+					></svg
+				>
+				<p>
+					You will always have a consultation with your surgeon prior
+					to your procedure. Your treatment plan is developed by the
+					same surgeon who will perform your procedure, ensuring total
+					continuity of care from your first measurement to your final
+					follow-up.
+				</p>
+			</InfoCard>
+
+			<InfoCard
+				title="Latest international technology"
+				iconBgColor="#2563EB"
+			>
+				<svg
+					slot="icon"
+					width="24"
+					height="24"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					><path
+						fill="none"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"
+					></path></svg
+				>
+				<p>
+					Focus Vision was the first clinic in Queensland to offer <strong
+						>Ray Tracing LASIK</strong
+					> — a customised laser treatment algorithm that uses ray-tracing
+					optical modelling rather than wavefront measurements alone. We
+					continually invest in technologies that produce better outcomes:
+				</p>
+				<ul>
+					<li>
+						<svg
+							width="24"
+							height="24"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							><path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="m18 8l4 4l-4 4M2 12h20"></path></svg
+						>
+						Ray Tracing LASIK
+					</li>
+					<li>
+						<svg
+							width="24"
+							height="24"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							><path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="m18 8l4 4l-4 4M2 12h20"></path></svg
+						>
+						Lenticule Extraction (CLEAR) for minimally-invasive correction
+					</li>
+					<li>
+						<svg
+							width="24"
+							height="24"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							><path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="m18 8l4 4l-4 4M2 12h20"></path></svg
+						>
+						Femtosecond laser-assisted cataract surgery
+					</li>
+					<li>
+						<svg
+							width="24"
+							height="24"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							><path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="m18 8l4 4l-4 4M2 12h20"></path></svg
+						>
+						Topography-guided treatments for irregular corneas
+					</li>
+					<li>
+						<svg
+							width="24"
+							height="24"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							><path
+								fill="none"
+								stroke="currentColor"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="m18 8l4 4l-4 4M2 12h20"></path></svg
+						>
+						Implantable Collamer Lenses (ICL)
+					</li>
+				</ul>
+			</InfoCard>
+
+			<InfoCard
+				title="Refractive Outcomes Analyzer"
+				iconBgColor="#10B981"
+			>
+				<svg
+					slot="icon"
+					width="24"
+					height="24"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					><path
+						fill="none"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M3 3v18h18m-3-4V9m-5 8V5M8 17v-3"></path></svg
+				>
+				<p>
+					We benchmark every refractive outcome at Focus Vision
+					against ESCRS published data. This is unusual for an
+					Australian clinic — most do not publicly track and report
+					outcomes. Our goal is transparency: we want patients to be
+					able to compare our results against international benchmarks
+					before making a decision.
+				</p>
+				<p>
+					We provide our Refractive Outcomes Analyzer free to surgeons
+					around the world. This tool assists surgeons to ensure they
+					are delivering the best refractive outcomes possible. We
+					also created the globally recognised website <strong
+						>cairsplan.com</strong
+					> which is used by surgeons globally to assist them in treating
+					corneal diseases.
+				</p>
+			</InfoCard>
+
+			<InfoCard title="Co-located with QEI" iconBgColor="#2563EB">
+				<svg
+					slot="icon"
+					width="24"
+					height="24"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					><g
+						fill="none"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						><path d="M10 12h4m-4-4h4m0 13v-3a2 2 0 0 0-4 0v3"
+						></path><path
+							d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"
+						></path><path
+							d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"
+						></path></g
+					></svg
+				>
+				<p>
+					Our clinic and surgical theatre are housed within the
+					Queensland Eye Institute precinct at 87 Ipswich Road,
+					Woolloongabba. South Brisbane Day Hospital, where we
+					operate, is a fully accredited day-procedure facility
+					meeting ACHS requirements.
+				</p>
+				<p>
+					Co-location with QEI gives our patients direct access to the
+					largest private subspecialty ophthalmology group in
+					Queensland — including retinal, glaucoma, and oculoplastic
+					specialists — should subspecialty input ever be required.
+				</p>
+			</InfoCard>
+		</CardGrid>
+	</div>
+
+	<TwoColumnContent
+		imageSrc={DrGunn}
+		imageAlt="DrGunn Using Laser Eye Machine"
+		imagePosition="right"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h2>Who are we?</h2>
+
+		<p>
+			Focus Vision is a specialist ophthalmology clinic in Woolloongabba,
+			Brisbane, dedicated to advanced laser vision correction, refractive
+			surgery, premium cataract surgery, and corneal procedures.
+		</p>
+
+		<p>
+			The clinic was founded by <a href="/about-dr-brendan-cronin/"
+				>Dr Brendan Cronin</a
+			> and <a href="/about-dr-david-gunn/">Dr David Gunn</a> — two Australian-trained
+			ophthalmologists who completed international corneal fellowships before
+			returning to Queensland to practise.
+		</p>
+
+		<p>
+			Focus Vision is co-located with Queensland Eye Institute and South
+			Brisbane Day Hospital at 87 Ipswich Road, giving patients seamless
+			access to a fully accredited surgical theatre and the broader QEI
+			specialist team.
+		</p>
+
+		<!-- <p>
+			Focus Vision was founded by <a href="/about-dr-brendan-cronin/"
+				>Dr Brendan Cronin</a
+			> and <a href="/about-dr-david-gunn/">Dr David Gunn</a> out of a desire
+			to offer patients in Queensland a new level of laser vision correction.
+			They have both seen the amazing impact that laser and lens surgery have
+			had on their patients (and themselves).
+		</p>
+
+		<p>
+			Every person and every eye is different. Your vision is precious and
+			individual to you. Your needs and your vision are our number one
+			focus – that is where we draw our inspiration for our work and also
+			our name.
+		</p>
+
+		<p>
+			At Focus Vision you can expect world-class, bespoke and customised
+			vision correction treatments delivered by some of the top laser eye
+			specialists in Australia. We look forward to welcoming you to our
+			clinic and partnering with you on the life changing journey of
+			vision correction.
+		</p> -->
+	</TwoColumnContent>
+
+	<TwoColumnContent
+		imageSrc={drCroninAndDrGunn}
+		imageAlt="Dr Cronin and Dr Gunn"
+		imagePosition="left"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h2>Why we founded Focus Vision?</h2>
+
+		<p>
+			Both Dr Cronin and Dr Gunn spent years training overseas in some of
+			the world’s busiest cornea and refractive units. Returning to
+			Australia, we saw an opportunity to combine the latest international
+			refractive technology — including procedures that were not yet
+			widely available in Queensland — with a personalised, surgeon-led
+			patient experience. We founded Focus Vision with a single guiding
+			principle: every eye is different, and every treatment plan should
+			reflect that.
+		</p>
+
+		<p>
+			We perform every assessment, every consultation, and every procedure
+			ourselves. There is no surgical team behind a curtain — when you
+			book an assessment at Focus Vision, you are seen by a specialist
+			ophthalmologist with international fellowship training and thousands
+			of completed procedures.
+		</p>
+
+		<Button href="/book-an-assessment" text="Book an Assessment" />
+	</TwoColumnContent>
+
+	<!-- <div class="basic-section" style="background-color: #F4F1ED">
+		<h2 class="big-text">How is Focus Vision different?</h2>
+
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#F4F1ED">
+			<Card layout="icon">
+				<Image
+					src={HighlyTrainedSurgeonIcon}
+					alt={`Highly trained Surgeons Icon`}
+				/>
+				<h3>Highly trained Surgeons</h3>
+				<p>
+					All Focus surgeons are Australian trained and have completed
+					international Corneal Surgery fellowships.
+				</p>
+			</Card>
+			<Card layout="icon">
+				<Image
+					src={PatientCenteredCareIcon}
+					alt={`that Patient centered care Icon`}
+				/>
+				<h3>Patient centered care</h3>
+				<p>
+					Commitment to providing bespoke, world-class, patient
+					centered vision correction.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={RaTracingLASIKIcon}
+					alt={`that Ray tracing LASIK Icon`}
+				/>
+				<h3>Ray tracing LASIK</h3>
+				<p>
+					The first and only clinic in Queensland to offer this
+					state-of-the-art treatment.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image src={DayHospitalIcon} alt={`that Day hospital Icon`} />
+				<h3>Day hospital</h3>
+				<p>
+					Access the only laser suite in Queensland to be housed in a
+					facility meeting the rigorous standards of an accredited day
+					hospital.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={CentreOfExcellenceIcon}
+					alt={`that Centre of excellence Icon`}
+				/>
+				<h3>Centre of excellence</h3>
+				<p>
+					Co-located with the Queensland Eye Institute, the largest
+					private ophthalmology group practice and the largest
+					independent ophthalmology research group in Queensland.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={AffordableCareIcon}
+					alt={`that Affordable care Icon`}
+				/>
+				<h3>Affordable care</h3>
+				<p>
+					Competitive and affordable treatment with financing
+					available.
+				</p>
+			</Card>
+		</CardGrid>
+	</div> -->
+
+	<PhilosophySection />
+
+	<Section backgroundColor="#F4F1ED">
+		<h2 class="big-text" style="font-size: 3rem; margin-bottom: 16px;">
+			Accreditation and Trust
+		</h2>
+		<p style="color: #1C2F49; font-size: 1.125rem; margin-bottom: 48px;">
+			Meeting and exceeding Australian and International standards.
+		</p>
+		<AccreditationTable />
+	</Section>
+
+	<ConditionsAndProcedures />
+
+	<VisitBanner />
+
+	<div class="center-content-wrap">
+		<h2>Meet Our Ophthalmologists</h2>
+
+		<SpiltContent>
+			<!-- Column 1 Content -->
+			<div>
+				<Image src={drGunnImage} alt={`Dr David Gunn`} />
+				<h3>Dr David Gunn</h3>
+				<p>OPHTHALMOLOGIST</p>
+				<Button
+					href="/about-dr-david-gunn"
+					text="Read More About David"
+				/>
+			</div>
+
+			<!-- Column 2 Content -->
+			<div>
+				<Image src={drCroninImage} alt={`Dr Brendan Cronin`} />
+				<h3>Dr Brendan Cronin</h3>
+				<p>OPHTHALMOLOGIST</p>
+				<Button
+					href="/about-dr-brendan-cronin"
+					text="Read More About Brendan"
+				/>
+			</div>
+		</SpiltContent>
+	</div>
+	<ImageGallery>
+		<Image
+			src={galleryImage1}
+			alt={`Focus Vision clinic reception area with logo`}
+		/>
+		<Image
+			src={galleryImage2}
+			alt={`that Focus Vision clinic entrance and sign`}
+		/>
+		<Image
+			src={galleryImage3}
+			alt={`that Patient at the Focus Vision reception desk`}
+		/>
+		<Image
+			src={galleryImage4}
+			alt={`that Patient sitting comfortably in the Focus Vision waiting area`}
+		/>
+		<Image
+			src={galleryImage5}
+			alt={`that Focus Vision staff member with diagnostic equipment`}
+		/>
+		<Image
+			src={galleryImage6}
+			alt={`that Focus Vision clinic consultation room`}
+		/>
+		<Image
+			src={galleryImage7}
+			alt={`that Modern and comfortable waiting room at Focus Vision`}
+		/>
+		<Image
+			src={galleryImage8}
+			alt={`that Patient receiving an eye scan at Focus Vision`}
+		/>
+	</ImageGallery>
+
+	<ImageBanner
+		backgroundImage={ImageBannerImageOne}
+		textAlign="left"
+		mobileImagePosition="70% 0%"
+	>
+		<h2>ARE YOU A CANDIDATE?</h2>
+		<p>
+			Not quite ready to book an appointment yet? Take the laser
+			suitability test and we will send you an information pack customised
+			to your vision.
+		</p>
+		<Button
+			href="/laser-suitability-test"
+			text="TAKE THE LASER SUITABILITY TEST"
+			openInNewTab={false}
+		/>
+	</ImageBanner>
+
+	<PartnerLogos />
+</BaseLayout>

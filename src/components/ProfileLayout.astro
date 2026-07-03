@@ -1,0 +1,83 @@
+---
+// src/components/ProfileLayout.astro
+// This component uses slots for all content, so no props are needed.
+---
+
+<section class="profile-layout-section">
+	<div class="container">
+		<aside class="image-column">
+			<slot name="image" />
+		</aside>
+		<main class="text-column">
+			<slot />
+		</main>
+	</div>
+</section>
+
+<style>
+	.profile-layout-section {
+		width: 100%;
+		margin: 64px 0; /* Vertical spacing */
+	}
+
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 24px;
+		display: flex;
+		gap: 40px; /* Space between image and text */
+		align-items: flex-start; /* Aligns items to the top */
+	}
+
+	.image-column {
+		flex: 0 0 30%; /* Sets the image column to 30% width and prevents it from shrinking */
+		position: sticky;
+		top: 170px; /* Offset to account for sticky header */
+	}
+
+	.text-column {
+		flex: 1; /* Allows the text column to take up the remaining space */
+		min-width: 0; /* Prevents flexbox overflow issues */
+	}
+
+	/* --- STYLES FOR SLOTTED CONTENT --- */
+
+	/* Style for the image passed into the 'image' slot */
+	:global(.profile-layout-section .image-column img) {
+		width: 100%;
+		height: auto;
+		display: block;
+		border-radius: 8px;
+	}
+
+	/* General text styles based on the example page */
+	:global(.profile-layout-section .text-column h2) {
+		font-size: 2.25rem; /* 36px */
+		font-weight: 700;
+		color: #1c2f49;
+		margin-bottom: 1rem;
+	}
+
+	:global(.profile-layout-section .text-column p) {
+		font-size: 1rem; /* 16px */
+		font-weight: 300;
+		line-height: 1.8;
+		color: #333;
+		margin-bottom: 1.5rem;
+	}
+
+	/* Responsive stacking for mobile */
+	@media (max-width: 800px) {
+		.container {
+			flex-direction: column;
+		}
+		.image-column {
+			width: 100%;
+			margin-bottom: 24px;
+		}
+		/* NEW: Reduce h2 font size on mobile */
+		:global(.profile-layout-section .text-column h2) {
+			font-size: 1.75rem; /* 28px */
+		}
+	}
+</style>

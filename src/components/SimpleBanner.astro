@@ -1,0 +1,133 @@
+---
+// src/components/SimpleBanner.astro
+export interface Props {
+	backgroundColor?: string;
+	textColor?: string;
+	headerColor?: string;
+	textAlign?: "left" | "center" | "right";
+	textWeight?: number | string; // New prop for paragraph font-weight
+	padding?: "notset" | "small" | "med" | "large";
+}
+
+const {
+	backgroundColor = "#C2DBE3", // Default: Light Blue
+	textColor = "#1C2F49", // Default: Dark Blue
+	headerColor,
+	textAlign = "center",
+	textWeight = 400, // Default font-weight
+	padding = "notset",
+} = Astro.props;
+
+// If headerColor isn't provided, it defaults to the textColor
+const finalHeaderColor = headerColor || textColor;
+
+const textAlignmentClass = `text-${textAlign}`;
+const paddingClass = `padding-${padding}`;
+---
+
+<section class="simple-banner" style={`background-color: ${backgroundColor};`}>
+	<div
+		class:list={["content-container", textAlignmentClass, paddingClass]}
+		style={`--text-color: ${textColor}; --header-color: ${finalHeaderColor}; --text-weight: ${textWeight};`}
+	>
+		<slot />
+	</div>
+</section>
+
+<style>
+	.simple-banner {
+		width: 100%;
+	}
+
+	.content-container {
+		color: var(--text-color);
+	}
+
+	/* Padding options */
+	.content-container.padding-notset {
+		padding: 34px 134px;
+	}
+	.content-container.padding-small {
+		padding: 16px 134px;
+	}
+	.content-container.padding-med {
+		padding: 64px 134px;
+	}
+	.content-container.padding-large {
+		padding: 128px 134px;
+	}
+
+	/* Text alignment classes */
+	.text-left {
+		text-align: left;
+	}
+	.text-center {
+		text-align: center;
+	}
+	.text-right {
+		text-align: right;
+	}
+
+	/* Apply the header color and size to any heading elements passed into the slot */
+	:global(.content-container h1),
+	:global(.content-container h2),
+	:global(.content-container h3),
+	:global(.content-container h4),
+	:global(.content-container h5),
+	:global(.content-container h6) {
+		color: var(--header-color);
+		font-size: 1.667rem;
+		font-weight: 600; /* A sensible default */
+	}
+
+	:global(.simple-banner a) {
+		color: black;
+	}
+
+	/* Style for paragraph text passed into the slot */
+	:global(.content-container p) {
+		font-size: 18px;
+	}
+
+	/* Responsive padding */
+	@media (max-width: 1200px) {
+		.content-container.padding-notset {
+			padding: 48px 60px;
+		}
+		.content-container.padding-small {
+			padding: 16px 60px;
+		}
+		.content-container.padding-med {
+			padding: 48px 60px;
+		}
+		.content-container.padding-large {
+			padding: 80px 60px;
+		}
+	}
+
+	@media (max-width: 800px) {
+		.content-container.padding-notset {
+			padding: 40px 24px;
+		}
+		.content-container.padding-small {
+			padding: 16px 24px;
+		}
+		.content-container.padding-med {
+			padding: 40px 24px;
+		}
+		.content-container.padding-large {
+			padding: 64px 24px;
+		}
+
+		:global(.content-container h1),
+		:global(.content-container h2),
+		:global(.content-container h3),
+		:global(.content-container h4),
+		:global(.content-container h5),
+		:global(.content-container h6) {
+			color: var(--header-color);
+			font-size: 1.2rem;
+			font-weight: 600; /* A sensible default */
+		}
+	}
+</style>

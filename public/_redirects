@@ -1,0 +1,46 @@
+# Redirects from what the browser requests to what we serve
+
+# Old URL mappings from Squarespace
+/our-team                      /about-focus-vision/             301!
+/dev                           /404                             404
+/refractive-lens-exchange-1    /refractive-lens-exchange/       301!
+/laser-for-reading-glasses-1   /laser-for-reading-glasses/      301!
+/implantable-contact-lens-1    /implantable-contact-lens/       301!
+/cataract-surgery-1            /cataract-surgery/               301!
+/pterygium-surgery-1           /pterygium-surgery/              301!
+/costs-1                       /costs/                          301!
+/vision-correction             /vision-correction/laser-eye-surgery/              301!
+/home                          /                                301!
+
+# Treatment Pages moved to vision-correction
+/laser-eye-surgery              /vision-correction/laser-eye-surgery/             301!
+/implantable-contact-lens       /vision-correction/implantable-contact-lens/      301!
+/laser-for-reading-glasses      /vision-correction/laser-for-reading-glasses/     301!
+/refractive-lens-exchange       /vision-correction/refractive-lens-exchange/      301!
+/cataract-surgery               /vision-correction/cataract-surgery/              301!
+/pterygium-surgery              /vision-correction/pterygium-surgery/             301!
+/ray-tracing-lasik              /vision-correction/ray-tracing-lasik/             301!
+
+# Blog tag redirects (+ → -)
+# (corrected a few typos: upa → bupa, alaxy → galaxy)
+#/old → /new
+/blog/tag/LASIK+coverage        /blog/tag/lasik-coverage/        301!
+/blog/tag/vision+correction     /blog/tag/vision-correction/     301!
+/blog/tag/Ray+Tracing+Lasik     /blog/tag/ray-tracing-lasik/     301!
+/blog/tag/laser+eye+surgery     /blog/tag/laser-eye-surgery/     301!
+/blog/tag/Spiral+Lens           /blog/tag/spiral-lens/           301!
+/blog/tag/Bupa+Gold+Ultimate    /blog/tag/bupa-gold-ultimate/    301!
+/blog/tag/eye+surgery+costs     /blog/tag/eye-surgery-costs/     301!
+/blog/tag/Laser+Blended+Vision  /blog/tag/laser-blended-vision/  301!
+/blog/tag/Cataract+Surgery      /blog/tag/cataract-surgery/      301!
+/blog/tag/Galaxy+IOL            /blog/tag/galaxy-iol/            301!
+/blog/tag/Multifocal+Lens       /blog/tag/multifocal-lens/       301!
+
+# Old Squarespace ?tag= redirects
+/blog  tag=LASIK                /blog/tag/lasik/                 301!
+/blog  tag=Cataract Surgery     /blog/tag/cataract-surgery/      301!
+
+# Doctor and about pages
+/dr-brendan-cronin              /about-dr-brendan-cronin/        301!
+/dr-david-gunn                  /about-dr-david-gunn/            301!
+/about-focus                    /about-focus-vision/             301!

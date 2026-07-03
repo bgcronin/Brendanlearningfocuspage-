@@ -1,0 +1,203 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BlogPostCard from "../../components/BlogPostCard.astro";
+import Pagination from "../../components/Pagination.astro";
+import { getBlogIndexSchema } from "../../utils/seo";
+import type { PaginateFunction } from "astro";
+
+// This function is required for pagination.
+// It fetches all posts and tells Astro how to create the pages.
+export async function getStaticPaths({
+	paginate,
+}: {
+	paginate: PaginateFunction;
+}) {
+	const posts = await getCollection("blog");
+
+	// Sort by datePublished directly from frontmatter
+	const sortedPosts = posts.sort(
+		(a, b) =>
+			new Date(b.data.datePublished).valueOf() -
+			new Date(a.data.datePublished).valueOf(),
+	);
+
+	return paginate(sortedPosts, { pageSize: 20 });
+}
+
+interface Props {
+	page: any;
+}
+
+// The page prop is now available because of getStaticPaths
+const { page } = Astro.props;
+
+const title = "Laser Eye Surgery Blog | Focus Vision | Woolloongabba, QLD";
+const description = `Stay informed with our eye health blogs covering laser eye surgery, LASIK, 
+and vision care tips. Visit our website for expert insights!`;
+const ogType = "website";
+
+import categoriesData from "../../data/categories.json";
+import tagsData from "../../data/tags.json";
+
+const authors = await getCollection("authors");
+const blogSchema = getBlogIndexSchema(Astro.url.pathname, page.data, authors);
+
+// Get all posts to extract used categories and tags
+const allPosts = await getCollection("blog");
+
+const usedCategoryValues = [
+	...new Set(allPosts.map((post) => post.data.category).filter(Boolean)),
+];
+const usedTagValues = [
+	...new Set(
+		allPosts.flatMap((post) => post.data.tags || []).filter(Boolean),
+	),
+];
+
+const activeCategories = categoriesData.items.filter((c) =>
+	usedCategoryValues.includes(c.value),
+);
+const activeTags = tagsData.items.filter((t) =>
+	usedTagValues.includes(t.value),
+);
+---
+
+<BaseLayout description={description} ogType={ogType}>
+	<Fragment slot="head-schema">
+		<script
+			type="application/ld+json"
+			set:html={JSON.stringify(blogSchema)}
+		/>
+	</Fragment>
+	<main class="container">
+		<h1 class="page-title">Our Blog</h1>
+
+		<section class="taxonomy-filters">
+			<div class="filter-group">
+				<h2>Categories</h2>
+				<ul class="filter-list categories">
+					{
+						activeCategories.map((category) => (
+							<li>
+								<a
+									href={`/blog/category/${category.value}/`}
+									class="filter-link category-link"
+								>
+									{category.label}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</div>
+
+			{
+				activeTags.length > 0 && (
+					<div class="filter-group">
+						<h2>Tags</h2>
+						<ul class="filter-list tags">
+							{activeTags.map((tag) => (
+								<li>
+									<a
+										href={`/blog/tag/${tag.value}/`}
+										class="filter-link tag-link"
+									>
+										{tag.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</div>
+				)
+			}
+		</section>
+
+		<div class="blog-grid">
+			{page.data.map((post: any) => <BlogPostCard post={post} />)}
+		</div>
+		<Pagination {page} />
+	</main>
+</BaseLayout>
+
+<style>
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 64px 24px;
+	}
+	.page-title {
+		font-size: 3rem;
+		font-weight: 700;
+		color: #1c2f49;
+		text-align: center;
+		margin-bottom: 3rem;
+	}
+
+	.taxonomy-filters {
+		background-color: #f4f1ed;
+		border-radius: 8px;
+		padding: 2rem;
+		margin-bottom: 4rem;
+	}
+	.filter-group {
+		margin-bottom: 1.5rem;
+	}
+	.filter-group:last-child {
+		margin-bottom: 0;
+	}
+	.filter-group h2 {
+		font-size: 1.25rem;
+		color: #1c2f49;
+		margin-bottom: 1rem;
+		border-bottom: 1px solid #e0dcd7;
+		padding-bottom: 0.5rem;
+	}
+	.filter-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+	.filter-link {
+		display: inline-block;
+		text-decoration: none;
+		font-size: 0.875rem;
+		font-weight: 500;
+		transition: all 0.2s ease;
+	}
+	.category-link {
+		color: white;
+		background-color: #437b8c;
+		padding: 6px 16px;
+		border-radius: 50px;
+	}
+	.category-link:hover {
+		background-color: #1c2f49;
+	}
+	.tag-link {
+		color: #437b8c;
+		background-color: white;
+		border: 1px solid #437b8c;
+		padding: 4px 12px;
+		border-radius: 4px;
+	}
+	.tag-link:hover {
+		background-color: #437b8c;
+		color: white;
+	}
+
+	.blog-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 40px;
+	}
+
+	@media (max-width: 800px) {
+		.blog-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

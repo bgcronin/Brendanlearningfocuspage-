@@ -1,0 +1,66 @@
+---
+// src/components/ContentSection.astro
+export interface Props {
+  textColor?: string;
+  headerColor?: string;
+}
+
+const {
+  textColor = '#1C2F49', // Default to dark blue
+  headerColor,
+} = Astro.props;
+
+// If a specific headerColor isn't provided, it will use the general textColor
+const finalHeaderColor = headerColor || textColor;
+---
+<section 
+  class="content-section" 
+  style={`--text-color: ${textColor}; --header-color: ${finalHeaderColor};`}
+>
+  <div class="header-content">
+    <slot name="header" />
+  </div>
+
+  <div class="main-content">
+    <slot />
+  </div>
+
+  <div class="footer-content">
+    <slot name="footer" />
+  </div>
+</section>
+
+<style>
+  .content-section {
+    width: 100%;
+    padding: 64px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: var(--text-color);
+  }
+
+  .header-content, .main-content, .footer-content {
+    width: 100%;
+    max-width: 1800px; /* Constrain the width of the content */
+  }
+
+  .header-content {
+    margin-bottom: 40px;
+  }
+  
+  .footer-content {
+    margin-top: 40px;
+  }
+
+  /* Apply the header color to any heading elements passed into any slot */
+  /* :global(.content-section h1),
+  :global(.content-section h2),
+  :global(.content-section h3),
+  :global(.content-section h4),
+  :global(.content-section h5),
+  :global(.content-section h6) {
+    color: var(--header-color);
+  } */
+</style>

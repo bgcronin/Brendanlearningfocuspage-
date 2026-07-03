@@ -1,0 +1,71 @@
+---
+// src/components/Curve.astro
+
+// 1. DEFINE THE PROPS
+// We define the types for our props and set their default values.
+interface Props {
+  topColor?: string;
+  bottomColor?: string;
+  direction?: 'down' | 'up'; // Optional: allows you to flip the curve
+}
+
+const {
+  topColor = 'transparent', // Default color above the curve is transparent
+  bottomColor = '#ffffff',   // Default color below the curve is white
+  direction = 'down',        // By default, the curve bends downwards
+} = Astro.props;
+---
+
+<!-- 
+  The main container's background is set by the `bottomColor` prop.
+  A class is added to flip the SVG if `direction` is 'up'.
+-->
+<div
+  class:list={['curve-container', { 'is-reversed': direction === 'up' }]}
+  style={`background-color: ${bottomColor};`}
+>
+  <svg class="curved-shape-svg" viewBox="0 0 1440 110" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- The fill of this path is controlled by the `topColor` prop -->
+    <path 
+      class="svg-fill-path" 
+      d="M0,50 C360,110 1080,110 1440,50 L1440,0 L0,0 Z" 
+      style={`fill: ${topColor};`}></path>
+    
+    <!-- This path creates the border line and will not scale its thickness -->
+    <path 
+      class="svg-border-path" 
+      d="M0,50 C360,110 1080,110 1440,50"
+      vector-effect="non-scaling-stroke" 
+    ></path>
+  </svg>
+</div>
+
+<style>
+  .curve-container {
+    /* CSS variable for the border thickness */
+    --stroke-thickness: 6px;
+    position: relative;
+    line-height: 0; /* Prevents extra space around the SVG */
+    /* padding-bottom: 60px; */
+  }
+
+  .curved-shape-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* Allows the component to be flipped vertically */
+    transition: transform 0.3s ease;
+  }
+
+  .is-reversed .curved-shape-svg {
+    transform: scaleY(-1);
+  }
+
+  /* We don't need a style for .svg-fill-path as it's controlled by an inline style */
+
+  .svg-border-path {
+    fill: none;
+    stroke: #4B8796; /* The hardcoded border color */
+    stroke-width: var(--stroke-thickness);
+  }
+</style>

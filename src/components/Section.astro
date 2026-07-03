@@ -1,0 +1,58 @@
+---
+// src/components/Section.astro
+
+interface Props {
+	paddingTop?: "none" | "small" | "med" | "large";
+	paddingBottom?: "none" | "small" | "med" | "large";
+	backgroundColor?: string;
+}
+
+const {
+	paddingTop = "med",
+	paddingBottom = "med",
+	backgroundColor = "transparent",
+} = Astro.props;
+
+const paddingValues = {
+	none: "0",
+	small: "40px",
+	med: "100px",
+	large: "160px",
+};
+
+const styles = {
+	"padding-top": paddingValues[paddingTop],
+	"padding-bottom": paddingValues[paddingBottom],
+	"background-color": backgroundColor,
+};
+
+const styleString = Object.entries(styles)
+	.map(([prop, value]) => `${prop}: ${value};`)
+	.join(" ");
+---
+
+<section class="basic-section" style={styleString}>
+	<slot />
+</section>
+
+<style>
+	.basic-section {
+		text-align: center;
+		width: 100%;
+		position: relative;
+	}
+
+	/* Maintain existing nested styles from global.css if they were applied via .basic-section */
+	.basic-section :global(.big-text) {
+		color: #1c2f49; /* Matching var(--dark-blue-color) */
+		font-size: 2.5rem;
+		margin: 0;
+	}
+
+	@media (max-width: 600px) {
+		.basic-section :global(.big-text) {
+			font-size: 2.2rem;
+			margin: 0 10px;
+		}
+	}
+</style>

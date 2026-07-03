@@ -1,0 +1,259 @@
+/* ======================================================= */
+/* FOOTER STYLES                                           */
+/* ======================================================= */
+.site-footer {
+  background:
+    radial-gradient(
+      circle at 50% 0,
+      hsla(0, 0%, 100%, 0.12),
+      hsla(0, 0%, 100%, 0) 35%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(13, 20, 31, 0.4),
+      rgba(13, 20, 31, 0) 38%
+    ),
+    linear-gradient(180deg, #1d314b, #131e2f);
+  color: #e0e0e0;
+  /* Main padding for top/bottom */
+  padding-top: 60px;
+  padding-bottom: 20px;
+  position: relative;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* --- UPDATED RULES --- */
+/* The following rules now use padding instead of max-width */
+
+.footer-top {
+  padding-top: 60px;
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 40px;
+  padding-right: 7vw; /* New padding */
+  padding-left: 7vw; /* New padding */
+}
+
+.footer-divider {
+  border: none;
+  height: 1px;
+  background-color: #3b506c;
+  margin: 20px 0; /* Adjusted margin */
+}
+
+.footer-middle {
+  display: flex;
+  justify-content: flex-start;
+  gap: 30px;
+  margin: 30px 0; /* Adjusted margin */
+  padding-right: 7vw; /* New padding */
+  padding-left: 7vw; /* New padding */
+}
+
+.footer-bottom {
+  text-align: center;
+  font-size: 16px;
+  color: #a0a0a0;
+  color: rgb(194, 219, 227);
+  padding-top: 20px;
+  padding-right: 7vw; /* New padding */
+  padding-left: 7vw; /* New padding */
+  font-weight: 300;
+}
+
+/* === NEW: Style for contact links in the footer === */
+
+.footer-contact-link {
+  color: #c2dbe3; /* Brighter white color */
+  text-decoration: underline; /* Removes the default underline */
+  transition: color 0.3s ease;
+}
+
+/* --- NO CHANGES BELOW THIS LINE --- */
+
+.footer-col {
+  flex: 1;
+}
+
+.footer-empty {
+  flex-grow: 0.5;
+}
+
+.footer-logo-area .footer-logo {
+  width: 150px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.footer-logo-area p {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.footer-address p,
+.footer-contact p {
+  line-height: 1.8;
+  margin: 0 0 20px 0;
+}
+
+.footer-address strong {
+  color: #fff;
+}
+
+.btn-whatsapp {
+  display: inline-block;
+  background-color: #3b506c;
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-whatsapp:hover {
+  background-color: #4a6384;
+}
+
+/* .footer-social {
+    display: flex;
+    gap: 15px;
+}
+
+.footer-social a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #fff;
+    color: #fff;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 18px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footer-social a:hover {
+    background-color: #fff;
+    color: #1a2a40;
+} */
+
+.footer-middle a {
+  color: #fff;
+  text-decoration: none;
+
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.footer-middle a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #fff;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.footer-middle a:hover::after {
+  transform: scaleX(1);
+}
+
+.footer-bottom a {
+  color: rgb(194, 219, 227);
+  text-decoration: none;
+}
+.footer-bottom a:hover {
+  text-decoration: underline;
+}
+
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #3b506c;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 500;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease,
+    visibility 0.4s ease;
+}
+.back-to-top.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.back-to-top:hover {
+  transform: translateY(-5px);
+}
+.back-to-top .fa-chevron-up {
+  font-size: 12px;
+}
+
+/* ======================================================= */
+/* RESPONSIVE BREAKPOINTS                                  */
+/* ======================================================= */
+
+/* For Mobile Phones */
+@media (max-width: 800px) {
+  .site-footer {
+    /* Adjust main padding for mobile */
+    padding-top: 40px;
+    padding-bottom: 20px;
+  }
+  .footer-top,
+  .footer-middle,
+  .footer-bottom {
+    /* Adjust side padding for mobile */
+    padding-right: 20px;
+    padding-left: 20px;
+    text-align: center;
+  }
+  .footer-top {
+    flex-direction: column; /* Stack columns vertically */
+    align-items: center;
+    gap: 30px;
+  }
+  .footer-col {
+    flex-basis: 100%;
+  }
+
+  .footer-empty {
+    display: none;
+  }
+
+  .footer-social,
+  .footer-middle {
+    justify-content: center;
+  }
+  .back-to-top {
+    display: none !important;
+  }
+
+  .footer-logo-area .footer-logo {
+    margin: auto;
+  }
+}

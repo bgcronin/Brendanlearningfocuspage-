@@ -1,0 +1,281 @@
+---
+//https://www.focusvision.com.au/ray-tracing-lasik
+import TreatmentLayout from "../../layouts/TreatmentLayout.astro";
+import StyledList from "../../components/StyledList.astro";
+import FeatureHeroImage from "../../assets/images/laser-eye-surgeon-focus-vision-brisbane-lasik-laser-eye-surgery-icl-brendan-cronin-david-gunn.jpg";
+import placeholder from "../../assets/images/placeholder.png";
+import Button from "../../components/Button.astro";
+import Card from "../../components/Card.astro";
+// Component imports will be added here
+import SimpleBanner from "../../components/SimpleBanner.astro";
+import CardGrid from "../../components/CardGrid.astro";
+import TwoColumnContent from "../../components/TwoColumnContent.astro";
+import twoColumnImageDrGunn from "../../assets/images/img-Dr2BGunn2BLaser2BSurgeon2BEye2BBrisbane.webp";
+import BottomCTA from "../../components/BottomCTA.astro";
+import Faq from "../../components/Faq.astro";
+import ReviewedBy from "../../components/ReviewedBy.astro";
+
+const faqs = [
+	{
+		q: "How much does laser eye surgery cost in Brisbane in 2026?",
+		a: "At Focus Vision in Brisbane, laser eye surgery starts from <strong>$3,500 per eye</strong> for TransPRK (no-touch surface laser) and <strong>$4,250 per eye</strong> for LASIK and CLEAR/SMILE. All prices are all-inclusive — there are no hidden costs for higher prescriptions, and every package includes all pre-operative assessments, the procedure itself, and one full year of aftercare appointments. Interest-free payment plans are available from as little as <strong>$34 per week</strong>. For a full price comparison with other Brisbane clinics, see our <a href='/costs'>Costs page</a>.",
+	},
+	{
+		q: "What is the difference between LASIK and SMILE laser eye surgery?",
+		a: "The main difference is that LASIK involves creating a corneal flap, while SMILE (performed as <strong>CLEAR</strong> at Focus Vision) is a flapless, 'keyhole' procedure. CLEAR is often preferred for patients with dry eyes or those playing contact sports, as it preserves more corneal stability. Both achieve excellent visual outcomes.",
+	},
+	{
+		q: "What is Ray Tracing LASIK?",
+		a: "Ray Tracing LASIK is a fully customized laser treatment that uses wavefront data to correct higher-order aberrations for superior night vision and contrast. Focus Vision is currently the only clinic in Queensland offering this technology.",
+	},
+	{
+		q: "Am I a suitable candidate for laser eye surgery?",
+		a: "Most people over 18 with a stable glasses prescription are suitable candidates. The key factors are: a stable prescription for at least 12 months, healthy corneas with adequate thickness, no active eye disease, and not currently pregnant or breastfeeding. Patients with thin corneas, high prescriptions, or dry eyes may be better suited to TransPRK or ICL surgery instead. The best way to find out is to take our <a href='/laser-suitability-test'>free laser suitability test online</a>, or book a free assessment with our optometrist team at Focus Vision in Woolloongabba.",
+	},
+	{
+		q: "Is laser eye surgery painful?",
+		a: "The procedure itself is painless — anaesthetic eye drops are applied before treatment, so you feel no sharp pain. You may be aware of a light pressure sensation for approximately 20 seconds during LASIK flap creation. After LASIK or CLEAR, most patients experience a gritty or watery feeling for a few hours, which settles overnight. TransPRK patients experience 3 to 5 days of moderate discomfort as the corneal surface heals, which is managed with prescribed drops and pain relief.",
+	},
+	{
+		q: "How long is the recovery after laser eye surgery?",
+		a: "<ul><li><strong>LASIK/CLEAR:</strong> 24-hour vision improvement; return to work in 1–2 days.</li><li><strong>TransPRK:</strong> 3–5 days of discomfort; return to work in 7-10 days.</li><li><strong>ICL/Cataract:</strong> Dramatic improvement within 24 hours; return to work in 2–4 days.</li></ul>",
+	},
+	{
+		q: "Does Medicare or private health insurance cover laser eye surgery in Australia?",
+		a: "Medicare does not cover elective laser vision correction, including LASIK, CLEAR/SMILE, or TransPRK. However, some private health insurance funds — including BUPA, Medibank Private, Navy Health, and Defence Health — may provide a partial benefit for certain procedures under extras cover. Focus Vision will check your specific entitlements as part of your free assessment. Interest-free payment plans are available to make surgery accessible regardless of insurance status.",
+	},
+	{
+		q: "Why should I choose Focus Vision for laser eye surgery in Brisbane?",
+		a: "Focus Vision is co-founded and led by two internationally fellowship-trained corneal subspecialists — Dr Brendan Cronin and Dr David Gunn — who trained at the Manchester Royal Eye Hospital and Bristol Eye Hospital in the UK respectively. We are the only laser eye surgery clinic in Queensland to offer Ray Tracing LASIK, and our laser suite is housed inside the South Brisbane Day Hospital — one of the very few accredited private day hospitals in Australia where laser eye surgery is performed. This means the safety, hygiene, and monitoring standards of a fully accredited hospital apply to every procedure.",
+	},
+	{
+		q: "What is TransPRK and how is it different from standard PRK?",
+		a: "Both are surface laser techniques with no corneal flap. In standard PRK the epithelium is removed manually; in TransPRK the laser removes it in a single no-touch step before seamlessly reshaping the cornea. Each has advantages. At Focus Vision we always select the technique best suited to your individual eyes based on the detailed measurements taken at your assessment.",
+	},
+	{
+		q: "Can I have laser eye surgery if I am pregnant or breastfeeding?",
+		a: "No. You should wait three to six months after you have finished breastfeeding before undergoing surgery. Pregnancy and nursing cause hormonal changes that can temporarily alter your corneal shape and prescription. Waiting ensures your results are based on a stable, permanent measurement.",
+	},
+	{
+		q: "What happens if I blink or move my eye during the procedure?",
+		a: "You cannot 'ruin' the surgery by moving. We use a gentle device to keep your eyelids open, preventing blinking. Additionally, our advanced lasers use active eye-trackers that monitor your eye position 1,000+ times per second, automatically pausing the laser if you move outside a microscopic range.",
+	},
+	{
+		q: "Will I be awake during the surgery? Does it hurt?",
+		a: "Generally you are awake, however as our laser is in a hospital you can have CLEAR performed while you sleep. We are the only laser eye clinic in Brisbane that is able to offer laser eye surgery while you sleep.",
+	},
+	{
+		q: "Can I drive myself home after the procedure?",
+		a: "No. You must arrange for a friend or carer to drive you home. While your vision improves rapidly, your eyes will be sensitive to light and you may be mildly sedated. Most patients are cleared to drive themselves to their follow-up appointment the next morning.",
+	},
+	{
+		q: "Is laser eye surgery permanent, or will I need it again in 10 years?",
+		a: "The reshaping of your cornea is permanent. However, laser surgery does not stop the natural aging of the eye. While your distance vision remains corrected, most people will still develop presbyopia (the need for reading glasses) in their mid-40s or 50s as a separate age-related change.",
+	},
+	{
+		q: "Will I have issues with night vision, such as halos or glare?",
+		a: "Temporary halos are a normal part of the healing process and usually resolve within weeks. Modern Ray Tracing LASIK specifically targets the microscopic imperfections that cause glare, meaning most patients actually experience sharper night vision after surgery than they did with glasses or contacts.",
+	},
+	{
+		q: "I was told my corneas are too thin for LASIK—do I have other options?",
+		a: "Yes. If your corneas are too thin for LASIK, you may be an ideal candidate for TransPRK (a surface-based laser) or ICL (Implantable Contact Lens) surgery. These procedures provide the same high-quality visual results without the need to remove significant corneal tissue.",
+	},
+];
+
+const title = "Ray Tracing LASIK | Focus Vision | Woolloongabba, QLD";
+const description = `Experience precise vision correction with advanced Ray Tracing LASIK technology. Achieve sharper, clearer sight. Contact us today to book your consultation.`;
+
+const author = "Dr Brendan Cronin";
+const authorUrl = "/about-dr-brendan-cronin";
+const lastReviewed = "2026-05-03T00:00:00Z";
+
+const ogType = "website";
+---
+
+<TreatmentLayout
+	showCurve={true}
+	topColor="#C2DBE3"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	author={author}
+	authorUrl={authorUrl}
+	lastReviewed={lastReviewed}
+	title={title}
+	pagePath="/vision-correction/ray-tracing-lasik"
+	procedureName="Ray Tracing LASIK"
+	procedureDescription="An advanced form of laser eye surgery that uses detailed, 3D measurements of your unique eye (front and back corneal surfaces and crystalline lens) to personalise the ablation profile for greater precision and more predictable visual outcomes."
+	faqs={faqs}
+	backgroundImage={FeatureHeroImage}
+	textPosition="left"
+	textColor="light"
+	heroBottomColor="#FFFFFF"
+	addOverlay={true}
+>
+	<Fragment slot="hero-content">
+		<h1>Ray Tracing LASIK</h1>
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h4>
+			Focus Vision stands as the premier and exclusive provider of Ray
+			Tracing LASIK in Queensland. This pioneering technology has
+			showcased unparalleled visual outcomes compared to other vision
+			correction procedures. Utilising cutting-edge laser technology, our
+			experts tailor the procedures to individual eye structures,
+			guaranteeing a secure and efficient treatment for each patient.
+		</h4>
+	</SimpleBanner>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#C2DBE3"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h3>What is LASIK Ray Tracing?</h3>
+		<p>
+			Ray tracing is a sophisticated computer-based method used to
+			determine the treatment plan for correcting vision issues. This
+			technique involves gathering data from a range of the patient's eye
+			measurements to create a detailed map of the eye's optical surfaces.
+			This includes the front and back surfaces of the cornea and the
+			crystalline lens. This technique offers a customisable LASIK
+			procedure, resulting in improved and more predictable outcomes.
+		</p>
+
+		<h3>How Is It Different from Normal Laser Eye Surgery?</h3>
+		<p>
+			Traditional laser eye surgery such as LASIK typically follows a
+			standard procedure without the details provided by ray tracing.
+			While both techniques aim to correct vision problems, ray tracing
+			offers a higher level of accuracy and predictability by considering
+			the patient's optical characteristics of the eye, resulting in
+			improved outcomes for patients undergoing laser eye surgery or lens
+			implantation.
+		</p>
+	</SimpleBanner>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h3>What Are the Benefits of Ray Tracing LASIK surgery?</h3>
+		<p>
+			<strong>Enhanced precision:</strong> Ray tracing technology enables more
+			accurate mapping of the eye, resulting in personalised and precise treatment.
+		</p>
+		<p>
+			<strong>Improved visual outcomes:</strong> The advanced laser technology
+			can lead to better visual acuity and reduced risk of complications.
+		</p>
+		<p>
+			<strong>Customised treatments:</strong> By tailoring the procedure to
+			individual characteristics, ray tracing offers a higher level of customisation
+			and optimisation for each patient's vision correction needs.
+		</p>
+		<h3>What Happens in The Procedure?</h3>
+		<p>
+			LASIK ray tracing is a safe and effective method for correcting
+			vision and is an innovative option for individuals seeking vision
+			correction surgery. Clinical studies and real-world outcomes have
+			consistently demonstrated the safety and effectiveness of this
+			approach in correcting vision. With its proven track record and
+			advancements in precision, LASIK ray tracing represents a trusted
+			and reliable option.
+		</p>
+
+		<Button href="/contact" text="ScheduLe a Consultation" />
+	</SimpleBanner>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#F4F1ED"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h3>Am I a Suitable Candidate for Ray Tracing LASIK?</h3>
+		<p>
+			Suitable candidates for ray tracing-guided laser eye surgery
+			typically include individuals who:
+		</p>
+
+		<StyledList position="left">
+			<li>Have a stable myopic prescription for at least one year.</li>
+			<li>Are over the age of 18.</li>
+			<li>
+				Have healthy eyes with no pre-existing conditions or diseases.
+			</li>
+			<li>
+				Have realistic expectations about the outcomes of the procedure.
+			</li>
+		</StyledList>
+
+		<p>
+			At Focus Vision, we prioritise the wellbeing of our patients by
+			conducting thorough eye examinations and consultations with our
+			skilled surgeons. These essential steps aim to educate individuals
+			about the procedure and determine their suitability as candidates.
+			Safety and patient care are paramount values upheld in our clinic,
+			ensuring a high-quality experience for all.
+		</p>
+		<p>
+			Focus Vision's exclusive Ray Tracing LASIK procedure, alongside
+			personalised treatments and prioritisation of patient safety and
+			wellbeing, sets a high standard for vision correction in Queensland.
+		</p>
+	</SimpleBanner>
+
+	<TwoColumnContent
+		imageSrc={twoColumnImageDrGunn}
+		imageAlt="Dr. David Gunn operating a machine for premium pterygium surgery in Brisbane with no-stitches approach"
+		imagePosition="left"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h2>Focus Vision - Experienced Surgeons that you can trust</h2>
+		<p>
+			Having eye surgery is often a worrying idea to many patients and
+			finding the right surgeon and team to trust with your eyesight is
+			crucial. At Focus Vision all our consultant anterior segment
+			surgeons have undergone extensive training both in Australia and
+			internationally so you can trust that your vision is in the most
+			experienced hands possible.
+		</p>
+
+		<Button
+			href="/about-focus-vision"
+			text="Read more about the Focus Team"
+			openInNewTab={false}
+		/>
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<Faq
+		title="Frequently Asked Questions about Ray Tracing LASIK:"
+		faqs={faqs}
+	/>
+
+	<ReviewedBy
+		author={author}
+		authorUrl={authorUrl}
+		lastReviewed={lastReviewed}
+	/>
+	<BottomCTA
+		h2Text="Ready to enjoy clear vision, clear eyes and improved quality of life?"
+		h3Text="Schedule a consultation with our experts today."
+		about="Ray Tracing LASIK"
+	/>
+</TreatmentLayout>

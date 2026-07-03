@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "path": ".",
+    },
+  ],
+<<<<<<< HEAD
+=======
+  "settings": {
+    "liveServer.settings.port": 5501,
+    "workbench.colorCustomizations": {
+      "activityBar.activeBackground": "#4c7e97",
+      "activityBar.background": "#4c7e97",
+      "activityBar.foreground": "#e7e7e7",
+      "activityBar.inactiveForeground": "#e7e7e799",
+      "activityBarBadge.background": "#6a3558",
+      "activityBarBadge.foreground": "#e7e7e7",
+      "commandCenter.border": "#e7e7e799",
+      "sash.hoverBorder": "#4c7e97",
+      "statusBar.background": "#3b6275",
+      "statusBar.foreground": "#e7e7e7",
+      "statusBarItem.hoverBackground": "#4c7e97",
+      "statusBarItem.remoteBackground": "#3b6275",
+      "statusBarItem.remoteForeground": "#e7e7e7",
+      "titleBar.activeBackground": "#3b6275",
+      "titleBar.activeForeground": "#e7e7e7",
+      "titleBar.inactiveBackground": "#3b627599",
+      "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "peacock.color": "#3B6275",
+  },
+>>>>>>> migration/keystatic
+}

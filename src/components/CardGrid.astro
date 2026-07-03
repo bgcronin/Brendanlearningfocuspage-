@@ -1,0 +1,116 @@
+---
+// src/components/CardGrid.astro
+import { Astro } from "astro";
+
+export interface Props {
+	backgroundColor?: string;
+	textColor?: string;
+	cardBackgroundColor?: string;
+	alignCards?: boolean; // New prop to align card content
+}
+
+const {
+	backgroundColor = "#FFFFFF",
+	textColor = "#1C2F49",
+	cardBackgroundColor = "#F4F1ED",
+	alignCards = false,
+} = Astro.props;
+
+const cardCount = Astro.slots.render("default").then((html) => {
+	return (html.match(/<article/g) || []).length;
+});
+const count = await cardCount;
+---
+
+<section
+	class="card-grid-section"
+	style={`background-color: ${backgroundColor};`}
+>
+	<div
+		class:list={[
+			"card-grid-container",
+			`grid-items-${count}`,
+			{ "align-cards": alignCards },
+		]}
+		style={`--text-color: ${textColor}; --card-bg-color: ${cardBackgroundColor};`}
+	>
+		<slot />
+	</div>
+</section>
+
+<style>
+	.card-grid-section {
+		width: 100%;
+	}
+
+	.card-grid-container {
+		padding: 45px 3%;
+		max-width: 1800px;
+		margin: 0 auto;
+		display: grid;
+		gap: 30px;
+	}
+
+	/* When enabled, this makes all grid cells in a row the same height */
+	.align-cards {
+		grid-auto-rows: 1fr;
+	}
+
+	.align-cards > * {
+		height: 100%;
+	}
+
+	/* --- DESKTOP GRID LOGIC --- */
+	.grid-items-2 {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.grid-items-3 {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.grid-items-4 {
+		grid-template-columns: repeat(4, 1fr);
+	}
+	.grid-items-5 {
+		grid-template-columns: repeat(5, 1fr);
+	}
+	.grid-items-6 {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.grid-items-8 {
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+	/* --- TABLET GRID LOGIC (max-width: 1200px) --- */
+	@media (max-width: 1200px) {
+		.card-grid-container {
+			padding: 40px 60px;
+		}
+		.grid-items-4,
+		.grid-items-5,
+		.grid-items-6,
+		.grid-items-8 {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.card-grid-container {
+			gap: 20px;
+		}
+	}
+
+	/* --- MOBILE GRID LOGIC (max-width: 800px) --- */
+	@media (max-width: 800px) {
+		.card-grid-container {
+			padding: 35px 24px;
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (max-width: 600px) {
+		/* .card-grid-container {
+			padding: 35px 0px;
+		} */
+		.align-cards {
+			grid-auto-rows: auto;
+		}
+	}
+</style>

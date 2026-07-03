@@ -1,0 +1,73 @@
+---
+interface Props {
+	author: string;
+	authorUrl?: string;
+	lastReviewed: string;
+}
+
+const { author, authorUrl, lastReviewed } = Astro.props;
+
+// Format the date for display (e.g. 30 April 2026)
+const date = new Date(lastReviewed);
+const formattedDate = date.toLocaleDateString("en-AU", {
+	day: "numeric",
+	month: "long",
+	year: "numeric",
+});
+---
+
+<div class="reviewed-by-section">
+	<div class="reviewed-by-wrapper">
+		<p class="reviewed-by-text">
+			Written and reviewed by {
+				authorUrl ? (
+					<a
+						href={authorUrl}
+						style="color: inherit; text-decoration: underline;"
+					>
+						{author}
+					</a>
+				) : (
+					author
+				)
+			} FRANZCO, FWCRS — Corneal, Cataract and Refractive Surgeon. Last reviewed:
+			{formattedDate}
+		</p>
+	</div>
+</div>
+
+<style>
+	.reviewed-by-section {
+		width: 100%;
+		background-color: transparent;
+		padding: 2rem 0; /* Creates space from the section above */
+	}
+
+	.reviewed-by-wrapper {
+		max-width: 1440px;
+		margin: 0 auto;
+		padding: 0 134px;
+		text-align: left;
+		box-sizing: border-box;
+	}
+
+	.reviewed-by-text {
+		font-size: 0.9rem;
+		color: #666;
+		font-style: italic;
+		margin: 0;
+		text-align: center;
+	}
+
+	@media (max-width: 1200px) {
+		.reviewed-by-wrapper {
+			padding: 0 60px;
+		}
+	}
+
+	@media (max-width: 800px) {
+		.reviewed-by-wrapper {
+			padding: 0 24px;
+		}
+	}
+</style>

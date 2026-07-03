@@ -1,0 +1,133 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Schema from "../components/Schema.astro";
+import FeatureHero from "../components/FeatureHero.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { type ImageMetadata } from "astro";
+import {
+	getMedicalClinicSchema,
+	getMedicalWebPageSchema,
+	getProcedureSchema,
+	getBreadcrumbSchema,
+} from "../utils/seo";
+
+interface Props {
+	// Hero Props
+	backgroundImage?: ImageMetadata | string;
+	textPosition?: "left" | "center" | "right";
+	textColor?: "light" | "dark";
+	heroBottomColor?: string;
+	addOverlay?: boolean;
+	mobileImagePosition?: string;
+
+	// Pass-through BaseLayout props
+	showCurve?: boolean;
+	topColor?: string;
+	bottomColor?: string;
+	direction?: "down" | "up";
+	bodyClass?: string;
+	description: string;
+	author?: string;
+	authorUrl?: string;
+	datePublished?: Date;
+	dateModified?: Date;
+	lastReviewed?: string;
+	ogType?: "website" | "article";
+
+	// Treatment schema props
+	title: string;
+	pagePath?: string;
+	procedureName: string;
+	procedureDescription: string;
+	procedureImage?: string;
+	procedureType?: "Surgical" | "NonSurgical";
+	breadcrumbs?: { name: string; item: string }[];
+	faqs?: { q: string; a: string }[];
+}
+
+const {
+	backgroundImage,
+	textPosition,
+	textColor,
+	heroBottomColor,
+	addOverlay,
+	mobileImagePosition,
+	showCurve,
+	topColor,
+	bottomColor,
+	direction,
+	bodyClass,
+	description,
+	author,
+	authorUrl,
+	datePublished,
+	dateModified,
+	lastReviewed,
+	ogType,
+	title,
+	pagePath = Astro.url.pathname,
+	procedureName,
+	procedureDescription,
+	procedureImage,
+	procedureType = "Surgical",
+	breadcrumbs = [],
+	faqs = [],
+} = Astro.props;
+
+const finalDateModified =
+	dateModified || (lastReviewed ? new Date(lastReviewed) : undefined);
+
+const graph = [
+	getMedicalWebPageSchema(
+		pagePath,
+		title,
+		description,
+		datePublished?.toISOString(),
+		finalDateModified?.toISOString(),
+		lastReviewed,
+		author,
+		authorUrl,
+	),
+	getProcedureSchema(
+		procedureName,
+		procedureDescription,
+		pagePath,
+		procedureImage,
+		procedureType,
+	),
+	getBreadcrumbSchema(breadcrumbs),
+	getMedicalClinicSchema(),
+].filter(Boolean);
+---
+
+<BaseLayout
+	showCurve={showCurve}
+	topColor={topColor}
+	bottomColor={bottomColor}
+	direction={direction}
+	bodyClass={bodyClass}
+	description={description}
+	author={author}
+	datePublished={datePublished}
+	dateModified={finalDateModified}
+	ogType={ogType}
+	ogImage={typeof backgroundImage === "object" ? backgroundImage : undefined}
+>
+	<Fragment slot="head-schema">
+		<Schema item={graph} />
+	</Fragment>
+
+	<FeatureHero
+		backgroundImage={backgroundImage}
+		textPosition={textPosition}
+		textColor={textColor}
+		bottomColor={heroBottomColor}
+		addOverlay={addOverlay}
+		mobileImagePosition={mobileImagePosition}
+	>
+		<slot name="hero-content" />
+		<Breadcrumbs variant="treatment" />
+	</FeatureHero>
+
+	<slot />
+</BaseLayout>

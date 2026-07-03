@@ -1,0 +1,163 @@
+---
+// src/components/SocialIcons.astro
+
+// NOTE: We no longer import the SVGs here, as they will be referenced directly in the CSS.
+// Make sure your SVG files are in the /public/ directory (e.g., /public/icons/envelope.svg)
+import siteData from "../data/site.json";
+interface Props {
+	variant?: "nav" | "footer";
+}
+const { variant = "nav" } = Astro.props;
+---
+
+<div
+	class:list={[
+		"social-links",
+		{ "is-nav": variant === "nav", "is-footer": variant === "footer" },
+	]}
+>
+	<a
+		href={`mailto:${siteData.email}`}
+		target="_blank"
+		class="icon-email"
+		aria-label="Email"></a>
+	<a
+		href={siteData.facebookUrl}
+		target="_blank"
+		class="icon-facebook"
+		aria-label="Facebook"></a>
+	<a
+		href={siteData.instagramUrl}
+		target="_blank"
+		class="icon-instagram"
+		aria-label="Instagram"></a>
+	{
+		variant === "footer" && (
+			<>
+				<a
+					href={siteData.linkedinUrl}
+					target="_blank"
+					class="icon-linkedin"
+					aria-label="LinkedIn"
+				/>
+				<a
+					href={siteData.youtubeUrl}
+					target="_blank"
+					class="icon-youtube"
+					aria-label="YouTube"
+				/>
+				<a
+					href={siteData.tiktokUrl}
+					target="_blank"
+					class="icon-tt"
+					aria-label="TikTok"
+				/>
+			</>
+		)
+	}
+	<a
+		href={siteData.whatsappUrl}
+		class="icon-whatsapp"
+		target="_blank"
+		aria-label="WhatsApp"></a>
+</div>
+
+<style>
+	.social-links {
+		display: flex;
+		gap: 15px;
+	}
+
+	/* This rule creates the circular button shape */
+	.social-links a {
+		position: relative; /* Needed for the pseudo-element */
+		display: block;
+		width: 38px;
+		height: 38px;
+		border-radius: 50%;
+		transition: all 0.3s ease;
+	}
+
+	/* --- This is the Icon Stencil --- */
+	/* Creates a pseudo-element inside each <a> tag that will become the icon */
+	.social-links a::before {
+		content: "";
+		position: absolute;
+		top: 15%;
+		left: 15%;
+		width: 70%; /* 50% of the 38px circle = 19px icon */
+		height: 70%;
+
+		/* These properties use the SVG shape as a mask */
+		mask-size: contain;
+		mask-position: center;
+		mask-repeat: no-repeat;
+		-webkit-mask-size: contain;
+		-webkit-mask-position: center;
+		-webkit-mask-repeat: no-repeat;
+
+		transition: background-color 0.3s ease;
+	}
+
+	/* --- Assigns the correct SVG shape to each icon --- */
+	/* IMPORTANT: Update these paths to where your SVGs are in the /public directory */
+	.icon-email::before {
+		-webkit-mask-image: url("/icons/envelope-regular-full.svg");
+		mask-image: url("/icons/envelope-regular-full.svg");
+	}
+	.icon-facebook::before {
+		-webkit-mask-image: url("/icons/facebook-f-brands-solid-full.svg");
+		mask-image: url("/icons/facebook-f-brands-solid-full.svg");
+	}
+	.icon-instagram::before {
+		-webkit-mask-image: url("/icons/instagram-brands-solid-full.svg");
+		mask-image: url("/icons/instagram-brands-solid-full.svg");
+	}
+	.icon-linkedin::before {
+		-webkit-mask-image: url("/icons/linkedin-in-brands-solid-full.svg");
+		mask-image: url("/icons/linkedin-in-brands-solid-full.svg");
+	}
+	.icon-youtube::before {
+		-webkit-mask-image: url("/icons/youtube-brands-solid-full.svg");
+		mask-image: url("/icons/youtube-brands-solid-full.svg");
+	}
+	.icon-whatsapp::before {
+		-webkit-mask-image: url("/icons/whatsapp-brands-solid-full.svg");
+		mask-image: url("/icons/whatsapp-brands-solid-full.svg");
+	}
+	.icon-tt::before {
+		-webkit-mask-image: url("/icons/tt-brands-solid-full.svg");
+		mask-image: url("/icons/tt-brands-solid-full.svg");
+		/* Center the tiktok icon slightly left/up if needed, typically tiktok icon feels off-center due to the SVG bounding box */
+		left: 25% !important;
+		top: 22% !important;
+	}
+
+	/* --- Variant-specific Styles (Now controls the colors) --- */
+
+	/* 1. Navigation Variant */
+	.is-nav a {
+		background-color: #3b6275; /* This is the circle color */
+	}
+	.is-nav a::before {
+		background-color: #ffffff; /* This is the icon color */
+	}
+	.is-nav a:hover {
+		transform: scale(1.1);
+	}
+
+	/* 2. Footer Variant */
+	.is-footer a {
+		border: 1px solid #fff;
+		background-color: transparent;
+	}
+	.is-footer a::before {
+		background-color: #ffffff; /* This is the icon color */
+	}
+	.is-footer a:hover {
+		background-color: #fff; /* Circle fills with white on hover */
+	}
+	.is-footer a:hover::before {
+		background-color: #1a2a40; /* Icon turns dark on hover */
+	}
+</style>

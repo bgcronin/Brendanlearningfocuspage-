@@ -1,0 +1,208 @@
+---
+// src/components/ConditionsAndProcedures.astro
+const conditions = [
+	"Myopia (short-sightedness)",
+	"Hyperopia (long-sightedness)",
+	"Astigmatism",
+	"Presbyopia (age-related reading difficulty)",
+	"Cataracts",
+	"Pterygium",
+];
+
+const procedures = [
+	{
+		name: "LASIK",
+		desc: "including Ray Tracing LASIK (Queensland exclusive)",
+	},
+	{
+		name: "PRK / TransPRK",
+		desc: "for active lifestyles or thin corneas",
+	},
+	{
+		name: "Lenticule Extraction",
+		desc: "(CLEAR – sometimes called SMILE)",
+	},
+	{
+		name: "Implantable Collamer Lens",
+		desc: "(ICL / EVO ICL)",
+	},
+	{
+		name: "Refractive Lens Exchange",
+		desc: "vision correction via lens replacement",
+	},
+	{
+		name: "Premium cataract surgery",
+		desc: "monofocal, toric, multifocal, EDOF, and trifocal IOLs",
+	},
+	{
+		name: "Femtosecond laser-assisted cataract surgery",
+		desc: "",
+	},
+	{
+		name: "Pterygium surgery",
+		desc: "(sutureless / no-stitch technique)",
+	},
+];
+---
+
+<section class="conditions-procedures">
+	<div class="container">
+		<!-- Conditions Card -->
+		<div class="card">
+			<h2 class="card-title">Conditions we treat</h2>
+			<ul class="conditions-list">
+				{
+					conditions.map((condition) => (
+						<li>
+							<span class="dot" />
+							{condition}
+						</li>
+					))
+				}
+			</ul>
+		</div>
+
+		<!-- Procedures Card -->
+		<div class="card">
+			<h2 class="card-title">Procedures we perform</h2>
+			<div class="procedures-list">
+				{
+					procedures.map((proc) => (
+						<div class="proc-item">
+							<strong>{proc.name}</strong>
+							{proc.desc && (
+								<span class="proc-desc"> — {proc.desc}</span>
+							)}
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</div>
+</section>
+
+<style>
+	.conditions-procedures {
+		background-color: #f8fafc;
+		padding: 100px 24px;
+	}
+
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1fr 1.5fr;
+		gap: 40px;
+		align-items: start;
+	}
+
+	.card {
+		background-color: #ffffff;
+		border-radius: 40px;
+		padding: 60px;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+		height: 100%;
+	}
+
+	.card-title {
+		font-size: 2.25rem;
+		font-weight: 700;
+		color: #1c2f49;
+		margin: 0 0 48px 0;
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.card-title::before {
+		content: "";
+		display: block;
+		width: 6px;
+		height: 32px;
+		background-color: #2563eb;
+		border-radius: 3px;
+	}
+
+	.conditions-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+	}
+
+	.conditions-list li {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		font-size: 1.25rem;
+		color: #4b5563;
+		font-weight: 500;
+	}
+
+	.dot {
+		width: 16px;
+		height: 16px;
+		background-color: #3b82f6;
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+
+	.procedures-list {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.proc-item {
+		background-color: #f8fafc;
+		padding: 16px 24px;
+		border-radius: 12px;
+		font-size: 1.125rem;
+		color: #1c2f49;
+		line-height: 1.4;
+	}
+
+	.proc-item strong {
+		font-weight: 700;
+	}
+
+	.proc-desc {
+		color: #64748b;
+		font-weight: 400;
+	}
+
+	@media (max-width: 1024px) {
+		.container {
+			grid-template-columns: 1fr;
+		}
+
+		.card {
+			padding: 40px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.conditions-procedures {
+			padding: 60px 20px;
+		}
+
+		.card {
+			padding: 30px 20px;
+		}
+
+		.card-title {
+			font-size: 1.75rem;
+		}
+
+		.conditions-list li {
+			font-size: 1.1rem;
+		}
+
+		.proc-item {
+			font-size: 1rem;
+			padding: 12px 16px;
+		}
+	}
+</style>

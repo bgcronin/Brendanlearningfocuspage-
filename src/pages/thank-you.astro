@@ -1,0 +1,196 @@
+---
+//https://www.focusvision.com.au/thank-you
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FeatureHero from "../components/FeatureHero.astro";
+import heroImage from "../assets/images/img-FocusVisionLaserEyeSurgeonsB.jpg"; // Make sure to import your image
+import YouTubeEmbed from "../components/YouTubeEmbed.astro";
+import SimpleBanner from "../components/SimpleBanner.astro";
+import siteData from "../data/site.json"; // Assuming your site data file exists
+
+import ContactLayout from "../components/ContactLayout.astro";
+import MapEmbed from "../components/MapEmbed.astro";
+import MosaicGallery from "../components/MosaicGallery.astro";
+import ContactSection from "../components/ContactSection.astro";
+import { Image } from "astro:assets";
+import StaticForm from "../components/StaticForm.astro";
+
+// Import your 5 images
+import image1 from "../assets/images/contact/a-map-and-directions-to-the-clinic.jpg"; // The tall image
+import image2 from "../assets/images/contact/a-bouquet-of-lilies-in-the-clinic-waiting-room.jpg";
+import image3 from "../assets/images/contact/a-patient-reading-comfortably-on-a-sofa.jpg";
+import image4 from "../assets/images/contact/the-focus-vision-sign-at-the-entrance.jpg";
+import image5 from "../assets/images/contact/the-main-focus-vision-logo-on-a-wooden-feature-wall.jpg";
+
+const title = "Thank You";
+const description = `FOCUS VISION: Brisbane Laser Eye Surgery. Laser assessment appointments can be made by booking online, via Phone: ${siteData.phoneNumber}, email 
+${siteData.email} or texting us on WhatsApp ${siteData.whatsappUrl}.`;
+const ogType = "website";
+---
+
+<BaseLayout
+	showCurve={false}
+	topColor="#ffffff"
+	direction="down"
+	bottomColor="transparent"
+	bodyClass="thankyou-page"
+	description={description}
+	ogType={ogType}
+>
+	<Fragment slot="googleTags">
+		<!-- Code just in <head> for this page -->
+		<!-- Google Tag Manager -->
+		<script is:inline>
+			(function (w, d, s, l, i) {
+				w[l] = w[l] || [];
+				w[l].push({
+					"gtm.start": new Date().getTime(),
+					event: "gtm.js",
+				});
+				var f = d.getElementsByTagName(s)[0],
+					j = d.createElement(s),
+					dl = l != "dataLayer" ? "&l=" + l : "";
+				j.async = true;
+				j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+				f.parentNode.insertBefore(j, f);
+			})(window, document, "script", "dataLayer", "GTM-N54GVLDN");
+		</script>
+		<!-- End Google Tag Manager -->
+
+		<!-- Google tag (gtag.js) -->
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-54VDJ2HH3Q"
+		></script>
+		<script is:inline>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+
+			gtag("config", "G-54VDJ2HH3Q");
+		</script>
+	</Fragment>
+
+	<Fragment slot="bodyStart">
+		<!-- Code just after <body> -->
+		<!-- Google Tag Manager (noscript) -->
+		<noscript>
+			<iframe
+				src="https://www.googletagmanager.com/ns.html?id=GTM-N54GVLDN"
+				height="0"
+				width="0"
+				style="display:none;visibility:hidden"></iframe>
+		</noscript>
+		<!-- End Google Tag Manager (noscript) -->
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<div class="content-small">
+			<h1>Thank you for filling out the laser eligibility form!</h1>
+			<p>
+				Our team will review your information and will email you. If you
+				have not heard from us within 15 minutes (in work hours) please
+				check your spam folder as sometimes we are incorrectly filtered
+				in there! If you would prefer to contact us directly please ring
+				the team on <a href={`tel:${siteData.phoneNumber}`}
+					>{siteData.phoneNumberText}</a
+				>.
+			</p>
+			<p>
+				To know what to expect from your first appointment with us, you
+				can watch the quick explainer video below.
+			</p>
+			<YouTubeEmbed
+				videoId="6ee7DIqFi4k"
+				title="A tour of the Focus Vision clinic"
+				params="start=12&controls=0"
+			/>
+			<h2>Focus Vision: Brisbane Laser Eye Surgery</h2>
+
+			<p>
+				If you would like to book an appointment straight away, you can
+				click the green “Book Appointment” button to the bottom right of
+				your screen.
+			</p>
+
+			<p>
+				Thanks for reaching out and we will be in contact soon! The
+				Focus Vision Team.
+			</p>
+		</div>
+	</SimpleBanner>
+
+	<ContactLayout mapPosition="right">
+		<!-- The MapEmbed component goes into the "map" slot -->
+		<div slot="map">
+			<MapEmbed height={600} mapPosition="left" />
+		</div>
+		<!-- This content goes into the "text" slot -->
+		<div slot="text">
+			<h3>Our Location</h3>
+			<p>
+				<strong>{siteData.name}</strong><br />
+				87 Ipswich Road<br />
+				Woolloongabba, QLD 4102.<br /><br />
+				<strong>Hours:</strong> Monday to Friday 9am–5pm
+			</p>
+			<p>
+				<strong>Phone:</strong>
+				{siteData.phoneNumberText}<br />
+				<strong>Fax:</strong>
+				{siteData.faxNumberText}<br />
+				<strong>Email:</strong>
+				<a href={`mailto:${siteData.email}`}>{siteData.email}</a><br />
+				<strong>Text us on WhatsApp:</strong>
+				<a href={siteData.whatsappUrl}>0488 VISION</a>
+			</p>
+		</div>
+	</ContactLayout>
+
+	<MosaicGallery>
+		<!-- The first image will automatically be the tall one -->
+		<Image src={image1} alt="A map and directions to the clinic" />
+
+		<!-- The next four images will fill the remaining grid cells -->
+		<Image
+			src={image2}
+			alt="A bouquet of lilies in the clinic waiting room"
+		/>
+		<Image src={image3} alt="A patient reading comfortably on a sofa" />
+		<Image src={image4} alt="The Focus Vision sign at the entrance" />
+		<Image
+			src={image5}
+			alt="The main Focus Vision logo on a wooden feature wall"
+		/>
+	</MosaicGallery>
+
+	<ContactSection>
+		<!-- Content for the left column goes in the "text" slot -->
+		<div slot="text">
+			<h3>General Enquiries</h3>
+			<p>
+				For non-urgent enquiries, please contact us using our online
+				contact form & reception staff will review your enquiry within
+				normal business hours.
+			</p>
+			<p>
+				Please note that this form should not be used to report an
+				emergency or to seek medical advice. In an emergency call Triple
+				Zero (000).
+			</p>
+		</div>
+
+		<!-- Your contact form component will go in the "form" slot -->
+		<div slot="form">
+			<StaticForm accessKey="" />
+		</div>
+	</ContactSection>
+</BaseLayout>

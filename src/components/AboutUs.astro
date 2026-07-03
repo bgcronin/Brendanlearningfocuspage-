@@ -1,0 +1,75 @@
+---
+// src/components/AboutUs.astro
+import TwoColumnContent from "../components/TwoColumnContent.astro";
+
+import Button from "../components/Button.astro";
+import defaultImage from "../assets/images/laser-eye-surgery/img-Focus-Brisbane-Eye-ICL-Cronin-Gun.jpg";
+
+// 1. Define that this component can accept the same props as TwoColumnContent
+
+// 2. Get the props passed to <AboutUs />, setting defaults based on your original code
+
+export interface Props {
+	imageSrc?: ImageMetadata;
+	imageAlt?: string;
+	imagePosition?: "left" | "right";
+	stylePreset?: "Eggshell" | "White" | "Lightblue";
+	fullWidth?: boolean;
+	backgroundColor?: string;
+}
+
+const {
+	imageSrc = defaultImage,
+	imageAlt = "Laser eye surgery experts Dr Brendan Cronin and Dr David Gunn standing at clinic reception.",
+	imagePosition = "left",
+	stylePreset = "White",
+	fullWidth,
+	backgroundColor,
+} = Astro.props;
+---
+
+{/* 3. Pass the props down to the TwoColumnContent component */}
+<TwoColumnContent
+	imageSrc={imageSrc}
+	imageAlt={imageAlt}
+	imagePosition={imagePosition}
+	stylePreset={stylePreset}
+	fullWidth={fullWidth}
+	backgroundColor={backgroundColor}
+>
+	{/* This content remains static inside your component */}
+	<h3>
+		Dr. David Gunn and Dr. Brendan Cronin, the specialist laser and cataract
+		surgeons at Focus Vision in Brisbane.
+	</h3>
+	<p>
+		With a shared commitment to exceptional care, we specialise in advanced
+		corneal surgery techniques, ensuring that every patient receives
+		personalised treatment of the highest standard. Our extensive training
+		and experience in corneal surgery enable us to address a wide range of
+		eye conditions with precision and care.
+	</p>
+	<p>
+		At Focus Vision, we understand the importance of clear vision and its
+		impact on your quality of life. That's why we are passionate about
+		helping our patients achieve the best possible vision correction
+		results, whether through LASIK, premium cataract surgery, or other
+		advanced procedures. We are here to guide you through every step of the
+		process, providing professional and reassuring care along the way. We
+		believe that successful outcomes are the result of a collaborative
+		approach between patient and surgeon. That's why we take the time to
+		listen to your concerns, answer your questions, and tailor our treatment
+		plans to meet your specific needs. Our goal is not just to improve your
+		vision, but to enhance your overall well-being, allowing you to enjoy
+		life with clear, comfortable vision.
+	</p>
+	<p>
+		<b>Dr David Gunn</b> | MBBS (Hons), BSc, CertLRS, FWCRS, FRANZCO<br />
+		<b>Dr Brendan Cronin</b> | MBBS (Hons), DipOphthSci, B.Com, LLB, FRANZCO
+	</p>
+	<Button
+		href="/contact"
+		text="Book A Free Assessment today"
+		openInNewTab={false}
+	/>
+</TwoColumnContent>

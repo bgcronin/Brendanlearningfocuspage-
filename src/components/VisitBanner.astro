@@ -1,0 +1,147 @@
+---
+// src/components/VisitBanner.astro
+import Button from "./Button.astro";
+---
+
+<section class="visit-banner-section">
+	<div class="banner">
+		<div class="content">
+			<h2 class="title">Visit Focus Vision</h2>
+			<p class="description">
+				We are located within the <strong
+					>Queensland Eye Institute building</strong
+				>, Woolloongabba, near Princess Alexandra Hospital. Ample free
+				parking is available for all patients.
+			</p>
+			<p class="description">
+				Patients travelling from regional Queensland, the Gold Coast,
+				the Sunshine Coast, or northern New South Wales are welcome — we
+				routinely accommodate one-day-visit assessments and can
+				coordinate procedure timing with travel arrangements.
+			</p>
+
+			<div class="address">
+				<svg
+					width="24"
+					height="24"
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"
+					></path><circle cx="12" cy="10" r="3"></circle></svg
+				>
+				87 Ipswich Road, Woolloongabba, QLD 4102
+			</div>
+		</div>
+
+		<div class="cta">
+			<Button
+				href="/book-an-assessment"
+				text="Book Your Consultation"
+				variant="white"
+			/>
+		</div>
+	</div>
+</section>
+
+<style>
+	.visit-banner-section {
+		padding: 40px 24px 100px;
+		background-color: #f8fafc;
+	}
+
+	.banner {
+		background-color: #1c2f49;
+		border-radius: 48px;
+		padding: 80px;
+		max-width: 1200px;
+		margin: 0 auto;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 60px;
+		color: #ffffff;
+		text-align: left;
+	}
+
+	.content {
+		max-width: 600px;
+	}
+
+	.title {
+		font-size: 3.5rem;
+		font-weight: 700;
+		margin: 0 0 32px 0;
+		color: #ffffff;
+	}
+
+	.description {
+		font-size: 1.125rem;
+		line-height: 1.6;
+		margin-bottom: 24px;
+		color: #e0f2fe;
+	}
+
+	.description strong {
+		color: #ffffff;
+	}
+
+	.address {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		font-size: 1.125rem;
+		font-weight: 500;
+		margin-top: 40px;
+		color: #ffffff;
+	}
+
+	.address svg {
+		flex-shrink: 0;
+		color: #bfdbfe;
+	}
+
+	@media (max-width: 1024px) {
+		.banner {
+			flex-direction: column;
+			padding: 60px 40px;
+			gap: 48px;
+			text-align: center;
+		}
+
+		.content {
+			max-width: 100%;
+		}
+
+		.title {
+			font-size: 2.5rem;
+		}
+
+		.address {
+			justify-content: center;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.banner {
+			padding: 40px 24px;
+			border-radius: 32px;
+		}
+
+		.title {
+			font-size: 2rem;
+		}
+
+		.description {
+			font-size: 1rem;
+		}
+
+		.address {
+			font-size: 1rem;
+		}
+	}
+</style>

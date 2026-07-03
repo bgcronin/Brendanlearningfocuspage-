@@ -1,0 +1,185 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FeatureHero from "../components/FeatureHero.astro";
+import PartnerLogos from "../components/PartnerLogos.astro";
+import SpiltContent from "../components/SpiltContent.astro";
+import ProfileLayout from "../components/ProfileLayout.astro";
+import ProfileSocialCard from "../components/ProfileSocialCard.astro";
+import placeholder from "../assets/images/placeholder.png";
+import { Image } from "astro:assets";
+// import drGunnImage from "../assets/images/img-BrisbaneOphthalmologistDrDavidGunn.jpg";
+import { getEntry } from "astro:content";
+import Schema from "../components/Schema.astro";
+import { getProfilePageSchema } from "../utils/seo";
+
+import drGunnImage from "../assets/images/dr-david-gunn-square.jpg";
+
+const authorData = await getEntry("authors", "david-gunn");
+
+const title = "About | Dr. David Gunn | Focus Vision | Woolloongabba, QLD";
+const description = `Meet Dr. David Gunn, a leading ophthalmologist dedicated to advanced eye care and surgical excellence. Contact us today to schedule your consultation.`;
+const ogType = "website";
+---
+
+<BaseLayout
+	showCurve={false}
+	topColor="#ffffff"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+>
+	<Fragment slot="head-schema">
+		{
+			authorData && (
+				<Schema
+					item={getProfilePageSchema(
+						"/about-dr-david-gunn",
+						authorData,
+					)}
+				/>
+			)
+		}
+	</Fragment>
+	<FeatureHero textPosition="center" textColor="light" bottomColor="#FFFFFF">
+		<h1>About Dr David Gunn</h1>
+	</FeatureHero>
+
+	<ProfileLayout>
+		<!-- 3. Place the image in the named "image" slot -->
+		<div slot="image">
+			<Image
+				src={drGunnImage}
+				alt={`A professional headshot of Dr. David Gunn`}
+			/>
+			<ProfileSocialCard
+				websiteUrl="https://www.drdavidgunn.com.au/"
+				linkedinUrl="https://www.linkedin.com/in/drdavidgunn"
+			/>
+		</div>
+
+		<!-- 4. Place all your text content in the default slot -->
+		<h4>MBBS (Hons I), BSc, CertLRS, FRANZCO, FWCRS</h4>
+		<h2>
+			Dr David Gunn is an internationally trained corneal eye surgeon
+			specialising in laser eye surgery, implantable contact lens and
+			multifocal lens surgery.
+		</h2>
+
+		<p>
+			<a href="https://www.linkedin.com/in/drdavidgunn" target="_blank"
+				>Dr Gunn</a
+			> is the co-founder of Focus Vision with Dr Cronin and also practices
+			at the prestigious
+			<a href="https://www.qei.org.au" target="_blank"
+				>Queensland Eye Institute</a
+			> in Brisbane, Australia.
+		</p>
+		<p>
+			Dr Gunn grew up in Brisbane and graduated from the <a
+				href="https://medical-school.uq.edu.au"
+				target="_blank">University of Queensland</a
+			> Bachelor of Science and Medicine programs with First Class Honours.
+			He undertook eye surgery training in Queensland and was awarded the prestigious
+			K.G. Howsam medal for the highest results in the Australian and New Zealand
+			final ophthalmology examinations.
+		</p>
+		<p>
+			Dr Gunn underwent fellowship training at the <a
+				href="https://metronorth.health.qld.gov.au/rbwh/"
+				target="_blank">Royal Brisbane and Women’s Hospital</a
+			> and then subspecialty training in corneal and refractive surgery at
+			the Bristol Eye Hospital, United Kingdom. Dr Gunn was certified in laser
+			refractive surgery by the <a
+				href="https://www.rcophth.ac.uk"
+				target="_blank">Royal College of Ophthalmologists</a
+			> in the United Kingdom by examination and undertook further training
+			at the prestigious <a
+				href="https://www.londonvisionclinic.com"
+				target="_blank">London Vision Clinic</a
+			>. He was one of the first Australians admitted as a fellow of the <a
+				href="https://wcrsvs.org"
+				target="_blank"
+				>World College of Refractive Surgery and Visual Sciences</a
+			>.
+		</p>
+
+		<p>
+			Dr Gunn has special interest and a research focus in laser eye
+			surgery, LASIK and PRK. He was an early adopter of analytic engine
+			assisted topography guided LASIK and he co-introduced advanced ray
+			tracing LASIK to Queensland in 2024. Dr Gunn has pioneered a number
+			of Australian and world first laser assisted procedures in
+			keratoconus. Most notably he introduced Corneal Allogenic
+			Intrastromal Ring Segment surgery to Australia in May 2021 with Dr
+			Cronin and he is one of only a handful of surgeons in the world
+			currently performing the procedure. Dr Gunn is a Senior Lecturer at
+			the University of Queensland and he regularly presents research and
+			teaches courses in laser eye surgery and keratoconus
+			internationally.
+		</p>
+
+		<p>
+			Outside of work David is a keen golfer and enjoys spending time with
+			his wife and three young girls.
+		</p>
+	</ProfileLayout>
+
+	<div class="" style="background-color:#F4F1ED; padding: 10px 0;">
+		<SpiltContent titleColor="#1C2F49" textColor="#1C2F49">
+			<!-- Column 1 Content -->
+			<div style="text-align: left;">
+				<h3>Training</h3><br />
+				<p>
+					<strong
+						>Fellow of Royal Australian & New Zealand College of
+						Ophthalmologists</strong
+					>
+				</p>
+				<p>
+					Awarded the prestigious K. G. Howsam gold medal for
+					obtaining the highest results in the Australian and New
+					Zealand final ophthalmology examinations
+				</p>
+				<p>
+					<strong>Fellowship in Cornea & Refractive Surgery</strong>
+				</p>
+				<p>Bristol Eye Hospital, United Kingdom</p>
+				<p><strong>Ophthalmology Registrar Training</strong></p>
+				<p>Queensland hospital training network</p>
+			</div>
+
+			<!-- Column 2 Content -->
+			<div style="text-align: left;">
+				<h3>Education</h3><br />
+				<p>
+					<strong
+						>Fellow of the World College of Refractive Surgery and
+						Visual Sciences</strong
+					>
+				</p>
+				<p>Founding Member</p>
+				<p>
+					<strong>Certificate in Laser & Refractive Surgery</strong>
+				</p>
+				<p>Royal College of Ophthalmologists, United Kingdom</p>
+				<p>
+					<strong
+						>Bachelor of Medicine & Surgery with First Class Honours</strong
+					>
+				</p>
+				<p>
+					The University of Queensland, Australia Top 0.1% of medical
+					school applicants (GAMSAT 81)
+				</p>
+				<p>
+					<strong
+						>Bachelor of Science Major in Physiology & Anatomy</strong
+					>
+				</p>
+				<p>University of Queensland, Australia</p>
+			</div>
+		</SpiltContent>
+	</div>
+	<PartnerLogos />
+</BaseLayout>

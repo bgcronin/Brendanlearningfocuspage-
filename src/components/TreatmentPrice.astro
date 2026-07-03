@@ -1,0 +1,24 @@
+---
+// src/components/TreatmentPrice.astro
+import siteData from "../data/site.json";
+
+interface Props {
+	treatmentName: string;
+}
+
+const { treatmentName } = Astro.props;
+
+const treatment = siteData.treatments.find((t) =>
+	t.name.toLowerCase().includes(treatmentName.toLowerCase()),
+);
+
+const price = treatment ? treatment.price : "Price not available";
+---
+
+<strong class="treatment-price">{price}</strong>
+
+<style>
+	.treatment-price {
+		color: #1c2f49;
+	}
+</style>

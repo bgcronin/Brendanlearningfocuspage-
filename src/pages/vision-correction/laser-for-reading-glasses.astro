@@ -1,0 +1,340 @@
+---
+// src/pages/laser-for-reading-glasses.astro
+import TreatmentLayout from "../../layouts/TreatmentLayout.astro";
+import { Image } from "astro:assets";
+import heroImage from "../../assets/images/hero/img-BrisbaneLaservisionSurgeryFo.jpg"; // Make sure to import your image
+import AboutUs from "../../components/AboutUs.astro";
+import BottomCTA from "../../components/BottomCTA.astro";
+// Import all the components we will use on this page
+
+import TwoColumnContent from "../../components/TwoColumnContent.astro";
+import SimpleBanner from "../../components/SimpleBanner.astro";
+import CardGrid from "../../components/CardGrid.astro";
+import Card from "../../components/Card.astro";
+import Faq from "../../components/Faq.astro";
+import Button from "../../components/Button.astro";
+import YouTubeSection from "../../components/YouTubeSection.astro";
+import ReviewedBy from "../../components/ReviewedBy.astro";
+
+const faqs = [
+	{
+		q: "Can laser eye surgery fix reading glasses?",
+		a: "Yes — Laser Blended Vision is a specific laser technique designed to reduce or eliminate the need for reading glasses. It works by using LASIK or PRK to set each eye for a slightly different focal distance: the dominant eye is optimised for distance vision, while the non-dominant eye is set for a near focus. A natural property of the eye called spherical aberration allows the two focal ranges to blend together, creating a continuous range of clear vision without needing to switch between pairs of glasses.",
+	},
+	{
+		q: "What is presbyopia and why do I suddenly need reading glasses in my 40s?",
+		a: "Presbyopia is the gradual loss of the eye's ability to change focus between near and distant objects, caused by the natural hardening of the crystalline lens with age. It typically begins in the mid-40s and progresses through the 50s. It is not a disease — it is a normal age-related change that affects virtually everyone. The result is that near objects appear blurry without reading glasses, even in people who previously had perfect vision or wore glasses only for distance.",
+	},
+	{
+		q: "Am I a candidate for Laser Blended Vision?",
+		a: "Laser Blended Vision suits patients typically over 45 who are experiencing presbyopia and want to reduce their dependence on reading glasses. You will need a thorough eye assessment to confirm suitability — including corneal thickness measurements, a stable prescription, and healthy overall eye health. Many patients who have previously worn distance glasses and now also need reading glasses find Laser Blended Vision to be a life-changing solution.",
+	},
+	{
+		q: "Will Laser Blended Vision affect my distance vision?",
+		a: "The slight adjustment to the non-dominant eye for near focus is very small and carefully calculated. The vast majority of patients adapt naturally and comfortably within a few days to weeks, without noticing any compromise to their distance vision. A short monovision trial using contact lenses can be arranged before surgery to confirm that you are likely to adapt well to the blended focus.",
+	},
+	{
+		q: "What is the difference between Laser Blended Vision and Refractive Lens Exchange for reading glasses?",
+		a: "Both treat presbyopia, but they work differently and suit different patient profiles. Laser Blended Vision uses LASIK to reshape the cornea — it preserves the natural lens and is generally better suited to patients under 55 who still have reasonable near focus ability. Refractive Lens Exchange removes the natural lens and replaces it with a multifocal or EDOF artificial lens — it is generally better suited to patients over 55, those with early cataracts, or those with high prescriptions unsuitable for laser surgery. Your Focus Vision surgeon will recommend the right approach at your free assessment.",
+	},
+	{
+		q: "Is laser treatment for reading glasses permanent?",
+		a: "Laser Blended Vision permanently reshapes the cornea, so the correction itself is stable. However, presbyopia is a progressive condition — the eye's natural lens continues to change with age. Some patients find that their reading vision continues to decline gradually over the years following Laser Blended Vision, as the natural lens becomes less flexible. For patients who want a permanent, age-proof solution, Refractive Lens Exchange with a premium multifocal lens is the definitive long-term option.",
+	},
+];
+
+const title = "Laser For Reading Glasses | Focus Vision | Woolloongabba, QLD";
+const description = `Reduce dependence on reading glasses with advanced laser blended vision treatment. Contact us today to begin your journey to a clearer vision!`;
+
+const author = "Dr Brendan Cronin";
+const authorUrl = "/about-dr-brendan-cronin";
+const lastReviewed = "2026-05-03T00:00:00Z";
+
+// next card
+
+import card21 from "../../assets/images/implantable-contact-lens/Focus+Vision+costs+of+Laser+Eye+Surgery+reading+glasses+copy.webp";
+import card22 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Laser+Eye+Surgery+ICL+implantable+contact+lenses+copy.webp";
+
+// 2col images
+import col1 from "../../assets/images/laser-eye-surgery/img-Laser-Surgeon-Vision-LASIK-Eye-ICL-Cronin-Gunn.jpg";
+import col2 from "../../assets/images/laser-for-reading-glasses/img-Dr-Cronin-Eye-Laser-Surgeon-Brisbane.webp";
+import col3 from "../../assets/images/laser-for-reading-glasses/img-women-with-glases-reading-a-book.webp";
+
+// cards images
+
+// Import the card images
+import card1 from "../../assets/images/laser-for-reading-glasses/img-Focus+Vision+Cataract+Eye+Surgery+LASIK+over+45+copy.webp";
+import card2 from "../../assets/images/laser-for-reading-glasses/img-Focus+Vision+Cataract+Eye+Surgery+near+distance+reading+copy.webp";
+import card3 from "../../assets/images/laser-for-reading-glasses/img-Focus+Vision+brisbane+Cataract+Eye+Surgery+night+natural+vision+copy+2.webp";
+import card4 from "../../assets/images/laser-for-reading-glasses/img-Focus+Vision+Cataract+Eye+Surgery+minimal+downtime+copy.webp";
+
+const ogType = "website";
+---
+
+<TreatmentLayout
+	showCurve={true}
+	topColor="#C2DBE3"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	title={title}
+	author={author}
+	authorUrl={authorUrl}
+	lastReviewed={lastReviewed}
+	pagePath="/vision-correction/laser-for-reading-glasses"
+	procedureName="Laser for Reading Glasses"
+	procedureDescription="A presbyopia-focused laser approach aimed at reducing dependence on reading glasses."
+	faqs={faqs}
+	backgroundImage={heroImage}
+	textPosition="right"
+	textColor="light"
+	heroBottomColor="#FFFFFF"
+	mobileImagePosition="25% 0%"
+	addOverlay={true}
+>
+	<Fragment slot="hero-content">
+		<h2>Be Glasses Free</h2>
+		<h1>Laser for Reading Glasses in Queensland</h1>
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h3>
+			This vision correction surgery removes the need for contact lenses
+			and reading glasses. A revolutionary eye surgery that fixes near and
+			far vision, commonly known as presbyopia.
+		</h3>
+		<p>
+			Can laser eye surgery correct the need of reading glasses? Yes it
+			can with Lasik Blended Vision. This eye surgery uses advanced laser
+			technology to improve both near and distance vision, reducing or
+			eliminating the need for glasses and contact lenses.
+		</p>
+	</SimpleBanner>
+
+	<TwoColumnContent
+		imageSrc={col1}
+		imageAlt="bright laser reshaping eye for reading glasses freedom"
+		imagePosition="right"
+		backgroundColor="#FFFFFF"
+		stylePreset="Eggshell"
+	>
+		<h3>How does Laser Blended Vision work?</h3>
+		<p>
+			Traditional LASIK surgery and PRK surgery only corrects the vision
+			for distance. Once people reach their mid 40's the need for reading
+			glasses arises. This weakening of the eye's power to change focus
+			from distance to reading is known as presbyopia.
+		</p>
+		<p>
+			Often this means people start to need reading glasses or graduated
+			glasses. Often they try multifocal contact lenses. But it can be
+			frustrating and many people report feeling older or less confident.
+		</p>
+		<p>
+			Laser surgery is a fantastic solution for this. It can corrrect
+			refractive errors in the eye that cause vision problems. Everyone
+			has a dominant eye like they have a dominant hand. This eye is set
+			for focus at good distance vision while the other eye is set for a
+			closer focus to allow reading without glasses. A feature of the eyes
+			called spherical aberration can be used to stretch the focus so the
+			focus in each eye blends together to give a natural feeling range of
+			vision.
+		</p>
+		<p>
+			It may sound strange to have the eyes set differently, but for most
+			people it is a very natural feeling. To check if you are a good
+			candidate, you will need an eye examination. This can be done with
+			your local optometrist before you see us or by our friendly team at
+			Focus Vision.
+		</p>
+	</TwoColumnContent>
+
+	<YouTubeSection
+		videoId="4TmKuMtdv_M"
+		title="Preparing for your Laser Blended Vision assessment"
+		heading="Preparing for Your Assessment"
+		text="This video will help you to prepare for your appointment with your doctor at Focus Vision."
+	>
+		<Button href="/contact" text="Book A Free Assessment today" />
+	</YouTubeSection>
+
+	<div class="basic-section" style="background-color: #FFFFFF;">
+		<h2 class="big-text">
+			Advantages of Lasik Blended Vision to Correct Presbyopia
+		</h2>
+		<h4>
+			This laser eye surgery offers several advantages over traditional
+			methods of vision correction:
+		</h4>
+
+		<CardGrid backgroundColor="transparent" cardBackgroundColor="#F4F1ED">
+			<Card layout="icon">
+				<Image
+					src={card1}
+					alt="illustration of a shining diamond with sparkle lines symbolizing clarity from implantable contact lens"
+				/>
+				<h3>LASIK over 45</h3>
+				<p>
+					Traditional LASIK only corrects distance vision, meaning
+					patients over 45 need glasses to read. Also lasik eye
+					surgery is not good for those with thin corneas which can
+					cause lasik complications.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card2}
+					alt="calendar icon with check mark representing implantable contact lens appointment"
+				/>
+				<h3>Laser Vision Correction</h3>
+				<p>
+					Enjoy the freedom and convenience of clear vision at all
+					distances, without the hassle of constantly switching
+					between glasses. No need for monovision contact lenses.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card3}
+					alt="illustration of a blue human eye with robotic element and stylized outline representing implantable contact lens"
+				/>
+				<h3>Natural Vision</h3>
+				<p>
+					Unlike lens exchange surgery, which replaces the natural
+					lens with an artificial lens, refractive surgery provides a
+					more natural, clearer visual experience with less haloes and
+					night time issues.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card4}
+					alt="UV protection symbol icon representing implantable contact lens safety"
+				/>
+				<h3>Minimal Downtime</h3>
+				<p>
+					Most patients are driving the next day and only take one or
+					two days off work.
+				</p>
+			</Card>
+		</CardGrid>
+
+		<Button href="/contact" text="Book Your Free Assessment" />
+	</div>
+
+	<TwoColumnContent
+		imageSrc={col2}
+		imageAlt="Dr Brendan Cronin operating a machine for laser for reading glasses treatment"
+		imagePosition="left"
+		backgroundColor="#FFFFFF"
+		stylePreset="Eggshell"
+	>
+		<h2>Why Choose Laser Blended Vision in Queensland?</h2>
+		<p>
+			Choosing Laser Blended Vision at our Queensland practice means
+			choosing a team of experienced professionals dedicated to providing
+			exceptional vision correction results. Our corneal specialists are
+			leaders in the field of presbyopic laser correction and use the
+			latest technology to ensure the best possible outcomes for every
+			patient.
+		</p>
+		<Button
+			href="/vision-correction/laser-for-reading-glasses"
+			text="Learn More ABout Our Team"
+		/>
+	</TwoColumnContent>
+
+	<TwoColumnContent
+		imageSrc={col3}
+		imageAlt="Women reading a book with glasses before laser for reading glasses treatment"
+		imagePosition="right"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h2>Are You a Candidate for Laser Blended Vision?</h2>
+		<p>
+			Laser Blended Vision is ideal for individuals over 40 who are
+			experiencing difficulty with near vision due to presbyopia.
+			Candidates for Laser Blended Vision should: Have good overall eye
+			health.
+		</p>
+		<ul>
+			<li>Have a stable glasses prescription for at least one year.</li>
+			<li>Nead glasses for distance, near or both.</li>
+			<li>
+				Be free from other eye conditions such as cataract. Once
+				cataract is present people are better suited to premium cataract
+				surgery with multifocal or extended depth of focus lens
+				implantation.
+			</li>
+		</ul>
+		<br />
+		<Button
+			href="/laser-suitability-test"
+			text="Take the Laser Suitability Test"
+		/>
+	</TwoColumnContent>
+
+	<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#F4F1ED">
+		<Card layout="icon">
+			<Image
+				src={card22}
+				alt="illustration of a shining diamond with sparkle lines symbolizing clarity from implantable contact lens"
+			/>
+			<h3>The Laser Procedure to Fix Presbyopia</h3>
+			<p>
+				The Laser Blended Vision procedure is a quick and painless
+				procedure that typically takes less than 10 minutes per eye. The
+				procedure is extremely similar to LASIK in terms of the
+				experience, risks and benefits. A laser is used to reshape the
+				corneal surface, improving both near and distance vision. Most
+				patients experience improved vision immediately after the
+				procedure, with minimal visual disturbances.
+			</p>
+		</Card>
+
+		<Card layout="icon">
+			<Image
+				src={card21}
+				alt="calendar icon with check mark representing implantable contact lens appointment"
+			/>
+			<h3>Cost & Financing Options</h3>
+			<p>
+				The cost of Laser Blended Vision can vary depending on
+				individual factors such as the complexity of the procedure and
+				the technology used. Our practice offers transparent pricing and
+				flexible financing options to make Laser Blended Vision
+				accessible to as many patients as possible. During your
+				consultation, we will provide you with a detailed cost estimate
+				based on your specific needs..
+			</p>
+		</Card>
+	</CardGrid>
+
+	<Faq title="Common questions about Laser Blended Vision:" faqs={faqs} />
+
+	<AboutUs backgroundColor="#F4F1ED" stylePreset="Eggshell" />
+
+	<ReviewedBy
+		author={author}
+		authorUrl={authorUrl}
+		lastReviewed={lastReviewed}
+	/>
+
+	<!-- 6. Final CTA Banner -->
+	<BottomCTA
+		h2Text="Ready to enjoy clear vision at all distances without glasses?"
+		h3Text="Schedule a consultation with our experts today."
+		about="Laser Blended Vision"
+	/>
+</TreatmentLayout>

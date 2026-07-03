@@ -1,0 +1,310 @@
+---
+// src/components/Faq.astro
+import type { FAQPage, WithContext } from "schema-dts";
+import Schema from "./Schema.astro";
+import Button from "./Button.astro";
+
+export interface Props {
+	title: string;
+	description?: string;
+	style?: "light" | "eggshell";
+	faqs?: { q?: string; a?: string; question?: string; answer?: string }[];
+	variant?: "default" | "blog";
+}
+
+const {
+	title,
+	description,
+	style = "light",
+	faqs = [],
+	variant = "default",
+} = Astro.props;
+
+const isBlog = variant === "blog";
+
+// Standardize FAQ items to use question/answer naming
+const normalizedFaqs = faqs.map((f) => ({
+	question: f.question || f.q || "",
+	answer: f.answer || f.a || "",
+}));
+
+// Generate FAQPage Schema
+const faqSchema: WithContext<FAQPage> | null =
+	normalizedFaqs.length > 0
+		? {
+				"@context": "https://schema.org",
+				"@type": "FAQPage",
+				mainEntity: normalizedFaqs.map((item) => ({
+					"@type": "Question",
+					name: item.question,
+					acceptedAnswer: {
+						"@type": "Answer",
+						text: item.answer,
+					},
+				})),
+			}
+		: null;
+---
+
+<section
+	class:list={[
+		"faq-section",
+		`style-${style}`,
+		{ "variant-blog": isBlog },
+		{ "box-width": isBlog },
+	]}
+>
+	{faqSchema && <Schema item={faqSchema} />}
+	<div class="faq-header">
+		<h2 class="faq-title">{title}</h2>
+		{description && <p class="faq-description">{description}</p>}
+	</div>
+
+	<div class="faq-list">
+		{
+			normalizedFaqs.length > 0 ? (
+				normalizedFaqs.map((item) => (
+					<details class="faq-item" name="faq-accordion">
+						<summary class="faq-summary">
+							<h4 class="faq-question">{item.question}</h4>
+							<span class="icon-plus" />
+						</summary>
+						<div class="answer-wrapper">
+							<div class="faq-answer">
+								<p set:html={item.answer} />
+							</div>
+						</div>
+					</details>
+				))
+			) : (
+				<slot />
+			)
+		}
+	</div>
+
+	<div class="faq-cta-box">
+		<div class="faq-cta-content">
+			<h3 class="faq-cta-title">Still have questions?</h3>
+			<p class="faq-cta-text">Contact our specialist team today.</p>
+		</div>
+		<div class="faq-cta-button-wrapper">
+			<Button href="/contact" text="Contact Us" />
+		</div>
+	</div>
+</section>
+
+<style>
+	.faq-section {
+		/* --- CSS Variables for Theming --- */
+		--bg-color: transparent;
+		--title-color: #1c2f49;
+		--text-color: #1c2f49;
+		--description-color: #667085;
+		--border-color: #eaecf0;
+		--icon-color: #437b8c;
+		--cta-bg: #f9fafb;
+
+		background-color: var(--bg-color);
+		padding: 64px 134px;
+		color: var(--text-color);
+	}
+
+	.faq-section.variant-blog {
+		padding: 4rem 0;
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.faq-header {
+		margin-bottom: 3rem;
+	}
+
+	.faq-title {
+		font-size: 2.25rem;
+		font-weight: 700;
+		color: var(--title-color);
+		margin-bottom: 1rem;
+		padding: 0;
+	}
+
+	.faq-description {
+		font-size: 1.125rem;
+		color: var(--description-color);
+		line-height: 1.5;
+	}
+
+	/* --- Eggshell Style Theme --- */
+	.faq-section.style-eggshell {
+		--bg-color: #f4f1ed;
+		--title-color: #1c2f49;
+		--text-color: #1c2f49;
+		--border-color: #e0dcd7;
+		--icon-color: #1c2f49;
+		--cta-bg: #f0edea;
+	}
+
+	.faq-list {
+		margin-bottom: 3rem;
+	}
+
+	.faq-item {
+		border-bottom: 1px solid var(--border-color);
+		padding: 1.5rem 0;
+	}
+
+	.faq-item:first-child {
+		border-top: 1px solid var(--border-color);
+	}
+
+	.faq-summary {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		cursor: pointer;
+		list-style: none;
+		color: var(--text-color);
+		gap: 1rem;
+		user-select: none;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.faq-summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.faq-question {
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin: 0;
+		line-height: 1.4;
+	}
+
+	.icon-plus {
+		position: relative;
+		width: 20px;
+		height: 20px;
+		flex-shrink: 0;
+		transition: transform 0.3s ease;
+	}
+
+	.icon-plus::before,
+	.icon-plus::after {
+		content: "";
+		position: absolute;
+		background-color: var(--icon-color);
+		transition: background-color 0.3s ease;
+	}
+
+	/* Horizontal line */
+	.icon-plus::before {
+		top: 50%;
+		left: 0;
+		width: 100%;
+		height: 2px;
+		transform: translateY(-50%);
+	}
+
+	/* Vertical line */
+	.icon-plus::after {
+		top: 0;
+		left: 50%;
+		width: 2px;
+		height: 100%;
+		transform: translateX(-50%);
+	}
+
+	.faq-item[open] .icon-plus {
+		transform: rotate(135deg);
+	}
+
+	.faq-answer {
+		overflow: hidden;
+		padding-top: 0.75rem;
+		font-weight: 400;
+		line-height: 1.6;
+		color: #475467;
+	}
+
+	.faq-answer p {
+		margin-top: 0.25rem;
+		margin-bottom: 0;
+	}
+
+	/* CTA Box Styles */
+	.faq-cta-box {
+		background-color: var(--cta-bg);
+		border-radius: 12px;
+		padding: 2rem;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 2rem;
+	}
+
+	.faq-cta-content {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	.faq-cta-title {
+		font-size: 1.25rem;
+		font-weight: 700;
+		margin: 0;
+		line-height: 1.2;
+		color: var(--title-color);
+	}
+
+	.faq-cta-text {
+		color: var(--description-color);
+		margin: 0.25rem 0 0 0;
+		line-height: 1.2;
+	}
+
+	.faq-cta-button-wrapper :global(.custom-button) {
+		margin-bottom: 0;
+	}
+
+	/* Tablet and smaller desktops */
+	@media (max-width: 1200px) {
+		.faq-section {
+			padding: 48px 60px;
+		}
+		.faq-section.variant-blog {
+			padding: 48px 0;
+		}
+	}
+
+	/* Mobile styles */
+	@media (max-width: 800px) {
+		.faq-section {
+			padding: 40px 24px;
+		}
+		.faq-section.variant-blog {
+			padding: 40px 24px;
+		}
+
+		.faq-title {
+			font-size: 1.75rem;
+		}
+
+		.faq-cta-box {
+			flex-direction: column;
+			text-align: center;
+			padding: 1.5rem;
+			gap: 1.5rem;
+		}
+
+		.faq-cta-button-wrapper :global(.custom-button) {
+			width: 100%;
+		}
+	}
+
+	/* Disable text selection on desktop */
+	@media (min-width: 801px) {
+		.faq-summary,
+		.faq-answer {
+			user-select: none;
+		}
+	}
+</style>

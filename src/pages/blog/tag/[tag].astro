@@ -1,0 +1,97 @@
+---
+import { getCollection } from "astro:content";
+import tagsData from "../../../data/tags.json";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import BlogPostCard from "../../../components/BlogPostCard.astro";
+
+export async function getStaticPaths() {
+	const allPosts = await getCollection("blog");
+
+	// Extract only the tags that are actually used in the posts
+	const usedTagValues = [
+		...new Set(
+			allPosts.flatMap((post) => post.data.tags || []).filter(Boolean),
+		),
+	];
+
+	// Filter the master tag list to only include used tags
+	const activeTags = tagsData.items.filter((tag) =>
+		usedTagValues.includes(tag.value),
+	);
+
+	return activeTags.map((tag) => {
+		const filteredPosts = allPosts.filter(
+			(post) => post.data.tags && post.data.tags.includes(tag.value),
+		);
+		const sortedPosts = filteredPosts.sort(
+			(a, b) =>
+				new Date(b.data.datePublished).valueOf() -
+				new Date(a.data.datePublished).valueOf(),
+		);
+
+		return {
+			params: { tag: tag.value },
+			props: {
+				tagName: tag.label,
+				posts: sortedPosts,
+			},
+		};
+	});
+}
+
+const { tagName, posts } = Astro.props;
+
+const title = `Posts Tagged: ${tagName} | Focus Vision Blog`;
+const description = `Browse all blog posts tagged with "${tagName}" on the Focus Vision blog.`;
+const ogType = "website";
+const noindex = true;
+---
+
+<BaseLayout description={description} ogType={ogType} noindex={noindex}>
+	<main class="container">
+		<h1 class="page-title">Tag: {tagName}</h1>
+		{
+			posts.length > 0 ? (
+				<div class="blog-grid">
+					{posts.map((post: any) => (
+						<BlogPostCard post={post} />
+					))}
+				</div>
+			) : (
+				<p class="no-posts">No posts found with this tag yet.</p>
+			)
+		}
+	</main>
+</BaseLayout>
+
+<style>
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 64px 24px;
+	}
+	.page-title {
+		font-size: 3rem;
+		font-weight: 700;
+		color: #1c2f49;
+		text-align: center;
+		margin-bottom: 4rem;
+	}
+	.blog-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 40px;
+	}
+	.no-posts {
+		text-align: center;
+		font-size: 1.25rem;
+		color: #666;
+		margin-top: 2rem;
+	}
+
+	@media (max-width: 800px) {
+		.blog-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

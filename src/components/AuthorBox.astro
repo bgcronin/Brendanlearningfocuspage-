@@ -1,0 +1,169 @@
+---
+import { Image } from "astro:assets";
+import { getEntry } from "astro:content";
+
+interface Props {
+	authorId: string;
+}
+
+const { authorId } = Astro.props;
+
+const authorEntry = await getEntry("authors", authorId);
+const author = authorEntry || (await getEntry("authors", "brendan-cronin"));
+---
+
+{
+	author && (
+		<div class="author-box">
+			<div class="author-box-content">
+				<div class="author-avatar-container">
+					{author.data.avatar ? (
+						<Image
+							src={author.data.avatar}
+							alt={author.data.name}
+							width={150}
+							height={150}
+							class="author-avatar"
+						/>
+					) : (
+						<div class="author-avatar-placeholder">
+							{author.data.name.charAt(0)}
+						</div>
+					)}
+				</div>
+				<div class="author-info">
+					<h3>{author.data.name}</h3>
+					{author.data.credentials && (
+						<p class="author-credentials">
+							{author.data.credentials}
+						</p>
+					)}
+					<p class="author-bio">{author.data.bio}</p>
+
+					<div class="author-actions">
+						<a
+							href={`/blog/author/${author.id.replace(/\.[^/.]+$/, "")}/`}
+							class="view-posts"
+						>
+							View all posts by {author.data.name.split(" ")[0]}{" "}
+							&rarr;
+						</a>
+						<a href="/contact" class="cta-button">
+							Book Consultation
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
+}
+
+<style>
+	.author-box {
+		background-color: var(--color-accent, #f4f1ed);
+		padding: 2.5rem;
+		border-radius: 12px;
+		margin-top: 4rem;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+	}
+
+	.author-box-content {
+		display: flex;
+		gap: 2rem;
+		align-items: center;
+	}
+
+	@media (max-width: 640px) {
+		.author-box-content {
+			flex-direction: column;
+			text-align: center;
+		}
+	}
+
+	.author-avatar-container {
+		flex-shrink: 0;
+	}
+
+	.author-avatar,
+	.author-avatar-placeholder {
+		width: 120px;
+		height: 120px;
+		border-radius: 50%;
+		border: 4px solid #fff;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		object-fit: cover;
+	}
+
+	.author-avatar-placeholder {
+		background-color: var(--dark-blue-color, #1c2f49);
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 3rem;
+		font-weight: bold;
+	}
+
+	.author-info h3 {
+		margin: 0 0 0.25rem 0;
+		font-family: var(--font-heading);
+		color: var(--dark-blue-color, #1c2f49);
+		font-size: 1.5rem;
+	}
+
+	.author-credentials {
+		font-size: 0.9rem;
+		color: #666;
+		margin: 0 0 1rem 0;
+		font-weight: 500;
+	}
+
+	.author-bio {
+		margin: 0 0 1.5rem 0;
+		line-height: 1.6;
+		font-size: 1.05rem;
+		color: #444;
+	}
+
+	.author-actions {
+		display: flex;
+		align-items: center;
+		gap: 2rem;
+		flex-wrap: wrap;
+	}
+
+	@media (max-width: 640px) {
+		.author-actions {
+			justify-content: center;
+			gap: 1rem;
+		}
+	}
+
+	.view-posts {
+		color: var(--dark-blue-color, #1c2f49);
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 0.95rem;
+		border-bottom: 2px solid transparent;
+		transition: border-color 0.2s ease;
+	}
+
+	.view-posts:hover {
+		border-bottom-color: var(--dark-blue-color, #1c2f49);
+	}
+
+	.cta-button {
+		background-color: var(--dark-blue-color, #1c2f49);
+		color: white !important;
+		padding: 0.75rem 1.5rem;
+		border-radius: 50px;
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 0.95rem;
+		transition: background-color 0.2s ease;
+	}
+
+	.cta-button:hover {
+		background-color: #2a4468;
+	}
+</style>

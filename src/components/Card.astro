@@ -1,0 +1,141 @@
+---
+// src/components/Card.astro
+export interface Props {
+	layout?: "icon" | "imageTop" | "imageBottom";
+}
+const { layout = "icon" } = Astro.props;
+---
+
+<article class:list={["card", `layout-${layout}`]}>
+	<div class="image-wrapper">
+		<slot name="image" />
+	</div>
+	<div class="text-wrapper">
+		<slot />
+	</div>
+</article>
+
+<style>
+	.card {
+		background-color: var(--card-bg-color, #f4f1ed);
+		color: var(--text-color, #1c2f49);
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		height: 100%; /* Allows the card to fill the grid cell's height */
+		overflow: hidden; /* Ensures full-width images respect border-radius */
+	}
+
+	/* --- LAYOUT: ICON (Your original styles) --- */
+	.layout-icon .text-wrapper {
+		padding: 0px 20px 50px 20px;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+	}
+
+	.text-wrapper > :last-child {
+		margin-top: auto; /* pushes the button to the bottom */
+	}
+
+	.text-wrapper .custom-button {
+		margin-top: auto; /* pushes it to the bottom */
+		align-self: center;
+	}
+
+	.layout-icon .image-wrapper {
+		margin-top: 40px; /* Add padding to the top of the image */
+	}
+	.layout-icon :global(img),
+	.layout-icon :global(svg) {
+		display: block;
+		margin: 0 auto 20px;
+		max-width: 140px;
+		height: auto;
+		transition: transform 0.3s ease-in-out;
+	}
+	.layout-icon:hover :global(img),
+	.layout-icon:hover :global(svg) {
+		transform: scale(1.05);
+	}
+
+	/* --- LAYOUT: IMAGE TOP & BOTTOM --- */
+	.layout-imageTop .text-wrapper,
+	.layout-imageBottom .text-wrapper {
+		padding: 30px;
+	}
+	.layout-imageTop :global(img),
+	.layout-imageBottom :global(img),
+	.layout-imageTop :global(svg),
+	.layout-imageBottom :global(svg) {
+		margin: auto;
+		width: 80%;
+		height: auto;
+		display: block;
+	}
+
+	/* Specific order for bottom image layout */
+	.layout-imageBottom .image-wrapper {
+		order: 2;
+	}
+	.layout-imageBottom .text-wrapper {
+		order: 1;
+		flex-grow: 1; /* Pushes the image to the bottom */
+	}
+
+	:global(.layout-icon .small-icon) {
+		width: 50px;
+	}
+
+	/* --- GLOBAL CONTENT STYLES (from your code) --- */
+	:global(.card h3) {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin-bottom: 1rem;
+	}
+	:global(.card p) {
+		font-size: 16px;
+		font-weight: 300;
+		line-height: 1.6;
+	}
+
+	:global(.card .text-wrapper p a) {
+		color: black;
+	}
+
+	:global(.card a:last-child) {
+		margin-bottom: 0;
+	}
+
+	@media (max-width: 600px) {
+		.card-grid-container {
+			padding: 0 5px;
+		}
+
+		.layout-icon .text-wrapper {
+			padding: 0px 15px 50px 15px;
+		}
+
+		.layout-icon .image-wrapper {
+			margin-top: 20px;
+		}
+
+		.layout-imageTop .text-wrapper,
+		.layout-imageBottom .text-wrapper {
+			padding: 10px 5px;
+		}
+		.layout-imageTop :global(img),
+		.layout-imageBottom :global(img) {
+			width: 100%;
+		}
+
+		.layout-imageBottom .image-wrapper {
+			order: 1;
+		}
+		.layout-imageBottom .text-wrapper {
+			order: 2;
+			flex-grow: 1; /* Pushes the image to the bottom */
+		}
+	}
+</style>

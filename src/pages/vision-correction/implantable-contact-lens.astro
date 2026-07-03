@@ -1,0 +1,314 @@
+---
+import TreatmentLayout from "../../layouts/TreatmentLayout.astro";
+import { Image } from "astro:assets";
+import TwoColumnContent from "../../components/TwoColumnContent.astro";
+import BottomCTA from "../../components/BottomCTA.astro";
+import usImage from "../../assets/images/img-Focus-Brisbane-Eye-ICL-Cronin-Gunn.webp";
+import scapeImage from "../../assets/images/img-woolloongabbabrisbanelaserey.webp";
+import Faq from "../../components/Faq.astro";
+import Button from "../../components/Button.astro";
+import SimpleBanner from "../../components/SimpleBanner.astro";
+import CardGrid from "../../components/CardGrid.astro";
+import Card from "../../components/Card.astro";
+import heroImage from "../../assets/images/img-FocusVisionLaserEyeSurgeonsB.jpg"; // Make sure to import your image
+import AboutUs from "../../components/AboutUs.astro";
+import YouTubeSection from "../../components/YouTubeSection.astro";
+import ReviewedBy from "../../components/ReviewedBy.astro";
+
+const faqs = [
+	{
+		q: "What is ICL (Implantable Collamer Lens) surgery?",
+		a: "ICL surgery is a fully reversible alternative to laser surgery that involves placing a biocompatible Collamer lens inside the eye. Unlike laser eye surgery, no corneal tissue is removed or altered. The lens corrects refractive errors by changing how light focuses on the retina, delivering crisp, clear vision.",
+	},
+	{
+		q: "How much does ICL surgery cost in Brisbane?",
+		a: "At Focus Vision, ICL surgery costs <strong>$7,000 per eye</strong> — and importantly, this price includes the anaesthetist fee, which many other clinics charge separately. Interest-free payment plans are available from <strong>$68 per week</strong>. For comparison, our major competitor VSON charges $7,262.40 per eye, not including the anaesthetist. There are no hidden extras at Focus Vision.",
+	},
+	{
+		q: "Is ICL surgery better than LASIK?",
+		a: "ICL is not necessarily better or worse than LASIK — it is better suited for different patients. ICL is typically recommended for people with high prescriptions (particularly myopia beyond -6.00 dioptres), thin corneas unsuitable for laser reshaping, or significant dry eye disease. Because ICL does not touch the cornea, it preserves all corneal tissue, maintains normal corneal nerves, and does not cause or worsen dry eye. LASIK is faster to recover from and is the right choice for the majority of patients with low to moderate prescriptions and healthy corneas.",
+	},
+	{
+		q: "Am I suitable for ICL surgery?",
+		a: "ICL is suitable for patients over 21 with a stable prescription for at least one year, who do not have glaucoma, cataracts, or certain other eye diseases. It is particularly well-suited to patients with myopia up to approximately -18.00 dioptres, hyperopia up to +8.00 dioptres, and astigmatism up to 5.00 dioptres. Anterior chamber depth and other anatomical measurements are assessed at your free assessment to confirm suitability.",
+	},
+	{
+		q: "How long does ICL surgery take and what is the recovery like?",
+		a: "The ICL procedure itself takes less than 30 minutes per eye and is performed in a day hospital under heavy sedation — most patients are essentially asleep and have no memory of the procedure. Vision typically improves dramatically within 24 hours. Most patients take approximately one week off work and driving. Full stabilisation occurs within two to four weeks.",
+	},
+	{
+		q: "Is ICL surgery permanent? Can the lens be removed?",
+		a: "ICL is a long-term vision correction solution, but unlike laser eye surgery it is fully reversible. The lens can be removed or replaced by a qualified surgeon if your vision changes significantly, if you develop cataracts later in life, or for any other clinical reason. This reversibility is considered one of ICL's key advantages over corneal laser procedures.",
+	},
+	{
+		q: "Does Medicare cover ICL surgery in Australia?",
+		a: "Medicare does not cover ICL surgery when performed purely for elective vision correction. Your Focus Vision surgeon will clarify this at your consultation. Private health insurance extras cover may provide a partial benefit for some patients.",
+	},
+	{
+		q: "Why choose Focus Vision for ICL surgery in Brisbane?",
+		a: "Focus Vision's ICL procedures are performed exclusively by Dr Brendan Cronin and Dr David Gunn — corneal subspecialists who completed fellowship training overseas. All surgery takes place in the South Brisbane Day Hospital, a fully accredited private day hospital, ensuring the highest standards of safety and sterility. Our all-inclusive pricing means no surprise bills after your procedure.",
+	},
+];
+
+const title = "Implantable Contact Lens | Focus Vision | Woolloongabba, QLD";
+const description = `Achieve sharp vision with implantable contact lenses from the experts of Focus Vision. Visit our website or contact us today for a consultation!`;
+
+const author = "Dr Brendan Cronin";
+const authorUrl = "/about-dr-brendan-cronin";
+const lastReviewed = "2026-05-03T00:00:00Z";
+
+// Import the card images
+import card1 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Cataract+Eye+Surgery+clarity+ov+vision+copy.webp";
+import card2 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Cataract+Eye+Surgery+long+lasting.webp";
+import card3 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Laser+Eye+Surgery+ICL+implantable+contact+lenses+copy.webp";
+import card4 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Cataract+Eye+Surgery+UV+protection+copy.webp";
+
+// next card
+
+import card21 from "../../assets/images/implantable-contact-lens/Focus+Vision+costs+of+Laser+Eye+Surgery+reading+glasses+copy.webp";
+import card22 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Laser+Eye+Surgery+ICL+implantable+contact+lenses+copy.webp";
+
+// Two COl
+
+import col1 from "../../assets/images/implantable-contact-lens/img-Dr+Brendan+Cronin+Ophthalmologist+Brisbane+Queensland+Eye+Institute+Lumera+Laser.webp";
+
+const ogType = "website";
+---
+
+<TreatmentLayout
+	showCurve={true}
+	topColor="#C2DBE3"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	title={title}
+	author={author}
+	authorUrl={authorUrl}
+	lastReviewed={lastReviewed}
+	pagePath="/vision-correction/implantable-contact-lens"
+	procedureName="Implantable Contact Lens (ICL) Surgery"
+	procedureDescription="A thin, soft lens is implanted inside the eye to correct high prescriptions or when laser is unsuitable; removable and typically rapid recovery."
+	faqs={faqs}
+	backgroundImage={heroImage}
+	textPosition="right"
+	textColor="light"
+	heroBottomColor="#FFFFFF"
+	mobileImagePosition="25% 0%"
+	addOverlay={true}
+>
+	<Fragment slot="hero-content">
+		<h1>Implantable Contact Lenses in Queensland</h1>
+		<h2>ICL surgery cost from $58/week</h2>
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="transparent"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h4>
+			Get freedom from glasses and traditional contact lenses with ICL
+			implantation. This quick procedure is excellent for people with thin
+			corneas and high prescriptions. The lens implant has a short
+			recovery time and is pain free.
+		</h4>
+
+		<br />
+	</SimpleBanner>
+
+	<div class="basic-section" style="background-color: #F4F1ED;">
+		<h2 class="big-text">Advantages of Implantable Contact</h2>
+		<h4>
+			ICLs offer a multitude of advantages over traditional eyewear and
+			even other vision correction procedures:
+		</h4>
+
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#FFFFFF">
+			<Card layout="icon">
+				<Image
+					src={card1}
+					alt="illustration of a shining diamond with sparkle lines symbolizing clarity from implantable contact lens"
+				/>
+				<h3>Exceptional Clarity</h3>
+				<p>
+					ICLs provide superior visual acuity, often exceeding what is
+					possible with glasses or regular contact lenses.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card2}
+					alt="calendar icon with check mark representing implantable contact lens appointment"
+				/>
+				<h3>Permanent Solution</h3>
+				<p>
+					ICLs offer a long-term solution for vision correction,
+					reducing or eliminating the need for additional procedures
+					in the future.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card3}
+					alt="illustration of a blue human eye with robotic element and stylized outline representing implantable contact lens"
+				/>
+				<h3>Enhanced Comfort</h3>
+				<p>
+					Unlike traditional contacts, ICLs are placed inside the eye,
+					eliminating the discomfort of dry eyes and irritation. You
+					can resume normal activities the day after surgery.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card4}
+					alt="UV protection symbol icon representing implantable contact lens safety"
+				/>
+				<h3>UV Protection</h3>
+				<p>
+					ICLs are designed to block harmful UV rays, providing added
+					protection for your eyes. This is good for eye health and
+					does not cause eye pressure.
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<YouTubeSection
+		videoId="NMjZbAOTFWY"
+		title="Preparing for your implantable contact lens assessment"
+		heading="Preparing for Your Assessment"
+		text="This video will help you to prepare for your appointment with your doctor at Focus Vision."
+	>
+		<Button href="/contact" text="Book A Free Assessment today" />
+	</YouTubeSection>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<br />
+		<h3>What is Implantable Collamer Lens ICL</h3>
+		<p>
+			The ICL procedure involves placing an extremely thin, soft and clear
+			lens into the eye to correct refractive errors. It is like a
+			permament contact lens can correct vision. Unlike laser eye surgery,
+			this procedure does not affect the corneal tissue and is removable.
+			This means the corneal nerves are not affected. Collamer is the name
+			of the special material used in the lens that is a combination of
+			purified collagen and polymer. The term for this procedure is ICL
+			surgery.
+		</p>
+		<h3>Are You a Candidate for Laser Vision Correction?</h3>
+		<p>
+			ICLs are ideal for individuals looking for a permanent vision
+			correction solution who may not be suitable candidates for laser eye
+			surgery. Candidates for ICL should:
+		</p>
+		<ul>
+			<li>Be over 21 years old</li>
+			<li>Have stable vision for at least one year</li>
+			<li>
+				Have no history of eye diseases such as glaucoma or cataracts
+			</li>
+			<li>
+				Have a precription within the range of ICL – often severe myopia
+				(short-sightedness) or moderate to severe hyperopia
+				(far-sightedness). <a
+					href="/blog/laser-eye-surgery-for-astigmatism"
+					>Astigmatism</a
+				> up to 5D
+			</li>
+		</ul>
+		<br />
+	</SimpleBanner>
+
+	<TwoColumnContent
+		imageSrc={col1}
+		imageAlt="Dr Brendan Cronin performing eye surgery using machine with implantable contact lens."
+		imagePosition="left"
+		stylePreset="Lightblue"
+		fullWidth={false}
+		backgroundColor="#1C2F49"
+	>
+		<h2>Why Choose ICL in Queensland</h2>
+		<p>
+			Choosing ICL at Focus Vision in Brisbane means entrusting your
+			vision to a team of highly trained specialists dedicated to
+			delivering exceptional results. Our corneal specialist team are
+			renowned for their expertise in vision correction and use
+			state-of-the-art technology to ensure the best possible outcomes for
+			every patient.
+		</p>
+
+		<Button
+			href="/about-focus-vision"
+			text="Learn More about our team"
+			openInNewTab={false}
+		/>
+
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#F4F1ED">
+		<Card layout="icon">
+			<Image
+				src={card22}
+				alt="illustration of a shining diamond with sparkle lines symbolizing clarity from implantable contact lens"
+			/>
+			<h3>The ICL Procedure for Clear Vision</h3>
+			<p>
+				The ICL implantation is a <a
+					href="/blog/are-implantable-contact-lenses-safe"
+					target="_blank">quick and painless procedure</a
+				> that typically takes less than 30 minutes per eye. ICL is performed
+				in a day hospital and you will be asleep with heavy sedation throughout.
+				A small incision is made in the cornea, and the ICL is inserted behind
+				the iris and in front of the natural lens. Many patients experience
+				improved vision immediately after the procedure, with minimal discomfort.
+			</p>
+		</Card>
+
+		<Card layout="icon">
+			<Image
+				src={card21}
+				alt="calendar icon with check mark representing implantable contact lens appointment"
+			/>
+			<h3>Cost & Financing Options</h3>
+			<p>
+				The cost of ICL surgery can vary depending on individual factors
+				such as the complexity of the procedure and the technology used.
+				Our practice offers transparent pricing and flexible financing
+				options to make ICL surgery accessible to all patients. During
+				your consultation, we will provide you with a detailed cost
+				estimate based on your specific needs.
+			</p>
+		</Card>
+	</CardGrid>
+
+	<Faq title="Common questions about ICL:" faqs={faqs} />
+
+	<AboutUs backgroundColor="#F4F1ED" stylePreset="Eggshell" />
+
+	<ReviewedBy
+		author={author}
+		authorUrl={authorUrl}
+		lastReviewed={lastReviewed}
+	/>
+
+	<BottomCTA
+		h2Text="Ready to experience the life-changing benefits of ICL?"
+		h3Text="Schedule a consultation with our experts today."
+		buttonText="Schedule A Consultation Today"
+		about="ICL implantation"
+	/>
+</TreatmentLayout>

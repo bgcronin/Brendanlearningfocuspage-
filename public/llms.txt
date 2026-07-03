@@ -1,0 +1,34 @@
+# Focus Vision
+
+> Focus Vision is a premier laser eye surgery and vision correction clinic based in Brisbane (Woolloongabba), Australia. Led by internationally trained cornea specialists, the clinic provides advanced surgical solutions including LASIK, PRK, and Ray Tracing technology.
+
+## Core Services
+- [Laser Eye Surgery](https://www.focusvision.com.au/laser-eye-surgery/) - LASIK, PRK, and Lenticule Extraction for short-sightedness and long-sightedness.
+- [Implantable Contact Lens (ICL)](https://www.focusvision.com.au/implantable-contact-lens/) - Treatment for high prescriptions or those unsuitable for laser surgery.
+- [Laser for Reading Glasses](https://www.focusvision.com.au/laser-blended-vision/) - Laser Blended Vision (LBV) to treat presbyopia.
+- [Refractive Lens Exchange (RLE)](https://www.focusvision.com.au/refractive-lens-exchange/) - Replacing the natural lens to improve vision for older patients.
+- [Premium Cataract Surgery](https://www.focusvision.com.au/premium-cataract-surgery/) - Advanced cataract removal with lens replacement.
+- [Premium Pterygium Surgery](https://www.focusvision.com.au/premium-pterygium-surgery/) - Suture-free pterygium removal.
+
+## Key Information
+- **Founding Surgeons:** [Dr. Brendan Cronin](https://www.focusvision.com.au/about-dr-brendan-cronin/) and [Dr. David Gunn](https://www.focusvision.com.au/about-dr-david-gunn/).
+- **Technology:** Only clinic in Queensland offering Ray Tracing LASIK and TransPRK.
+- **Accreditation:** Co-located with the Queensland Eye Institute and South Brisbane Day Hospital, meeting rigorous Australian private hospital hygiene standards.
+- **Costs:** Transparent pricing starting from $29/week via financing options.
+
+## Contact & Location
+- **Address:** 87 Ipswich Road, Woolloongabba, QLD 4102, Australia.
+- **Phone:** (07) 3239 5005
+- **Email:** hello@focusvision.com.au
+- **WhatsApp:** 0488 VISION
+- **Website:** [focusvision.com.au](https://www.focusvision.com.au/)
+
+## Technical Tools
+- [Refractive Outcomes Analyzer](https://www.focusvision.com.au/refractive-outcomes-analyzer/) - A tool for monitoring and analyzing surgical results.
+- [Laser Suitability Test](https://www.focusvision.com.au/take-the-test/) - Online assessment for prospective patients.
+
+## Sitemap & Socials
+- [About Us](https://www.focusvision.com.au/about-focus-vision/)
+- [Costs & Financing](https://www.focusvision.com.au/costs/)
+- [Blog](https://www.focusvision.com.au/blog/)
+- [Contact Us](https://www.focusvision.com.au/contact/)

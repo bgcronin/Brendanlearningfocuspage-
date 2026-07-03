@@ -1,0 +1,167 @@
+---
+// src/components/Breadcrumbs.astro
+interface BreadcrumbItem {
+	name: string;
+	url: string;
+}
+
+interface Props {
+	items?: any[];
+	variant?: "default" | "blog" | "treatment";
+}
+
+const { items: manualItems, variant = "default" } = Astro.props;
+
+// Automated formatting of slug segments
+const formatSegment = (segment: string) => {
+	const specialized: Record<string, string> = {
+		"vision-correction": "Vision Correction",
+		lasik: "LASIK",
+		prk: "PRK",
+		icl: "ICL",
+		smile: "SMILE",
+		"ray-tracing-lasik": "Ray Tracing LASIK",
+	};
+
+	if (specialized[segment.toLowerCase()])
+		return specialized[segment.toLowerCase()];
+
+	return segment
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
+};
+
+const pathname = Astro.url.pathname;
+const segments = pathname.split("/").filter(Boolean);
+
+// Only generate breadcrumbs if we have segments (not on homepage)
+let items = manualItems;
+
+if (!items && segments.length > 0) {
+	const urlOverrides: Record<string, string> = {
+		"vision-correction": "/all-ophthalmology",
+	};
+
+	const nonLinkableSegments = ["author", "tag"];
+
+	items = segments.map((segment, index) => {
+		const url =
+			urlOverrides[segment.toLowerCase()] ||
+			`/${segments.slice(0, index + 1).join("/")}`;
+
+		return {
+			name: formatSegment(segment),
+			url: url,
+			isLink: !nonLinkableSegments.includes(segment.toLowerCase()),
+		};
+	});
+	// Add Home
+	items = [{ name: "Home", url: "/" }, ...items];
+}
+
+// Visibility rules
+const isTreatment = variant === "treatment";
+const isBlogRelated = pathname.startsWith("/blog");
+const shouldShow = isTreatment || isBlogRelated;
+---
+
+{
+	shouldShow && items && items.length > 0 && (
+		<nav aria-label="Breadcrumb" class:list={["breadcrumbs", variant]}>
+			<ol>
+				{items.map((item, index) => (
+					<li>
+						{index === items.length - 1 ? (
+							<span class="current-page" aria-current="page">
+								{item.name}
+							</span>
+						) : (
+							<>
+								{item.isLink !== false ? (
+									<a href={item.url}>{item.name}</a>
+								) : (
+									<span class="non-link">{item.name}</span>
+								)}
+								<span class="separator">/</span>
+							</>
+						)}
+					</li>
+				))}
+			</ol>
+		</nav>
+	)
+}
+
+<style>
+	.breadcrumbs {
+		margin-bottom: 1rem;
+		font-size: 0.75rem;
+		letter-spacing: 0.05em;
+	}
+
+	.breadcrumbs ol {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-wrap: nowrap;
+		align-items: center;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+
+	.breadcrumbs li {
+		display: inline-flex;
+		align-items: center;
+		min-width: 0;
+	}
+
+	.breadcrumbs li:last-child {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.breadcrumbs a,
+	.breadcrumbs .current-page,
+	.breadcrumbs .non-link {
+		color: #777; /* Neutral grey for all */
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.breadcrumbs .current-page {
+		font-weight: 400;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		display: inline-block;
+		max-width: 100%;
+	}
+
+	.breadcrumbs a:hover {
+		color: #1c2f49;
+		text-decoration: underline;
+	}
+
+	.breadcrumbs .separator {
+		margin: 0 0.5rem;
+		color: #ccc;
+		flex-shrink: 0;
+	}
+
+	/* Treatment Variant (inside Hero) */
+	.treatment {
+		margin-top: 0.5rem;
+		margin-bottom: 0;
+	}
+	.treatment a,
+	.treatment .current-page,
+	.treatment .separator {
+		color: inherit;
+		opacity: 0.8;
+	}
+	.treatment a:hover {
+		opacity: 1;
+		color: inherit;
+	}
+</style>

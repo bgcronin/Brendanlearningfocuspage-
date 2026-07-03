@@ -1,0 +1,334 @@
+---
+import TreatmentLayout from "../../layouts/TreatmentLayout.astro";
+import { Image } from "astro:assets";
+import heroImage from "../../assets/images/hero/bg-BrisbaneLaserEyeSurgeonFocusV.jpg"; // Make sure to import your image
+import placeholder from "../../assets/images/placeholder.png";
+import Button from "../../components/Button.astro";
+import StyledList from "../../components/StyledList.astro";
+import Card from "../../components/Card.astro";
+import BottomCTA from "../../components/BottomCTA.astro";
+// Component imports will be added here
+import SimpleBanner from "../../components/SimpleBanner.astro";
+import CardGrid from "../../components/CardGrid.astro";
+import TwoColumnContent from "../../components/TwoColumnContent.astro";
+import Faq from "../../components/Faq.astro";
+import AboutUs from "../../components/AboutUs.astro";
+import YouTubeSection from "../../components/YouTubeSection.astro";
+import ReviewedBy from "../../components/ReviewedBy.astro";
+
+const faqs = [
+	{
+		q: "What is Refractive Lens Exchange (RLE)?",
+		a: "RLE removes the eye's natural lens and replaces it with a premium artificial IOL to correct short-sightedness, long-sightedness, astigmatism, and presbyopia. It is essentially the same operation as cataract surgery, performed before a cataract develops. As a bonus, it permanently eliminates the risk of future cataracts.",
+	},
+	{
+		q: "Who is a good candidate for Refractive Lens Exchange?",
+		a: "RLE is most suitable for patients over 40 to 45 who are developing presbyopia (the need for reading glasses), patients with high prescriptions unsuitable for laser eye surgery, and patients over 50 who want to correct both distance and near vision in a single procedure. It is particularly well suited to patients who are not good candidates for LASIK — for example those with thin corneas, very high prescriptions, or dry eyes — and to patients who want to avoid future cataract surgery.",
+	},
+	{
+		q: "How much does Refractive Lens Exchange cost in Brisbane?",
+		a: "At Focus Vision, RLE costs <strong>$6,000 per eye</strong> — an all-inclusive price that covers the procedure, all pre-operative assessments, the premium intraocular lens, anaesthetist fees, hospital fees, and one year of post-operative follow-up appointments. Interest-free payment plans are available from <strong>$58 per week</strong>. For comparison, our major competitor VSON charges $7,556.06 per eye, not including the anaesthetist fee.",
+	},
+	{
+		q: "Does RLE prevent cataracts?",
+		a: "Yes. Because RLE removes the natural crystalline lens — the same lens that develops a cataract — patients who have RLE will never develop a cataract in the treated eye. This is one of RLE's most significant long-term advantages over laser eye surgery, which does not alter the natural lens and therefore does not prevent cataracts from forming later in life.",
+	},
+	{
+		q: "What is the difference between RLE and LASIK for someone over 50?",
+		a: "For patients over 50, RLE is often the superior long-term solution. LASIK only corrects distance vision — patients over 45 typically still need reading glasses after LASIK as presbyopia is not addressed. RLE with a premium multifocal or EDOF lens can correct distance, intermediate, and near vision simultaneously, and also eliminates future cataract risk. LASIK is generally more suitable for younger patients with stable prescriptions who do not yet have presbyopia.",
+	},
+	{
+		q: "What types of lens are available for Refractive Lens Exchange?",
+		a: "Focus Vision offers the full range of premium intraocular lenses for RLE, including Extended Depth of Focus (EDOF) lenses that provide excellent distance and intermediate vision with minimal halos, trifocal multifocal lenses offering distance, intermediate, and near vision, and toric lenses for patients with significant astigmatism. Our surgeons take time to understand your lifestyle, visual demands, and hobbies before recommending the lens that is genuinely the best fit for your life — not simply the most standard option.",
+	},
+	{
+		q: "Is RLE surgery safe?",
+		a: "RLE is one of the most commonly performed surgical procedures in the world. The technique is essentially identical to cataract surgery, which is performed millions of times annually with an extremely high safety record. At Focus Vision, all RLE procedures are performed in the South Brisbane Day Hospital — a fully accredited private day hospital — by internationally fellowship-trained corneal subspecialists. Our surgeons use the Focus Vision Refractive Outcomes Analyzer to continuously benchmark their results against ESCRS international standards.",
+	},
+];
+
+const title = "Refractive Lens Exchange | Focus Vision | Woolloongabba, QLD";
+const description = `Enhance your vision through refractive lens exchange with experts from Focus Vision. Achieve lasting vision clarity—contact us today to book a consultation.`;
+
+const author = "Dr Brendan Cronin";
+const authorUrl = "/about-dr-brendan-cronin";
+const lastReviewed = "2026-05-03T00:00:00Z";
+
+import twoColumnImageEyeLumera from "../../assets/images/refractive-lens-exchange/img-Dr-Cronin-Brisbane-Eye-Lumera-Laser.webp";
+
+import card2 from "../../assets/images/implantable-contact-lens/Focus+Vision+costs+of+Laser+Eye+Surgery+reading+glasses+copy.webp";
+import card1 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Laser+Eye+Surgery+ICL+implantable+contact+lenses+copy.webp";
+
+const ogType = "website";
+---
+
+<TreatmentLayout
+	showCurve={true}
+	topColor="#C2DBE3"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	title={title}
+	author={author}
+	authorUrl={authorUrl}
+	lastReviewed={lastReviewed}
+	pagePath="/vision-correction/refractive-lens-exchange"
+	procedureName="Refractive Lens Exchange (RLE)"
+	procedureDescription="Replacement of the eye’s natural lens with a premium IOL to correct both distance and near vision—commonly for patients aged 40 and above."
+	faqs={faqs}
+	backgroundImage={heroImage}
+	textPosition="left"
+	textColor="light"
+	heroBottomColor="#FFFFFF"
+	addOverlay={true}
+>
+	<Fragment slot="hero-content">
+		<h2>Reclaim Your Vision</h2>
+		<h1>Refractive Lens Exchange (RLE) in Queensland</h1>
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h3>
+			RLE is a cutting-edge procedure that replaces the eye's natural lens
+			with an artificial lens to correct refractive errors such as
+			short-sightedness, far-sightedness, and presbyopia. RLE is suitable
+			for older patients, typically those over age 40.
+		</h3>
+	</SimpleBanner>
+
+	<div class="basic-section" style="background-color: #f4f1ed">
+		<h2 class="big-text">Advantages of RLE</h2>
+		<h4>
+			RLE offers several key advantages over traditional laser vision
+			correction methods:
+		</h4>
+
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#FFFFFF">
+			<Card layout="icon">
+				<Image
+					src="/icons/checkmark.svg"
+					alt="Checkmark Icon"
+					class="small-icon"
+					width="50"
+					height="50"
+				/>
+				<h3>Permanent Results</h3>
+				<p>
+					RLE provides a long-term solution for clear vision, reducing
+					or eliminating the need for glasses or contact lenses.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src="/icons/checkmark.svg"
+					alt="Checkmark Icon"
+					class="small-icon"
+					width="50"
+					height="50"
+				/>
+				<h3>Corrects Multiple Vision Problems</h3>
+				<p>
+					RLE is an artificial intraocular lens that can correct
+					short-sightedness, far-sightedness, and presbyopia in a
+					single procedure.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src="/icons/checkmark.svg"
+					alt="Checkmark Icon"
+					class="small-icon"
+					width="50"
+					height="50"
+				/>
+				<h3>Distance & Reading</h3>
+				<p>
+					Premium lenses such as Extended Depth of Focus (“EDOF”) or
+					multifocal IOLs allow good distance vision as well as
+					varying levels of reading without glasses.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src="/icons/checkmark.svg"
+					alt="Checkmark Icon"
+					class="small-icon"
+					width="50"
+					height="50"
+				/>
+				<h3>Prevents Risk of Cataracts</h3>
+				<p>
+					Once the lens has been exchanged, in general no further
+					procedures are needed to enhance the vision lifelong.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src="/icons/checkmark.svg"
+					alt="Checkmark Icon"
+					class="small-icon"
+					width="50"
+					height="50"
+				/>
+				<h3>First & Last Procedure</h3>
+				<p>
+					Once the lens has been exchanged, in general no further
+					procedures are needed to enhance the vision lifelong.
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<YouTubeSection
+		videoId="v3MMS4JPB54"
+		title="Preparing for your refractive lens exchange appointment"
+		heading="Preparing for Your Assessment"
+		text="This video will help you to prepare for your appointment with your doctor at Focus Vision."
+	>
+		<Button href="/contact" text="Book A Free Assessment today" />
+	</YouTubeSection>
+
+	<TwoColumnContent
+		imageSrc={twoColumnImageEyeLumera}
+		imageAlt="Dr Brendan Cronin operating a machine for refractive lens exchange procedure"
+		imagePosition="left"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h2>Why Choose Refractive Lens Exchange Surgery?</h2>
+		<p>
+			Choosing the RLE surgery at our Queensland practice means choosing a
+			team of experienced professionals dedicated to providing exceptional
+			vision correction results. Refractive Lens Exchange (RLE) uses lens
+			implants as a replacement lens to restore clear distance,
+			intermediate vision, blended vision and near vision in patients
+			seeking freedom from glasses.
+		</p>
+	</TwoColumnContent>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="#F4F1ED"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<div class="block-space-wrap">
+			<h2>Are You a Candidate for Lens Replacement Surgery?</h2>
+			<h4>
+				Refractive Lens Exchange (RLE) is ideal for individuals over 40
+				who are seeking a permanent solution for vision correction.
+				Candidates for RLE should:
+			</h4>
+
+			<StyledList position="center">
+				<li>Have good overall eye health</li>
+				<li>Have long sightedness, astigmatism or blurred vision</li>
+				<li>
+					Be motivated to reduce or eliminate their dependence on
+					glasses or contact lenses
+				</li>
+				<li>
+					Be willing to undergo a comprehensive eye examination to
+					determine candidacy
+				</li>
+			</StyledList>
+
+			<br />
+			<br />
+
+			<div class="button-stack-wrap">
+				<Button
+					href="/contact"
+					text="Schedule a Consultation"
+					openInNewTab={false}
+				/>
+			</div>
+
+			<!-- You can add lists, buttons, etc. here -->
+			<div class="button-stack-wrap">
+				<Button
+					href="/laser-suitability-test"
+					text="Take the Laser Suitability Test"
+					openInNewTab={false}
+				/>
+			</div>
+
+			<!-- You can add lists, buttons, etc. here -->
+		</div>
+	</SimpleBanner>
+
+	<div class="basic-section" style="background-color: #FFFFFF">
+		<CardGrid backgroundColor="#FFFFFF" cardBackgroundColor="#FFFFFF">
+			<Card layout="icon">
+				<Image
+					src={card1}
+					alt="A stylized drawing of an eye with marking reperesening refractive lens exchange"
+				/>
+				<h3>Refractive Lens Exchange (RLE) Procedure</h3>
+				<p>
+					The Refractive Lens Exchange (RLE) procedure is a safe and
+					effective outpatient procedure that typically takes less
+					than 30 minutes per eye. During the procedure, the natural
+					lens is removed and replaced with an artificial lens,
+					customized to your unique prescription. Most patients
+					experience improved vision immediately after the procedure,
+					with minimal downtime.
+				</p>
+				<p>
+					Refractive Lens Exchange (RLE) is often performed after the
+					age of 40 to reduce dependence on vision glasses, using
+					multifocal lenses. It usually starts with the dominant eye,
+					but some patients may notice reduced night vision or glare.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card2}
+					alt="Icon of papers and money reperesening the cost of RLE"
+				/>
+				<h3>Cost and Financing Options for RLE</h3>
+				<p>
+					The cost of RLE can vary depending on individual factors
+					such as the complexity of the procedure and the technology
+					used. Our practice offers transparent pricing and flexible
+					financing options to make RLE accessible to all patients.
+					During your consultation, we will provide you with a
+					detailed cost estimate based on your specific needs.
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<Faq
+		title="Common questions about Refractive Lens Exchange (RLE)"
+		style="eggshell"
+		faqs={faqs}
+	/>
+
+	<AboutUs backgroundColor="#F4F1ED" stylePreset="White" />
+
+	<ReviewedBy
+		author={author}
+		authorUrl={authorUrl}
+		lastReviewed={lastReviewed}
+	/>
+
+	<BottomCTA
+		h2Text="Ready to enjoy clear vision at all distances?"
+		h3Text="Schedule a consultation with our experts today."
+		about="Refractive Lens Exchange (RLE)"
+	/>
+</TreatmentLayout>

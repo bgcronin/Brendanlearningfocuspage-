@@ -1,0 +1,70 @@
+---
+import YouTube from "./YouTube.astro";
+
+interface Props {
+	videoId: string;
+	title: string;
+	heading?: string;
+	text: string;
+}
+
+const { videoId, title, heading, text } = Astro.props;
+---
+
+<section style="background-color: #C2DBE3;">
+	<div class="content-wrapper">
+		{
+			heading && (
+				<div class="header">
+					<h2>{heading}</h2>
+				</div>
+			)
+		}
+
+		<div class="video-container">
+			<YouTube videoId={videoId} title={title} />
+		</div>
+
+		<div class="text-content">
+			<p>{text}</p>
+			<slot />
+		</div>
+	</div>
+</section>
+
+<style>
+	section {
+		padding: 60px 0;
+		margin: 0;
+	}
+
+	.content-wrapper {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 0 20px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+	}
+
+	.header {
+		margin-bottom: 30px;
+		color: #1c2f49;
+	}
+
+	.video-container {
+		width: 100%;
+		max-width: 800px; /* Limit video width */
+		margin-bottom: 30px;
+	}
+
+	.text-content {
+		max-width: 600px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 20px;
+		color: #1c2f49;
+	}
+</style>

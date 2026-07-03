@@ -1,0 +1,244 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import FeatureHero from "../components/FeatureHero.astro";
+import PartnerLogos from "../components/PartnerLogos.astro";
+import TwoColumnContent from "../components/TwoColumnContent.astro";
+import ProfileLayout from "../components/ProfileLayout.astro";
+import ProfileSocialCard from "../components/ProfileSocialCard.astro";
+import { Image } from "astro:assets";
+import DrCronin from "../assets/images/img-Dr-Cronin-Eye-Laser-Surgeon-Brisbane.webp";
+// import drCroninImage from "../assets/images/img-DrBrendanCroninOphthalmologi.jpg";
+import { getEntry } from "astro:content";
+import Schema from "../components/Schema.astro";
+import { getProfilePageSchema } from "../utils/seo";
+
+import drCroninImage from "../assets/images/dr-brendan-cronin-square.jpg";
+
+const authorData = await getEntry("authors", "brendan-cronin");
+
+const title = "About | Dr. Brendan Cronin | Focus Vision | Woolloongabba, QLD";
+const description = `Dr. Brendan Cronin is a skilled ophthalmologist specializing in advanced eye care and surgery. Contact us today to book your eye health consultation!`;
+const ogType = "website";
+---
+
+<BaseLayout
+	showCurve={false}
+	topColor="#ffffff"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+>
+	<Fragment slot="head-schema">
+		{
+			authorData && (
+				<Schema
+					item={getProfilePageSchema(
+						"/about-dr-brendan-cronin",
+						authorData,
+					)}
+				/>
+			)
+		}
+	</Fragment>
+	<FeatureHero textPosition="center" textColor="light" bottomColor="#FFFFFF">
+		<h1>About Dr Brendan Cronin</h1>
+	</FeatureHero>
+
+	<ProfileLayout>
+		<!-- 3. Place the image in the named "image" slot -->
+		<div slot="image">
+			<Image
+				src={drCroninImage}
+				alt="A professional headshot of Dr, Brendan Cronin"
+			/>
+			<ProfileSocialCard
+				websiteUrl="https://drbrendancronin.com.au/"
+				linkedinUrl="https://www.linkedin.com/in/brendan-cronin-301a776b/"
+			/>
+		</div>
+
+		<!-- 4. Place all your text content in the default slot -->
+		<h4>MBBS (Hons), DipOphthSci, B.Com, LLB, FRANZCO</h4>
+		<h2>
+			Dr Cronin is a Corneal & Anterior Segment Surgeon & the Director of
+			Education at the Queensland Eye Institute in Brisbane Australia.
+		</h2>
+
+		<p>
+			Dr Brendan Cronin is a Brisbane-based Corneal, Cataract and
+			Refractive Surgeon known for his expertise in <strong
+				>complex cataract surgery and advanced anterior segment disease</strong
+			>. He is the co-founder of Focus Vision. He grew up on the Gold
+			Coast and completed his medical and ophthalmic training in Brisbane
+			at the University of Queensland where he graduated from medicine
+			with honours. He completed his ophthalmic training in Brisbane and
+			then further trained in his subspecialty of Corneal, Refractive and
+			Anterior Segment Surgery at the prestigious <a
+				href="https://mft.nhs.uk/royal-eye/"
+				target="_blank"
+				rel="noopener noreferrer">Manchester Royal Eye Hospital</a
+			> in the United Kingdom.
+		</p>
+
+		<p>
+			Dr Cronin is a registered specialist with the <a
+				href="https://www.ahpra.gov.au"
+				target="_blank"
+				rel="noopener noreferrer"
+				>Australian Health Practitioner Regulatory Agency</a
+			> and is a member of The Royal Australian and New Zealand College of
+			Ophthalmologists (<a
+				href="https://www.ranzco.edu"
+				target="_blank"
+				rel="noopener noreferrer">RANZCO</a
+			>), The <a
+				href="https://www.asoeye.org"
+				target="_blank"
+				rel="noopener noreferrer">Australian Society of Ophthalmology</a
+			>, The <a
+				href="https://www.escrs.org"
+				target="_blank"
+				rel="noopener noreferrer"
+				>European Society of Cataract and Refractive Surgery</a
+			>, <a
+				href="https://ebaanz.org"
+				target="_blank"
+				rel="noopener noreferrer">The Cornea Society</a
+			>, and is a founding fellow of the World College of Refractive
+			Surgery and Visual Sciences.
+		</p>
+
+		<p>
+			His practice is focused on patients who require more than routine
+			care — including those with previous LASIK or laser vision
+			correction, irregular or diseased corneas, keratoconus, and
+			challenging cataracts where surgical precision and experience are
+			critical to achieving optimal outcomes.
+		</p>
+
+		<p>
+			While many surgeons perform cataract surgery, Dr Cronin is
+			frequently involved in <strong
+				>cases where standard approaches are not enough</strong
+			>.
+		</p>
+
+		<h3>A referral centre for complex cataract surgery</h3>
+
+		<p>
+			Dr Cronin has developed a reputation for managing <strong
+				>technically demanding cataract cases</strong
+			>, including:
+		</p>
+
+		<ul>
+			<li>
+				Cataract surgery after LASIK, PRK and other refractive
+				procedures
+			</li>
+			<li>Irregular corneas and keratoconus</li>
+			<li>High astigmatism requiring toric and advanced lens planning</li>
+			<li>
+				Premium intraocular lens cases requiring precise refractive
+				outcomes
+			</li>
+			<li>
+				Difficult or high-risk cataracts referred for specialist care
+			</li>
+		</ul>
+
+		<p>
+			These cases require careful planning, advanced diagnostics, and a
+			deep understanding of corneal optics — an area in which Dr Cronin
+			has subspecialty expertise.
+		</p>
+
+		<h3>Precision refractive outcomes</h3>
+
+		<p>
+			For patients seeking independence from glasses, cataract surgery is
+			no longer just about removing the cataract — it is a refractive
+			procedure.
+		</p>
+
+		<p>
+			Dr Cronin has a strong focus on <strong
+				>refractive cataract surgery</strong
+			>, using modern intraocular lens technology and detailed
+			pre-operative analysis to optimise visual outcomes. This includes
+			the use of toric, extended depth of focus (EDOF), and multifocal
+			lenses where appropriate, with a tailored approach based on each
+			patient's eye and visual goals.
+		</p>
+
+		<p>
+			This is why Dr Cronin offers Ray-Tracing LASIK at Focus Vision – he
+			demands the best technology and the best refractive outcomes for his
+			patients.
+		</p>
+
+		<h3>Training, research and leadership</h3>
+
+		<p>
+			Dr Cronin trained in Brisbane and completed advanced fellowship
+			training in Corneal, Refractive and Anterior Segment Surgery at the
+			internationally recognised Manchester Royal Eye Hospital in the
+			United Kingdom.
+		</p>
+
+		<p>
+			He is Director of Education at the Queensland Eye Institute and is
+			actively involved in teaching and training ophthalmologists. He has
+			participated in over 20 international clinical trials and holds an
+			international patent in corneal cross-linking technology. His work
+			reflects a continued commitment to advancing surgical techniques and
+			improving patient outcomes.
+		</p>
+
+		<h3>A surgeon's perspective — and a patient's</h3>
+
+		<p>
+			I have been the patient! I needed urgent eye surgery when I was a
+			medical student. Thankfully the surgery went very well and I
+			maintained excellent vision - thanks to modern ophthalmology!!
+			That's why I became an ophthalmologist. I fell in love with the
+			amazing technology and treatments we have available. But this means
+			I know what it is like to be in your position.
+		</p>
+
+		<p>
+			Even better - I have had laser eye surgery! Yes - I believe in the
+			safety and efficacy of the procedure so much that I have had it
+			myself.
+		</p>
+	</ProfileLayout>
+
+	<TwoColumnContent
+		imageSrc={DrCronin}
+		imageAlt="Brendan Cronin laser refractive surgery"
+		imagePosition="left"
+		backgroundColor="#FFFFFF"
+		stylePreset="Eggshell"
+	>
+		<h2>Areas of expertise</h2>
+		<ul>
+			<li>
+				Complex micro-incision cataract surgery (including post-LASIK
+				and irregular corneas)
+			</li>
+			<li>Refractive cataract surgery and premium intraocular lenses</li>
+			<li>Laser vision correction (LASIK, PRK, CLEAR, ICL)</li>
+			<li>Pterygium and ocular surface surgery</li>
+			<li>Implantable Collamer Lenses</li>
+			<li>
+				Keratoconus including CAIRS and advanced corneal collagen cross
+				linking
+			</li>
+		</ul>
+
+		<!-- You can add lists, buttons, etc. here -->
+	</TwoColumnContent>
+
+	<PartnerLogos />
+</BaseLayout>

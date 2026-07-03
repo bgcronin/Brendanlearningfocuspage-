@@ -1,0 +1,155 @@
+# Use DecapBridge PKCE auth (required)
+backend:
+  name: git-gateway
+  repo: bnrio/focusvision.com.au
+  branch: master
+  auth_type: pkce
+  base_url: https://auth.decapbridge.com
+  auth_endpoint: /sites/29bf32ec-67ea-4fd4-aff0-20cb2408a710/pkce
+  auth_token_endpoint: /sites/29bf32ec-67ea-4fd4-aff0-20cb2408a710/token
+  gateway_url: https://gateway.decapbridge.com
+
+  # See who did what (optional)
+  commit_messages:
+    create: Create {{collection}} “{{slug}}” - {{author-name}} <{{author-login}}> via DecapBridge
+    update: Update {{collection}} “{{slug}}” - {{author-name}} <{{author-login}}> via DecapBridge
+    delete: Delete {{collection}} “{{slug}}” - {{author-name}} <{{author-login}}> via DecapBridge
+    uploadMedia: Upload “{{path}}” - {{author-name}} <{{author-login}}> via DecapBridge
+    deleteMedia: Delete “{{path}}” - {{author-name}} <{{author-login}}> via DecapBridge
+    openAuthoring: Message {{message}} - {{author-name}} <{{author-login}}> via DecapBridge
+
+# Enable PKCE fields (optional, recommended)
+auth:
+  email_claim: email
+  first_name_claim: first_name
+  last_name_claim: last_name
+  avatar_url_claim: avatar_url
+
+# Better Decap + Bridge logo (optional)
+logo_url: https://decapbridge.com/decapcms-with-bridge.svg
+
+# Add site links in Decap CMS (optional)
+site_url: https://www.focusvision.com.au
+
+# This setting allows you to run the CMS locally during development
+local_backend: true
+
+# Enable editorial workflow
+# publish_mode: editorial_workflow
+
+# Media and Public Folder Setup
+# A global media_folder is required for the config to be valid.
+# Collection-specific settings will override this where needed.
+media_folder: "public/uploads"
+public_folder: "/uploads"
+media_folder_relative: true
+
+# Content Collections
+collections:
+  - name: "blog"
+    label: "Blog"
+    folder: "src/content/blog"
+    create: true
+    path: "{{slug}}/index"
+    media_folder: "images" # This is relative to the entry's path.
+    public_folder: "./images" # THE FIX: Use a placeholder to prevent duplication.
+    extension: "mdx"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - label: "Publish Date"
+        name: "date"
+        widget: "datetime"
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+      - { label: "Cover Image", name: "coverImage", widget: "image" }
+      - {
+          label: "Description",
+          name: "description",
+          widget: "text",
+          required: false,
+        }
+      - { label: "Body", name: "body", widget: "markdown" }
+      # Hidden fields are now populated by the custom script
+      - { label: "Author", name: "author", widget: "hidden" }
+      - { label: "Date Published", name: "datePublished", widget: "hidden" }
+      - { label: "Date Modified", name: "dateModified", widget: "hidden" }
+
+      # START: New Tags Field
+      - label: "Tags"
+        name: "tags"
+        widget: "relation"
+        collection: "tags"
+        file: "tags"
+        search_fields: ["tags.*.label"]
+        value_field: "tags.*.id"
+        display_fields: ["tags.*.label"]
+        multiple: true
+      # END: New Tags Field
+
+  # NEW: Site Settings Collection
+  - name: "settings"
+    label: "Site Settings"
+    editor: { preview: false }
+    files:
+      - label: "General Settings"
+        name: "general"
+        file: "src/data/site.json"
+        format: "json"
+        fields:
+          - { label: "Site Name", name: "name", widget: "string" }
+          - { label: "Site Description", name: "description", widget: "text" }
+          - { label: "Author", name: "author", widget: "string" }
+          - {
+              label: "Phone Number (Formatted)",
+              name: "phoneNumberText",
+              widget: "string",
+            }
+          - {
+              label: "Phone Number (Digits Only)",
+              name: "phoneNumber",
+              widget: "string",
+            }
+          - {
+              label: "Fax Number (Formatted)",
+              name: "faxNumberText",
+              widget: "string",
+            }
+          - { label: "Email Address", name: "email", widget: "string" }
+          - { label: "Facebook URL", name: "facebookUrl", widget: "string" }
+          - { label: "Instagram URL", name: "instagramUrl", widget: "string" }
+          - { label: "WhatsApp URL", name: "whatsappUrl", widget: "string" }
+          - label: "Location"
+            name: "location"
+            widget: "object"
+            fields:
+              - { label: "Latitude", name: "latitude", widget: "string" }
+              - { label: "Longitude", name: "longitude", widget: "string" }
+              - {
+                  label: "Street Address",
+                  name: "streetAddress",
+                  widget: "string",
+                }
+              - { label: "City/Suburb", name: "locality", widget: "string" }
+              - { label: "State/Region", name: "region", widget: "string" }
+              - { label: "Postal Code", name: "postalCode", widget: "string" }
+              - { label: "Country", name: "countryName", widget: "string" }
+
+  # START: New Tags Collection
+  - name: "tags"
+    label: "Tags"
+    editor: { preview: false }
+    files:
+      - file: "src/data/tags.json"
+        label: "Tags"
+        name: "tags"
+        fields:
+          - name: "tags"
+            label: "Tags"
+            widget: "list"
+            allow_add: true
+            fields:
+              - { label: "ID", name: "id", widget: "string" }
+              - { label: "Label", name: "label", widget: "string" }
+  # END: New Tags Collection

@@ -1,0 +1,465 @@
+---
+import siteInfo from "../data/site.json";
+// import "../styles/components/Footer.css";
+import { Image } from "astro:assets";
+import FooterLogo from "../assets/images/footer_white_logo.png";
+import SocialIcons from "../components/SocialIcons.astro";
+import Curve from "../components/Curve.astro";
+
+interface Props {
+	showCurve?: boolean;
+	topColor?: string;
+	bottomColor?: string;
+	direction?: "down" | "up";
+}
+
+const {
+	showCurve = true,
+	topColor = "#FFFFFF",
+	bottomColor = "transparent",
+	direction,
+} = Astro.props;
+---
+
+<style>
+	/* ======================================================= */
+	/* FOOTER STYLES                                           */
+	/* ======================================================= */
+	.site-footer {
+		background:
+			radial-gradient(
+				circle at 50% 0,
+				hsla(0, 0%, 100%, 0.12),
+				hsla(0, 0%, 100%, 0) 35%
+			),
+			radial-gradient(
+				circle at 50% 100%,
+				rgba(13, 20, 31, 0.4),
+				rgba(13, 20, 31, 0) 38%
+			),
+			linear-gradient(180deg, #1d314b, #131e2f);
+		color: #e0e0e0;
+		/* Main padding for top/bottom */
+		padding-top: 60px;
+		padding-bottom: 20px;
+		position: relative;
+		font-size: 16px;
+		font-weight: 400;
+	}
+
+	/* --- UPDATED RULES --- */
+	/* The following rules now use padding instead of max-width */
+
+	.footer-top {
+		padding-top: 60px;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 40px;
+		margin-bottom: 40px;
+		padding-right: 7vw;
+		padding-left: 7vw;
+	}
+
+	.footer-divider {
+		border: none;
+		height: 1px;
+		background-color: #3b506c;
+		margin: 20px 0;
+	}
+
+	.footer-bottom {
+		text-align: center;
+		font-size: 16px;
+		color: rgb(194, 219, 227);
+		padding-top: 20px;
+		padding-bottom: 20px;
+		padding-right: 7vw;
+		padding-left: 7vw;
+		font-weight: 300;
+	}
+
+	.footer-disclaimer {
+		margin-bottom: 10px;
+		font-style: italic;
+	}
+
+	/* === NEW: Style for contact links in the footer === */
+
+	.footer-contact-link {
+		color: #c2dbe3; /* Brighter white color */
+		text-decoration: underline; /* Removes the default underline */
+		transition: color 0.3s ease;
+	}
+
+	/* --- NO CHANGES BELOW THIS LINE --- */
+
+	.footer-col {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.footer-col h3 {
+		color: #fff;
+		font-size: 18px;
+		margin-bottom: 20px;
+		text-transform: uppercase;
+		letter-spacing: 1px;
+	}
+
+	.footer-logo-area .footer-logo {
+		width: 150px;
+		height: auto;
+		margin-bottom: 20px;
+	}
+
+	.footer-logo-area p {
+		font-size: 16px;
+		line-height: 1.6;
+		font-weight: 400;
+	}
+
+	.footer-address p,
+	.footer-contact p {
+		line-height: 1.8;
+		margin: 0 0 20px 0;
+		font-weight: 400;
+		display: flex;
+		gap: 12px;
+		align-items: flex-start;
+	}
+
+	.footer-contact p svg {
+		margin-top: 4px;
+		color: #c2dbe3;
+		width: 18px;
+		height: 18px;
+		flex-shrink: 0;
+	}
+
+	.footer-address strong {
+		color: #fff;
+		font-weight: 400;
+	}
+
+	.btn-whatsapp {
+		display: inline-block;
+		background-color: #3b506c;
+		color: #fff;
+		padding: 12px 20px;
+		border-radius: 25px;
+		text-decoration: none;
+		font-weight: 500;
+		text-align: center;
+		margin-bottom: 20px;
+		transition: background-color 0.3s ease;
+	}
+
+	.btn-whatsapp:hover {
+		background-color: #4a6384;
+	}
+
+	/* .footer-social {
+    display: flex;
+    gap: 15px;
+}
+
+.footer-social a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid #fff;
+    color: #fff;
+    border-radius: 50%;
+    text-decoration: none;
+    font-size: 18px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footer-social a:hover {
+    background-color: #fff;
+    color: #1a2a40;
+} */
+
+	.footer-nav {
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+	}
+
+	.footer-nav a {
+		color: #fff;
+		text-decoration: none;
+		position: relative;
+		width: fit-content;
+		font-weight: 400;
+	}
+
+	.footer-nav a:hover {
+		text-decoration: underline;
+	}
+
+	.footer-bottom a {
+		color: rgb(194, 219, 227);
+		text-decoration: none;
+	}
+	.footer-bottom a:hover {
+		text-decoration: underline;
+	}
+
+	.back-to-top {
+		position: fixed;
+		bottom: 30px;
+		right: 30px;
+		background-color: #3b506c;
+		color: #fff;
+		padding: 10px 15px;
+		border-radius: 4px;
+		text-decoration: none;
+		font-weight: 500;
+		font-size: 16px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		z-index: 500;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(20px);
+		transition:
+			opacity 0.4s ease,
+			transform 0.4s ease,
+			visibility 0.4s ease;
+	}
+	.back-to-top.is-visible {
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+	}
+	.back-to-top:hover {
+		transform: translateY(-5px);
+	}
+	.back-to-top .fa-chevron-up {
+		font-size: 12px;
+	}
+
+	/* ======================================================= */
+	/* RESPONSIVE BREAKPOINTS                                  */
+	/* ======================================================= */
+
+	/* For Tablets */
+	@media (max-width: 1024px) {
+		.footer-top {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	/* For Mobile Phones */
+	@media (max-width: 800px) {
+		.site-footer {
+			padding-top: 40px;
+			padding-bottom: 160px;
+		}
+		.footer-top,
+		.footer-bottom {
+			padding-right: 20px;
+			padding-left: 20px;
+			text-align: center;
+		}
+		.footer-top {
+			grid-template-columns: 1fr;
+			align-items: center;
+			gap: 40px;
+		}
+		.footer-nav {
+			align-items: center;
+		}
+		.footer-logo-area .footer-social {
+			display: flex;
+			justify-content: center;
+		}
+		.footer-contact p {
+			justify-content: center;
+		}
+		.back-to-top {
+			display: none !important;
+		}
+
+		.footer-logo-area .footer-logo {
+			margin: auto;
+		}
+	}
+
+	.shape-container {
+		/* Define the CSS variable for stroke thickness here */
+		--stroke-thickness: 6px;
+
+		/* This container can be placed at the top of your footer */
+		background-color: none; /* The dark background of your footer */
+		margin-bottom: 60px;
+	}
+
+	.curved-shape-svg {
+		width: 100%;
+		height: auto;
+		display: block; /* Removes any extra space below the SVG */
+	}
+
+	/* Style for the main light blue fill */
+	.svg-fill-path {
+		fill: #b4d1dc; /* Changed from #B4D1DC to transparent */
+	}
+
+	/* Style for the border line */
+	.svg-border-path {
+		fill: none; /* The border path should not be filled */
+		stroke: #4b8796; /* The border color */
+		stroke-width: var(--stroke-thickness); /* Uses the CSS variable */
+	}
+
+	/* Needed when the bend is acitivated  */
+	.site-footer {
+		padding-top: 0;
+	}
+</style>
+
+<footer class="site-footer" role="contentinfo">
+	{
+		showCurve && (
+			<Curve
+				topColor={topColor}
+				bottomColor={bottomColor}
+				direction={direction}
+			/>
+		)
+	}
+
+	<div class="footer-top">
+		<div class="footer-col footer-logo-area">
+			<Image
+				class="footer-logo"
+				src={FooterLogo}
+				alt="Focus Vision"
+				width="107"
+				height="96"
+			/>
+			<p>Enhancing Your World Through<br />Advanced Eye Care.</p>
+			<div class="footer-social">
+				<SocialIcons variant="footer" />
+			</div>
+		</div>
+
+		<div class="footer-col">
+			<h3>Navigation</h3>
+			<nav class="footer-nav">
+				<a href="/about-focus-vision">About Us</a>
+				<a href="/all-ophthalmology">Vision Correction</a>
+				<a href="/contact">Contact</a>
+				<a href="/free-refractive-outcomes-analyzer"
+					>Refractive Outcomes Analyzer</a
+				>
+			</nav>
+		</div>
+
+		<div class="footer-col footer-contact">
+			<h3>Get In Touch</h3>
+			<p>
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="lucide lucide-map-pin"
+					><path
+						d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
+					></path><circle cx="12" cy="10" r="3"></circle></svg
+				>
+				<span>
+					<strong>87 Ipswich Road</strong><br />
+					Woolloongabba QLD 4102
+				</span>
+			</p>
+			<p>
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="lucide lucide-phone"
+					><path
+						d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233a14 14 0 0 0 6.392 6.384"
+					></path></svg
+				>
+				<span>
+					Ph: <a
+						href={"tel:" + siteInfo.phoneNumber}
+						class="footer-contact-link"
+						target="_blank">{siteInfo.phoneNumberText}</a
+					><br />
+					Fax {siteInfo.faxNumberText}
+				</span>
+			</p>
+			<p>
+				<svg
+					width="24"
+					height="24"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="lucide lucide-mail"
+					><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
+					></path><rect width="20" height="16" x="2" y="4" rx="2"
+					></rect></svg
+				>
+				<span>
+					Email: <a
+						href="mailto:hello@focusvision.com.au?subject=Contact%20from%20Website"
+						class="footer-contact-link"
+						target="_blank">hello@focusvision.com.au</a
+					>
+				</span>
+			</p>
+			<a
+				href="https://wa.me/+61488847466"
+				target="_blank"
+				class="btn-whatsapp">Text us on WhatsApp</a
+			>
+		</div>
+
+		<div class="footer-col">
+			<h3>Legal Notice</h3>
+			<p style="font-weight: normal; line-height: 1.6; color: #a0a0a0;">
+				The content on this website is for informational purposes only
+				and is not a substitute for professional medical advice,
+				diagnosis, or treatment.
+			</p>
+		</div>
+	</div>
+
+	<hr class="footer-divider" />
+
+	<div class="footer-bottom">
+		<p>
+			All content © 2025 FOCUS VISION. All Rights Reserved. | AHPRA: {
+				siteInfo.ahpraNumber
+			} | <a href="/terms-conditions">Terms & Conditions</a> | <a
+				href="/privacy-policy">Privacy Policy</a
+			> | <a href="/disclaimers">Disclaimers</a>
+		</p>
+	</div>
+
+	<a href="#top" class="back-to-top" aria-label="Back to top">
+		<i class="fas fa-chevron-up"></i> TOP
+	</a>
+</footer>

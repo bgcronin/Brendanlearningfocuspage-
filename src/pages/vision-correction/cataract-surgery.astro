@@ -1,0 +1,342 @@
+---
+import TreatmentLayout from "../../layouts/TreatmentLayout.astro";
+import heroImage from "../../assets/images/hero/img-BrisbaneLaserEyeSurgeryFocus.jpg"; // Make sure to import your image
+import StyledList from "../../components/StyledList.astro";
+import BottomCTA from "../../components/BottomCTA.astro";
+import placeholder from "../../assets/images/placeholder.png";
+import twoColumnImageDrGunn from "../../assets/images/img-Dr2BGunn2BLaser2BSurgeon2BEye2BBrisbane.webp";
+
+import { Image } from "astro:assets";
+import Button from "../../components/Button.astro";
+import Card from "../../components/Card.astro";
+// Component imports will be added here
+import SimpleBanner from "../../components/SimpleBanner.astro";
+import CardGrid from "../../components/CardGrid.astro";
+import TwoColumnContent from "../../components/TwoColumnContent.astro";
+import Faq from "../../components/Faq.astro";
+import AboutUs from "../../components/AboutUs.astro";
+import YouTubeSection from "../../components/YouTubeSection.astro";
+import ReviewedBy from "../../components/ReviewedBy.astro";
+
+const faqs = [
+	{
+		q: "How much does premium cataract surgery cost in Brisbane?",
+		a: "At Focus Vision, premium cataract surgery costs range from <strong>$2,500 to $5,500 per eye</strong>, depending on the type of premium lens chosen and your private health insurance. If you have hospital cover that includes cataract surgery (Medicare item number 42702) for at least 12 months, your fund will contribute to theatre and anaesthetic fees. A detailed written quote is always provided before any procedure is booked — no surprises.",
+	},
+	{
+		q: "Does Medicare cover cataract surgery in Australia?",
+		a: "Yes. Cataract surgery is a Medicare-covered procedure under item number 42702 when clinically indicated. Medicare provides a rebate for the surgeon's fee, and private health insurance with hospital cover contributes to theatre and anaesthetic costs. The additional cost of premium lens upgrades (multifocal, EDOF, or toric lenses) is an out-of-pocket expense not covered by Medicare or health funds. Focus Vision provides a full written cost estimate before your procedure.",
+	},
+	{
+		q: "What is the difference between standard and premium cataract surgery?",
+		a: "Standard cataract surgery uses a basic monofocal lens — most patients still need reading glasses afterwards. Premium surgery uses multifocal, EDOF, or toric lenses that can correct distance, intermediate, and near vision, often eliminating the need for glasses entirely. The right lens depends on your lifestyle and visual demands.",
+	},
+	{
+		q: "Will I be awake during cataract surgery?",
+		a: "No! At Focus Vision, cataract surgery is performed under <strong>heavy twilight sedation</strong> delivered by a specialist anaesthetic doctor. Patients are deeply sedated and have no memory of the procedure. You will not experience pain — anaesthetic eye drops are also used so there are no needles around the eye. You arrive at the South Brisbane Day Hospital, meet the anaesthetic team, and wake up in recovery. The procedure itself takes less than 20 minutes per eye.",
+	},
+	{
+		q: "How long does cataract surgery recovery take?",
+		a: "Most patients notice improved vision within 24 to 48 hours of cataract surgery. You can typically return to light activities and driving within a few days, once your surgeon confirms your vision at your first follow-up appointment. Most patients return to work after 48 hours. Full visual stabilisation, particularly with premium multifocal lenses, can take a few weeks as brain adapts to the new lens optics.",
+	},
+	{
+		q: "Are both eyes treated on the same day?",
+		a: "This depends on whether you have a health fund or not. Generally, if you have a health fund the eyes are done on separate days. If you do not have a health insurance fund then you can have both eyes done on the same day or different days.",
+	},
+	{
+		q: "What types of premium intraocular lenses does Focus Vision offer?",
+		a: "Focus Vision offers a full range of premium intraocular lenses customised to each patient's lifestyle and visual needs, including Extended Depth of Focus (EDOF) lenses for excellent distance and intermediate vision with minimal halos, trifocal multifocal lenses for distance, intermediate and near vision, toric lenses to correct astigmatism, and combinations of these technologies. Our surgeons are key opinion leaders for leading ophthalmic device companies, meaning our patients access the latest available lens technology.",
+	},
+	{
+		q: "Why choose Focus Vision for cataract surgery in Brisbane?",
+		a: "At Focus Vision, all cataract surgery is performed by corneal subspecialists — Dr Brendan Cronin and Dr David Gunn — who have completed international fellowship training and who use the most advanced diagnostic and measurement technology available, including topography, biometry, and wavefront aberrometry. Focus Vision uses the free Refractive Outcomes Analyzer tool — developed by our own surgeons — to continuously benchmark outcomes against ESCRS international standards, ensuring you benefit from data-driven, rigorously measured surgical precision.",
+	},
+];
+
+const title = "Laser Eye Surgery | Focus Vision | Woolloongabba, QLD";
+const description = `Regain clear vision with advanced laser cataract surgery at Focus Vision—a safe, effective treatment tailored to you. Contact us today to book a consultation!`;
+
+const author = "Dr Brendan Cronin";
+const authorUrl = "/about-dr-brendan-cronin";
+const lastReviewed = "2026-05-03T00:00:00Z";
+
+import icon1 from "../../assets/images/cataract-surgery/img-Focus-Vision-Laser-Eye-Surgery-correct-astigmatism-clarity-lens-copy.webp";
+import icon2 from "../../assets/images/cataract-surgery/img-Focus-Vision-Laser-Eye-Surgery-correct-astigmatism-copy.webp";
+import icon3 from "../../assets/images/cataract-surgery/img-Focus-Vision-Laser-Eye-Surgery-Refractive-Lens-Exchange-copy.webp";
+import icon4 from "../../assets/images/cataract-surgery/img-Focus-Vision-Laser-Eye-Surgery-reading-glasses-copy.webp";
+
+import card2 from "../../assets/images/implantable-contact-lens/Focus+Vision+costs+of+Laser+Eye+Surgery+reading+glasses+copy.webp";
+import card1 from "../../assets/images/implantable-contact-lens/img-Focus+Vision+Laser+Eye+Surgery+ICL+implantable+contact+lenses+copy.webp";
+
+const ogType = "website";
+---
+
+<TreatmentLayout
+	showCurve={true}
+	topColor="#C2DBE3"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+	ogType={ogType}
+	title={title}
+	author={author}
+	authorUrl={authorUrl}
+	lastReviewed={lastReviewed}
+	pagePath="/vision-correction/cataract-surgery"
+	procedureName="Premium Cataract Surgery"
+	procedureDescription="Removal of the cloudy lens and implantation of premium intraocular lenses (e.g., EDOF or multifocal) to restore clarity and reduce glasses dependence."
+	faqs={faqs}
+	backgroundImage={heroImage}
+	textPosition="left"
+	textColor="dark"
+	heroBottomColor="#FFFFFF"
+	mobileImagePosition="85% 0%"
+	addOverlay={true}
+>
+	<Fragment slot="hero-content">
+		<h1>Cataract Surgery Brisbane <br /> Premium Lens Replacement</h1>
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h4>
+			Cataract removal surgery is a life-changing procedure using cutting
+			edge technology that removes the clouded lens and gives clear sight.
+			Health insurance may contribute to or cover the cost of your
+			surgery.
+		</h4>
+	</SimpleBanner>
+
+	<div class="basic-section" style="background-color: #f4f1ed">
+		<h3 class="big-text">
+			Advantages of “Premium” Cataract Surgery Brisbane
+		</h3>
+		<h4>
+			Premium Cataract Surgery offers several key advantages over
+			traditional cataract surgery:
+		</h4>
+
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#FFFFFF">
+			<Card layout="icon">
+				<Image
+					src={icon1}
+					alt="Gray circle on the left, black circle on the right with an arrow pointing from gray to black on a black background representing cataract surgery process"
+				/>
+				<h3>Improved Visual Clarity</h3>
+				<p>
+					Premium lenses are offered that can provide better visual
+					range and reduce the need for glasses after surgery.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={icon2}
+					alt="Stylized letter 'A' with blurry appearance before and clear after, representing improved vision after cataract surgery
+Illustration of a human eye focusing on the iris and pupil, representing cataract surgery"
+				/>
+				<h3>Correction of Astigmatism</h3>
+				<p>
+					Premium lenses can correct astigmatism, providing clearer
+					vision at all distances.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={icon3}
+					alt="Illustration of a human eye focusing on the iris and pupil, representing cataract surgery"
+				/>
+				<h3>Ultimate Choice</h3>
+				<p>
+					Not all lenses are made equal. At Focus Vision you will be
+					offered bespoke lens options that are customised to your
+					personal lifestyle and needs. Cataract surgery isn't and
+					shouldn't be one size fits all.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={icon4}
+					alt="Crossed-out glasses in a circle illustrating life without glasses thanks to cataract surgery"
+				/>
+				<h3>Potential for Glasses Independence</h3>
+				<p>
+					EDOF lenses provide a continuous range of clear vision,
+					especially for distance and intermediate vision, with fewer
+					halos and glare than traditional multifocal lenses.
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<YouTubeSection
+		videoId="v3MMS4JPB54"
+		title="Preparing for your cataract surgery appointment"
+		heading="Preparing for Your Assessment"
+		text="This video will help you to prepare for your appointment with your doctor at Focus Vision."
+	>
+		<Button href="/contact" text="Book A Free Assessment today" />
+	</YouTubeSection>
+
+	<TwoColumnContent
+		imageSrc={twoColumnImageDrGunn}
+		imageAlt="Dr. David Gunn examining a patient's eye with a machine before cataract surgery"
+		imagePosition="left"
+		backgroundColor="#FFFFFF"
+		stylePreset="White"
+	>
+		<h2>Experienced Surgeons that you can trust</h2>
+		<p>
+			Having eye surgery is often a worrying idea to many patients and
+			finding the right surgeon and team to trust with your eyesight is
+			crucial. At Focus Vision all our consultant anterior segment
+			surgeons have undergone extensive training both in Australia and
+			internationally so you can trust that your vision is in the most
+			experienced hands possible.
+		</p>
+
+		<Button
+			href="/about-focus-vision"
+			text="Read more about the Focus Team"
+			openInNewTab={false}
+		/>
+		<!-- You can add lists, Buttons, etc. here -->
+	</TwoColumnContent>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#C2DBE3"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h3>Technology Makes a Difference for Cataract Surgery</h3>
+		<p>
+			Choosing Focus Vision for your premium cataract surgery in Brisbane
+			means choosing a team that invests in the latest and best technology
+			and diagnostic devices available to ensure the highest possible
+			outcomes. The team at Focus Vision have some of the latest
+			topography, biometry and wavefront aberrometry devices available for
+			cataract surgery.
+		</p>
+		<p>
+			Our surgeons are key opinion leaders for leading commercial
+			ophthalmic companies. You can rest assured that by investing in your
+			vision at Focus, you are doing everything possible to maximise your
+			vision after surgery.
+		</p>
+	</SimpleBanner>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="transparent"
+		headerColor="#4C8897"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h2>Are You a Candidate for Premium Cataract Surgery?</h2>
+		<p>
+			Laser Cataract Surgery is ideal for individuals over 50 who are
+			experiencing vision problems due to cataracts. Candidates for
+			Premium cataract treatment should:
+		</p>
+		<StyledList position="left">
+			<li>Have blurred vision</li>
+			<li>Have cloudy lens</li>
+			<li>Have a significant cataract affecting their vision</li>
+			<li>
+				Be motivated to reduce or eliminate their dependence on glasses
+				or contact lenses
+			</li>
+		</StyledList>
+
+		<br />
+
+		<Button href="/contact" text="Schedlue a Consultation" />
+	</SimpleBanner>
+
+	<div class="basic-section" style="background-color: #f4f1ed">
+		<CardGrid backgroundColor="#F4F1ED" cardBackgroundColor="#f4f1ed">
+			<Card layout="icon">
+				<Image
+					src={card1}
+					alt="Healing eye icon illustrating care and vision correction after cataract surgery"
+				/>
+				<h3>The Premium Cataract Surgery Procedure</h3>
+				<p>
+					Cataract Eye Surgery is a safe and effective treatment that
+					typically takes less than 20 minutes per eye. Your operation
+					will be performed in an accredited day hospital with an eye
+					surgeon and a team of nurses looking after you. The
+					procedure is performed under topical and sedation which
+					means you will be heavily sedated and there is no use of
+					needles or anaesthetic blocks around the eye. In other
+					words, you comfortably sleep through the surgery and won't
+					experience any pain around your eye due to anaesthetic
+					drops.
+				</p>
+
+				<p>
+					During the procedure, the clouded natural lens is removed
+					and replaced with an artificial lens Most patients
+					experience improved vision immediately after the lens
+					replacement surgery, with minimal downtime.
+				</p>
+
+				<p>
+					During the initial consultation for cataract surgery,
+					patients experiencing vision impairment from a cataract that
+					forms may also be offered refractive lens exchange. This
+					procedure not only removes the cloudy lens but can also
+					correct vision using multifocal lenses. These lenses help
+					restore excellent distance vision as well as improve near
+					and intermediate vision, often reducing the need for
+					glasses.
+				</p>
+			</Card>
+
+			<Card layout="icon">
+				<Image
+					src={card2}
+					alt="Icon of money and finance symbols illustrating cataract surgery payment plans"
+				/>
+				<h3>Cost and Financing Options for Premium Cataract Surgery</h3>
+				<p>
+					The cost of laser assisted cataract surgery can vary
+					depending on individual factors such as the type of premium
+					lens chosen and any additional procedures required. If you
+					have health insurance that covers cataract surgery (Item
+					number 42702) for at least 12 months you will be able to use
+					this to fund some of your treatment. Our practice offers
+					transparent pricing and flexible financing options to make
+					Premium Cataract Surgery accessible to all patients. During
+					your consultation, we will provide you with a detailed cost
+					estimate based on your specific needs.
+				</p>
+			</Card>
+		</CardGrid>
+	</div>
+
+	<Faq title="Common questions about Premium Cataract Surgery:" faqs={faqs} />
+
+	<AboutUs backgroundColor="#F4F1ED" stylePreset="Eggshell" />
+
+	<ReviewedBy
+		author={author}
+		authorUrl={authorUrl}
+		lastReviewed={lastReviewed}
+	/>
+
+	<BottomCTA
+		h2Text="Ready to enjoy clear vision and improved quality of life?"
+		h3Text="Schedule a consultation with our experts today."
+		about="Premium Cataract Surgery"
+	/>
+</TreatmentLayout>

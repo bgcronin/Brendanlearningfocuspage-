@@ -1,0 +1,35 @@
+---
+// src/components/YouTubeEmbed.astro
+
+// Import ONLY the CSS for server-side rendering.
+// This prevents the JS from running on the server.
+import "lite-youtube-embed/src/lite-yt-embed.css";
+
+export interface Props {
+	videoId: string;
+	title: string;
+	params?: string; // Optional: for start time, controls, etc.
+}
+
+const { videoId, title, params } = Astro.props;
+
+// Create a new variable that always includes rel=0 to hide related videos.
+let finalParams = "rel=0";
+
+// If the user provides other params, append them.
+if (params) {
+	finalParams += `&${params}`;
+}
+---
+
+<lite-youtube videoid={videoId} videotitle={title} params={finalParams}>
+</lite-youtube>
+
+<!-- 
+  The client-side JavaScript is now loaded here.
+  Astro ensures this script only runs in the browser,
+  which is where HTMLElement is defined.
+-->
+<script>
+	import "lite-youtube-embed/src/lite-yt-embed.js";
+</script>

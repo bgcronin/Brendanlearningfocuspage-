@@ -1,0 +1,49 @@
+---
+// src/pages/blog/[slug].astro
+import { getCollection, render } from "astro:content";
+import BlogPostLayout from "../../layouts/BlogPostLayout.astro";
+import BlogCtaButton from "../../components/BlogCtaButton.astro";
+import TreatmentPrice from "../../components/TreatmentPrice.astro";
+import AuthorBox from "../../components/AuthorBox.astro";
+
+export async function getStaticPaths() {
+	const posts = await getCollection("blog");
+	return posts.map((post) => {
+		const slug = post.id.replace(/\.[^/.]+$/, "");
+		return {
+			params: { slug },
+			props: {
+				post,
+			},
+		};
+	});
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+// Fetch all posts again to pass to the layout for next/prev navigation
+// Sort by datePublished from frontmatter
+const allPosts = (await getCollection("blog"))
+	.map((p) => {
+		const slug = p.id.replace(/\.[^/.]+$/, "");
+		return {
+			...p,
+			id: slug, // Update id to be the slug for correct URL generation in layout
+		};
+	})
+	.sort(
+		(a, b) =>
+			new Date(b.data.datePublished).valueOf() -
+			new Date(a.data.datePublished).valueOf(),
+	);
+---
+
+<BlogPostLayout
+	frontmatter={post.data}
+	allPosts={allPosts}
+	slug={post.id.replace(/\.[^/.]+$/, "")}
+>
+	<Content components={{ BlogCtaButton, TreatmentPrice }} />
+	<AuthorBox authorId={post.data.author} />
+</BlogPostLayout>
