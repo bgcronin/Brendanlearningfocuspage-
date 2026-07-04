@@ -6634,6 +6634,115 @@
 
       const isToricRow = (r) => /toric/i.test(r.iolType || "");
 
+      // Shared astigmatism computations — used by both the Astigmatism &
+      // Toric tab and the PDF export so the two always report identical
+      // numbers.
+      function computeAstigSummary(d) {
+        const toric = d.filter(isToricRow);
+        const nonToric = d.filter((r) => !isToricRow(r));
+        const meanAbsCyl = (arr) =>
+          arr.length
+            ? arr.reduce((s, r) => s + Math.abs(r.cyl), 0) / arr.length
+            : null;
+        const pctLE = (arr, t) =>
+          arr.length
+            ? (100 * arr.filter((r) => Math.abs(r.cyl) <= t).length) /
+              arr.length
+            : null;
+        const cj0 = d.reduce((s, r) => s + r.j0, 0) / d.length;
+        const cj45 = d.reduce((s, r) => s + r.j45, 0) / d.length;
+        return {
+          n: d.length,
+          toric,
+          nonToric,
+          meanAll: meanAbsCyl(d),
+          meanToric: meanAbsCyl(toric),
+          meanNonToric: meanAbsCyl(nonToric),
+          le05: pctLE(d, 0.5),
+          le10: pctLE(d, 1.0),
+          le05T: pctLE(toric, 0.5),
+          le10T: pctLE(toric, 1.0),
+          cj0,
+          cj45,
+          cen: centroidToCyl(cj0, cj45),
+        };
+      }
+
+      function computeMisalignment(d) {
+        const pts = d
+          .filter((r) => r.toricIntAxis != null && r.toricImplAxis != null)
+          .map((r) => ({
+            mis: angularDiff(r.toricIntAxis, r.toricImplAxis),
+            cyl: Math.abs(r.cyl),
+            raw: r,
+          }));
+        if (!pts.length) return null;
+        const mvals = pts.map((m) => m.mis).sort((a, b) => a - b);
+        const mid = Math.floor(mvals.length / 2);
+        return {
+          pts,
+          n: pts.length,
+          mean: mvals.reduce((s, v) => s + v, 0) / mvals.length,
+          med:
+            mvals.length % 2 ? mvals[mid] : (mvals[mid - 1] + mvals[mid]) / 2,
+          pctLE5: (100 * mvals.filter((v) => v <= 5).length) / mvals.length,
+          pctLE10: (100 * mvals.filter((v) => v <= 10).length) / mvals.length,
+          max: mvals[mvals.length - 1],
+        };
+      }
+
+      function computeSIA(rows) {
+        const siaRows = rows.filter(
+          (r) =>
+            r.k1 != null &&
+            r.k2 != null &&
+            r.preKAxis != null &&
+            r.postK1 != null &&
+            r.postK2 != null &&
+            r.postKAxis != null,
+        );
+        if (!siaRows.length) return null;
+        const kaVec = (k1, k2, ax) => {
+          const C = Math.abs(k2 - k1);
+          const a = (ax * Math.PI) / 180;
+          return { x: C * Math.cos(2 * a), y: C * Math.sin(2 * a) };
+        };
+        const vecs = siaRows.map((r) => {
+          const pre = kaVec(r.k1, r.k2, r.preKAxis);
+          const post = kaVec(r.postK1, r.postK2, r.postKAxis);
+          return { x: post.x - pre.x, y: post.y - pre.y, eye: r.eye };
+        });
+        const group = (label, gv) => {
+          if (!gv.length) return null;
+          const mx = gv.reduce((s, v) => s + v.x, 0) / gv.length;
+          const my = gv.reduce((s, v) => s + v.y, 0) / gv.length;
+          let ax = ((Math.atan2(my, mx) / 2) * 180) / Math.PI;
+          ax = ((ax % 180) + 180) % 180;
+          return {
+            label,
+            n: gv.length,
+            mag: Math.hypot(mx, my),
+            axis: ax,
+            meanMag:
+              gv.reduce((s, v) => s + Math.hypot(v.x, v.y), 0) / gv.length,
+          };
+        };
+        return {
+          n: vecs.length,
+          groups: [
+            group("All eyes", vecs),
+            group(
+              "Right eyes",
+              vecs.filter((v) => v.eye === "R"),
+            ),
+            group(
+              "Left eyes",
+              vecs.filter((v) => v.eye === "L"),
+            ),
+          ].filter(Boolean),
+        };
+      }
+
       function renderAstigTab() {
         astigDirty = false;
         const d = filteredData.filter(
@@ -6659,45 +6768,32 @@
         clearEmptyState("card-astig-dap");
         clearEmptyState("card-astig-hist");
 
-        const toric = d.filter(isToricRow);
-        const nonToric = d.filter((r) => !isToricRow(r));
-        const meanAbsCyl = (arr) =>
-          arr.length
-            ? arr.reduce((s, r) => s + Math.abs(r.cyl), 0) / arr.length
-            : null;
-        const pctLE = (arr, t) =>
-          arr.length
-            ? (100 * arr.filter((r) => Math.abs(r.cyl) <= t).length) /
-              arr.length
-            : null;
-
-        const cj0 = d.reduce((s, r) => s + r.j0, 0) / d.length;
-        const cj45 = d.reduce((s, r) => s + r.j45, 0) / d.length;
-        const cen = centroidToCyl(cj0, cj45);
+        const A = computeAstigSummary(d);
+        const { toric, nonToric, cj0, cj45, cen } = A;
 
         buildKpiCards(strip, [
           {
             label: "Eyes with Astigmatism Data",
-            val: d.length,
+            val: A.n,
             sub: `${toric.length} toric · ${nonToric.length} non-toric`,
           },
           {
             label: "Mean Residual Cylinder",
-            val: `${fmt(meanAbsCyl(d))} D`,
+            val: `${fmt(A.meanAll)} D`,
             sub:
               toric.length && nonToric.length
-                ? `Toric ${fmt(meanAbsCyl(toric))} · Non-toric ${fmt(meanAbsCyl(nonToric))} D`
+                ? `Toric ${fmt(A.meanToric)} · Non-toric ${fmt(A.meanNonToric)} D`
                 : "",
           },
           {
             label: "Cylinder ≤ 0.50 D",
-            val: pct(pctLE(d, 0.5)),
-            sub: toric.length ? `Toric: ${pct(pctLE(toric, 0.5))}` : "of eyes",
+            val: pct(A.le05),
+            sub: toric.length ? `Toric: ${pct(A.le05T)}` : "of eyes",
           },
           {
             label: "Cylinder ≤ 1.00 D",
-            val: pct(pctLE(d, 1.0)),
-            sub: toric.length ? `Toric: ${pct(pctLE(toric, 1.0))}` : "of eyes",
+            val: pct(A.le10),
+            sub: toric.length ? `Toric: ${pct(A.le10T)}` : "of eyes",
           },
           {
             label: "Centroid Residual Astigmatism",
@@ -6909,37 +7005,23 @@
         });
 
         // ── Toric axis misalignment (optional columns) ──
-        const mis = d
-          .filter((r) => r.toricIntAxis != null && r.toricImplAxis != null)
-          .map((r) => ({
-            mis: angularDiff(r.toricIntAxis, r.toricImplAxis),
-            cyl: Math.abs(r.cyl),
-            raw: r,
-          }));
+        const M = computeMisalignment(d);
         const misStats = $("astig-misalign-stats");
-        if (!mis.length) {
+        if (!M) {
           misStats.innerHTML = "";
           setEmptyState(
             "card-astig-misalign",
-            "Toric alignment data not present.<br>Add the optional columns <strong>Toric_Intended_Axis_deg</strong> and <strong>Toric_Implanted_Axis_deg</strong> to your spreadsheet (or map them via “Remap columns”) to analyse rotational misalignment.",
+            "Toric alignment data not present.<br>Add the optional columns <strong>Toric_Intended_Axis_deg</strong> and <strong>Toric_Implanted_Axis_deg</strong> (included in the latest template) to your spreadsheet, or map them via “Remap columns”, to analyse rotational misalignment.",
           );
         } else {
           clearEmptyState("card-astig-misalign");
-          const mvals = mis.map((m) => m.mis).sort((a, b) => a - b);
-          const mMean = mvals.reduce((s, v) => s + v, 0) / mvals.length;
-          const mid = Math.floor(mvals.length / 2);
-          const mMed =
-            mvals.length % 2 ? mvals[mid] : (mvals[mid - 1] + mvals[mid]) / 2;
-          const pctLE5 =
-            (100 * mvals.filter((v) => v <= 5).length) / mvals.length;
-          const pctLE10 =
-            (100 * mvals.filter((v) => v <= 10).length) / mvals.length;
+          const mis = M.pts;
           misStats.innerHTML = `
-            <div class="polar-stat"><div class="polar-stat-val">${mis.length}</div><div class="polar-stat-lbl">Eyes</div></div>
-            <div class="polar-stat"><div class="polar-stat-val">${fmt(mMean, 1)}°</div><div class="polar-stat-lbl">Mean |misalignment|</div></div>
-            <div class="polar-stat"><div class="polar-stat-val">${fmt(mMed, 1)}°</div><div class="polar-stat-lbl">Median</div></div>
-            <div class="polar-stat"><div class="polar-stat-val">${Math.round(pctLE5)}%</div><div class="polar-stat-lbl">≤ 5°</div></div>
-            <div class="polar-stat"><div class="polar-stat-val">${Math.round(pctLE10)}%</div><div class="polar-stat-lbl">≤ 10°</div></div>`;
+            <div class="polar-stat"><div class="polar-stat-val">${M.n}</div><div class="polar-stat-lbl">Eyes</div></div>
+            <div class="polar-stat"><div class="polar-stat-val">${fmt(M.mean, 1)}°</div><div class="polar-stat-lbl">Mean |misalignment|</div></div>
+            <div class="polar-stat"><div class="polar-stat-val">${fmt(M.med, 1)}°</div><div class="polar-stat-lbl">Median</div></div>
+            <div class="polar-stat"><div class="polar-stat-val">${Math.round(M.pctLE5)}%</div><div class="polar-stat-lbl">≤ 5°</div></div>
+            <div class="polar-stat"><div class="polar-stat-val">${Math.round(M.pctLE10)}%</div><div class="polar-stat-lbl">≤ 10°</div></div>`;
           const misDatasets = [
             {
               label: "Eyes",
@@ -6954,7 +7036,7 @@
             mis.map((m) => m.cyl),
           );
           if (reg.m != null) {
-            const maxX = Math.max(...mvals, 10);
+            const maxX = Math.max(M.max, 10);
             misDatasets.push({
               label: `Trend (R²=${reg.r2.toFixed(2)})`,
               data: [
@@ -7006,53 +7088,21 @@
         }
 
         // ── Corneal SIA (optional pre/post K columns) ──
-        const siaRows = filteredData.filter(
-          (r) =>
-            r.k1 != null &&
-            r.k2 != null &&
-            r.preKAxis != null &&
-            r.postK1 != null &&
-            r.postK2 != null &&
-            r.postKAxis != null,
-        );
+        const S = computeSIA(filteredData);
         const siaBody = $("astig-sia-body");
-        if (!siaRows.length) {
-          siaBody.innerHTML = `<div class="empty-state">Corneal SIA requires pre- and post-operative keratometry with steep-meridian axes.<br>Optional columns: <strong>Pre_K1_D, Pre_K2_D, Pre_K_Steep_Axis_deg, Post_K1_D, Post_K2_D, Post_K_Steep_Axis_deg</strong> — map them via “Remap columns” if your file uses different headers.</div>`;
+        if (!S) {
+          siaBody.innerHTML = `<div class="empty-state">Corneal SIA requires pre- and post-operative keratometry with steep-meridian axes.<br>Optional columns (included in the latest template): <strong>Pre_K1_D, Pre_K2_D, Pre_K_Steep_Axis_deg, Post_K1_D, Post_K2_D, Post_K_Steep_Axis_deg</strong> — map them via “Remap columns” if your file uses different headers.</div>`;
         } else {
-          const kaVec = (k1, k2, ax) => {
-            const C = Math.abs(k2 - k1);
-            const a = (ax * Math.PI) / 180;
-            return { x: C * Math.cos(2 * a), y: C * Math.sin(2 * a) };
-          };
-          const siaVecs = siaRows.map((r) => {
-            const pre = kaVec(r.k1, r.k2, r.preKAxis);
-            const post = kaVec(r.postK1, r.postK2, r.postKAxis);
-            return { x: post.x - pre.x, y: post.y - pre.y, eye: r.eye };
-          });
-          const siaGroupRow = (label, vecs) => {
-            if (!vecs.length) return "";
-            const mx = vecs.reduce((s, v) => s + v.x, 0) / vecs.length;
-            const my = vecs.reduce((s, v) => s + v.y, 0) / vecs.length;
-            const mag = Math.hypot(mx, my);
-            let ax = ((Math.atan2(my, mx) / 2) * 180) / Math.PI;
-            ax = ((ax % 180) + 180) % 180;
-            const meanMag =
-              vecs.reduce((s, v) => s + Math.hypot(v.x, v.y), 0) / vecs.length;
-            return `<tr><td>${esc(label)}</td><td>${vecs.length}</td><td><strong>${fmt(mag)} D × ${Math.round(ax)}°</strong></td><td>${fmt(meanMag)} D</td></tr>`;
-          };
           siaBody.innerHTML = `
             <table class="sg-table" style="margin-top:6px">
               <thead><tr><th>Group</th><th>n</th><th>Centroid SIA</th><th>Mean |SIA|</th></tr></thead>
               <tbody>
-                ${siaGroupRow("All eyes", siaVecs)}
-                ${siaGroupRow(
-                  "Right eyes",
-                  siaVecs.filter((v) => v.eye === "R"),
-                )}
-                ${siaGroupRow(
-                  "Left eyes",
-                  siaVecs.filter((v) => v.eye === "L"),
-                )}
+                ${S.groups
+                  .map(
+                    (g) =>
+                      `<tr><td>${esc(g.label)}</td><td>${g.n}</td><td><strong>${fmt(g.mag)} D × ${Math.round(g.axis)}°</strong></td><td>${fmt(g.meanMag)} D</td></tr>`,
+                  )
+                  .join("")}
               </tbody>
             </table>
             <p style="margin-top:10px;font-size:.72rem;color:var(--text-muted);line-height:1.5">Centroid SIA (vector mean) is the value to use in toric IOL calculators. The mean magnitude includes random measurement noise and overstates the effective SIA — modern practice typically uses centroid values of ~0.1 D or the Abulafia-Koch regression.</p>`;
@@ -7736,11 +7786,47 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
         a.click();
       }
 
+      // The Astigmatism & Subgroups tabs render lazily, so their charts may
+      // not exist (or may be stale) when the PDF is generated. Render any
+      // hidden/dirty tab off-screen with animations disabled so every canvas
+      // holds a finished bitmap, and return a restore function.
+      async function prepareHiddenTabsForExport() {
+        const restore = [];
+        const prevAnim = Chart.defaults.animation;
+        Chart.defaults.animation = false;
+        [
+          ["astig", () => astigDirty, renderAstigTab],
+          ["subgroups", () => subgroupsDirty, renderSubgroupsTab],
+        ].forEach(([t, dirty, render]) => {
+          const panel = $("tab-" + t);
+          if (!panel) return;
+          const hidden = panel.style.display === "none";
+          if (hidden) {
+            restore.push([panel, panel.getAttribute("style")]);
+            panel.style.cssText =
+              "display:block;position:absolute;left:-10000px;top:0;width:1000px";
+          }
+          if (hidden || dirty()) render();
+        });
+        // Two frames: one for layout, one for the chart draw.
+        await new Promise((r) =>
+          requestAnimationFrame(() => requestAnimationFrame(r)),
+        );
+        return () => {
+          restore.forEach(([p, s]) =>
+            s == null ? p.removeAttribute("style") : p.setAttribute("style", s),
+          );
+          Chart.defaults.animation = prevAnim;
+        };
+      }
+
       async function exportPDF() {
         const btn = $("btn-export-pdf");
         btn.textContent = "⏳ Generating…";
         btn.disabled = true;
+        let restoreTabs = null;
         try {
+          restoreTabs = await prepareHiddenTabsForExport();
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({
             orientation: "portrait",
@@ -7794,7 +7880,7 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             pdf.text(lbl, x, y);
             pdf.setFontSize(10);
             pdf.setFont("helvetica", "bold");
-            pdf.setTextColor(0, 212, 255);
+            pdf.setTextColor(39, 102, 117);
             pdf.text(val, x, y + 5);
             pdf.setTextColor(0);
             pdf.setFontSize(7);
@@ -7837,6 +7923,226 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             pageY += imgH + 12;
           }
 
+          // ── Astigmatism & Toric Analysis section ──
+          const astigD = filteredData.filter(
+            (r) => r.j0 != null && r.j45 != null && r.cyl != null,
+          );
+          if (astigD.length) {
+            pdf.addPage();
+            let ay = 20;
+            pdf.setFontSize(12);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(27, 43, 75);
+            pdf.text("Astigmatism & Toric Analysis", 15, ay);
+            ay += 7;
+            const A = computeAstigSummary(astigD);
+            pdf.setFontSize(8);
+            pdf.setFont("helvetica", "normal");
+            pdf.setTextColor(60, 60, 60);
+            const astigLines = [
+              `Eyes with astigmatism data: ${A.n} (${A.toric.length} toric, ${A.nonToric.length} non-toric)`,
+              `Mean residual cylinder: ${fmt(A.meanAll)} D` +
+                (A.toric.length && A.nonToric.length
+                  ? `  (toric ${fmt(A.meanToric)} D · non-toric ${fmt(A.meanNonToric)} D)`
+                  : ""),
+              `Cylinder within 0.50 D: ${pct(A.le05)}` +
+                (A.toric.length ? ` (toric ${pct(A.le05T)})` : "") +
+                `   ·   Cylinder within 1.00 D: ${pct(A.le10)}` +
+                (A.toric.length ? ` (toric ${pct(A.le10T)})` : ""),
+              `Centroid residual astigmatism: ${fmt(A.cen.cylMag)} D × ${Math.round(A.cen.axis)}° (${A.cen.cls})`,
+            ];
+            astigLines.forEach((l) => {
+              pdf.text(l, 15, ay);
+              ay += 4.5;
+            });
+            ay += 4;
+
+            const astigCharts = [
+              {
+                key: "astig-dap",
+                title: "Double-Angle Plot - 95% Confidence Ellipses",
+              },
+              {
+                key: "astig-hist",
+                title: "Residual Cylinder - Toric vs Non-Toric",
+              },
+              { key: "astig-misalign", title: "Toric IOL Axis Misalignment" },
+            ];
+            for (const { key, title } of astigCharts) {
+              const ch = charts[key];
+              if (!ch) continue;
+              const c = ch.canvas;
+              const imgData = c.toDataURL("image/png", 0.9);
+              const ratio = c.width / c.height;
+              const imgW = 85,
+                imgH = imgW / ratio;
+              if (ay + imgH > 275) {
+                pdf.addPage();
+                ay = 20;
+              }
+              pdf.setFontSize(8);
+              pdf.setFont("helvetica", "bold");
+              pdf.setTextColor(0);
+              pdf.text(title, 15, ay);
+              ay += 2;
+              pdf.addImage(imgData, "PNG", 15, ay, imgW, imgH);
+              ay += imgH + 10;
+            }
+
+            const M = computeMisalignment(astigD);
+            if (M) {
+              if (ay > 265) {
+                pdf.addPage();
+                ay = 20;
+              }
+              pdf.setFontSize(8);
+              pdf.setFont("helvetica", "normal");
+              pdf.setTextColor(60, 60, 60);
+              pdf.text(
+                `Toric axis misalignment (n=${M.n}): mean ${fmt(M.mean, 1)}° · median ${fmt(M.med, 1)}° · ${Math.round(M.pctLE5)}% within 5° · ${Math.round(M.pctLE10)}% within 10° · max ${fmt(M.max, 1)}°`,
+                15,
+                ay,
+              );
+              ay += 7;
+            }
+
+            const S = computeSIA(filteredData);
+            if (S) {
+              if (ay > 250) {
+                pdf.addPage();
+                ay = 20;
+              }
+              pdf.setFontSize(9);
+              pdf.setFont("helvetica", "bold");
+              pdf.setTextColor(0);
+              pdf.text("Corneal Surgically Induced Astigmatism (SIA)", 15, ay);
+              ay += 5;
+              pdf.setFontSize(8);
+              pdf.text("Group", 15, ay);
+              pdf.text("n", 70, ay, { align: "right" });
+              pdf.text("Centroid SIA", 110, ay, { align: "right" });
+              pdf.text("Mean |SIA|", 145, ay, { align: "right" });
+              ay += 1.5;
+              pdf.setDrawColor(197, 213, 224);
+              pdf.setLineWidth(0.3);
+              pdf.line(15, ay, 150, ay);
+              ay += 4;
+              pdf.setFont("helvetica", "normal");
+              pdf.setTextColor(60, 60, 60);
+              S.groups.forEach((gr) => {
+                pdf.text(gr.label, 15, ay);
+                pdf.text(String(gr.n), 70, ay, { align: "right" });
+                pdf.text(
+                  `${fmt(gr.mag)} D × ${Math.round(gr.axis)}°`,
+                  110,
+                  ay,
+                  {
+                    align: "right",
+                  },
+                );
+                pdf.text(`${fmt(gr.meanMag)} D`, 145, ay, { align: "right" });
+                ay += 4.5;
+              });
+              ay += 1;
+              pdf.setFontSize(7);
+              pdf.setTextColor(120, 120, 120);
+              pdf.text(
+                "Centroid SIA (vector mean) is the value to use in toric calculators; the mean magnitude overstates effective SIA.",
+                15,
+                ay,
+              );
+            }
+          }
+
+          // ── Subgroup Analysis section ──
+          if (lastSubgroupRows.length) {
+            const bySel = $("subgroup-by");
+            const byLabel = bySel
+              ? bySel.options[bySel.selectedIndex].text
+              : "";
+            pdf.addPage();
+            let sy = 20;
+            pdf.setFontSize(12);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(27, 43, 75);
+            pdf.text(`Subgroup Analysis - by ${byLabel}`, 15, sy);
+            sy += 8;
+
+            const sgChart = charts["subgroups"];
+            if (sgChart) {
+              const c = sgChart.canvas;
+              const imgData = c.toDataURL("image/png", 0.9);
+              const ratio = c.width / c.height;
+              const imgW = 170,
+                imgH = imgW / ratio;
+              pdf.addImage(imgData, "PNG", 15, sy, imgW, imgH);
+              sy += imgH + 10;
+            }
+
+            // Text table mirroring the on-screen subgroup statistics
+            const cols = [
+              { h: "Subgroup", x: 15, align: "left" },
+              { h: "n", x: 88, align: "right" },
+              { h: "Mean PE", x: 103, align: "right" },
+              { h: "SD", x: 116, align: "right" },
+              { h: "MAE", x: 129, align: "right" },
+              { h: "MedAE", x: 144, align: "right" },
+              { h: "% ±0.50 D", x: 163, align: "right" },
+              { h: "% ±1.00 D", x: 182, align: "right" },
+            ];
+            const num2 = (v, suffix = "") =>
+              v == null || isNaN(v) ? "-" : v.toFixed(suffix ? 1 : 2) + suffix;
+            if (sy > 250) {
+              pdf.addPage();
+              sy = 20;
+            }
+            pdf.setFontSize(8);
+            pdf.setFont("helvetica", "bold");
+            pdf.setTextColor(0);
+            cols.forEach((col) =>
+              pdf.text(col.h, col.x, sy, { align: col.align }),
+            );
+            sy += 1.5;
+            pdf.setDrawColor(197, 213, 224);
+            pdf.setLineWidth(0.3);
+            pdf.line(15, sy, 195, sy);
+            sy += 4;
+            pdf.setFont("helvetica", "normal");
+            lastSubgroupRows.forEach((r) => {
+              if (sy > 275) {
+                pdf.addPage();
+                sy = 20;
+              }
+              const isTotal = r.label === "All filtered eyes";
+              pdf.setFont("helvetica", isTotal ? "bold" : "normal");
+              pdf.setTextColor(
+                r.flag ? 192 : 60,
+                r.flag ? 64 : 60,
+                r.flag ? 64 : 60,
+              );
+              const label =
+                (r.flag ? "! " : "") +
+                (r.label.length > 42 ? r.label.slice(0, 41) + "…" : r.label);
+              pdf.text(label, 15, sy);
+              pdf.text(String(r.n), 88, sy, { align: "right" });
+              pdf.text(num2(r.mpe), 103, sy, { align: "right" });
+              pdf.text(num2(r.sd), 116, sy, { align: "right" });
+              pdf.text(num2(r.mae), 129, sy, { align: "right" });
+              pdf.text(num2(r.medae), 144, sy, { align: "right" });
+              pdf.text(num2(r.w50, "%"), 163, sy, { align: "right" });
+              pdf.text(num2(r.w100, "%"), 182, sy, { align: "right" });
+              sy += 4.5;
+            });
+            sy += 2;
+            pdf.setFontSize(7);
+            pdf.setTextColor(120, 120, 120);
+            pdf.text(
+              "! = mean prediction error deviates from the overall cohort by more than 0.25 D (n >= 10) - possible systematic bias.",
+              15,
+              sy,
+            );
+          }
+
           // Footer on every page
           const totalPages = pdf.internal.getNumberOfPages();
           for (let p = 1; p <= totalPages; p++) {
@@ -7863,6 +8169,7 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
         } catch (err) {
           alert("PDF export failed: " + err.message);
         }
+        if (restoreTabs) restoreTabs();
         btn.textContent = "⬇ Export PDF";
         btn.disabled = false;
       }
