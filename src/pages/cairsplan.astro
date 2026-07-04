@@ -1,0 +1,238 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SimpleBanner from "../components/SimpleBanner.astro";
+import Section from "../components/Section.astro";
+import CardGrid from "../components/CardGrid.astro";
+import Card from "../components/Card.astro";
+import Button from "../components/Button.astro";
+import Faq from "../components/Faq.astro";
+import ReviewedBy from "../components/ReviewedBy.astro";
+import Schema from "../components/Schema.astro";
+import {
+	getMedicalClinicSchema,
+	getMedicalWebPageSchema,
+	getBreadcrumbSchema,
+	SITE_URL,
+} from "../utils/seo";
+
+const title = "CAIRSPlan — CAIRS Surgery Planning for Keratoconus";
+const description =
+	"CAIRSPlan is the free CAIRS surgery planning resource created by Dr David Gunn and Dr Brendan Cronin of Focus Vision Brisbane — the team that introduced corneal allogenic intrastromal ring segments (CAIRS) to Australia and authored the Brisbane nomogram. Learn what CAIRS is, then open the planner.";
+const lastReviewed = "2026-07-04";
+
+const cairsplanFeatures = [
+	{
+		title: "Built By The Surgeons Who Introduced CAIRS To Australia",
+		text: "CAIRSPlan was created by Dr David Gunn and Dr Brendan Cronin, who introduced corneal allogenic intrastromal ring segment surgery to Australia and teach the technique internationally.",
+	},
+	{
+		title: "The Brisbane Nomogram",
+		text: "The planner is built around the Brisbane nomogram for femtosecond-laser CAIRS, developed and refined at Focus Vision and the Queensland Eye Institute.",
+	},
+	{
+		title: "Free For Surgeons Worldwide",
+		text: "Like our Refractive Outcomes Analyzer, CAIRSPlan is offered free to the global ophthalmology community — used by corneal surgeons around the world to plan customised CAIRS treatment.",
+	},
+];
+
+const faqs = [
+	{
+		q: "What is CAIRS?",
+		a: "CAIRS stands for Corneal Allogenic Intrastromal Ring Segments — segments of sterilised donor corneal tissue implanted within the cornea to reshape and support it, most commonly for keratoconus. The technique was first described by Dr Soosan Jacob in 2018. Because the segments are human tissue rather than synthetic plastic, they integrate well within the cornea and can be customised to each patient's disease pattern.",
+	},
+	{
+		q: "How is CAIRS different from synthetic ring segments (ICRS)?",
+		a: "Traditional intracorneal ring segments (such as synthetic PMMA rings) can carry risks of extrusion, inflammation or infection in some eyes. CAIRS uses allogenic (donor) corneal tissue instead, which offers better biocompatibility, can be placed at more effective depths, and can be customised in size and shape. For many patients CAIRS can improve corneal shape and vision while avoiding or delaying corneal transplantation.",
+	},
+	{
+		q: "What is CAIRSPlan?",
+		a: 'CAIRSPlan (<a href="https://cairsplan.com" target="_blank" rel="noopener">cairsplan.com</a>) is a free online surgical planning resource for CAIRS surgery, created by Dr David Gunn and Dr Brendan Cronin of Focus Vision, Brisbane. It helps corneal surgeons plan customised CAIRS treatment based on the Brisbane nomogram for femtosecond-laser-assisted CAIRS, and is used by surgeons globally.',
+	},
+	{
+		q: "Who is CAIRSPlan for?",
+		a: "CAIRSPlan is a professional tool intended for ophthalmic surgeons planning CAIRS procedures. It is not a patient self-assessment tool. If you are a patient with keratoconus, the right starting point is a consultation with a corneal specialist who can assess whether CAIRS, corneal cross-linking, or another treatment is appropriate for your eyes.",
+	},
+	{
+		q: "Is CAIRSPlan free to use?",
+		a: "Yes. Focus Vision provides CAIRSPlan free to the global ophthalmology community, in the same spirit as our free Refractive Outcomes Analyzer. Sharing the tools we build is part of how we contribute to better outcomes for patients everywhere — not just in Brisbane.",
+	},
+	{
+		q: "Does Focus Vision perform CAIRS surgery?",
+		a: 'Yes. Keratoconus care — including CAIRS and advanced corneal collagen cross-linking — is a special interest of Dr Brendan Cronin at Focus Vision in Brisbane. If you have keratoconus and would like to know whether CAIRS is an option for you, <a href="/contact">book an assessment</a> with our team.',
+	},
+	{
+		q: "Is CAIRS suitable for everyone with keratoconus?",
+		a: "No single treatment suits every keratoconic eye. Depending on the stage and pattern of your keratoconus, options may include corneal collagen cross-linking to halt progression, CAIRS to improve corneal shape, specialty contact lenses, or in advanced cases corneal transplantation. A corneal specialist assessment — including corneal tomography — is needed to determine the right pathway for your eyes.",
+	},
+];
+
+const graph = [
+	getMedicalClinicSchema(),
+	{
+		...getMedicalWebPageSchema(
+			"/cairsplan",
+			title,
+			description,
+			undefined,
+			lastReviewed,
+			lastReviewed,
+		),
+		alternateName: ["CAIRS Plan", "CAIRS Planner", "CAIRS planning software"],
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "SoftwareApplication",
+		"@id": "https://cairsplan.com/#app",
+		name: "CAIRSPlan",
+		alternateName: ["CAIRS Plan", "cairsplan.com"],
+		url: "https://cairsplan.com",
+		applicationCategory: "MedicalApplication",
+		operatingSystem: "Any (web browser)",
+		isAccessibleForFree: true,
+		offers: { "@type": "Offer", price: "0", priceCurrency: "AUD" },
+		description:
+			"Free online surgical planning resource for corneal allogenic intrastromal ring segment (CAIRS) surgery for keratoconus, based on the Brisbane nomogram for femtosecond-laser CAIRS.",
+		author: [
+			{
+				"@type": ["Person", "Physician"],
+				"@id": `${SITE_URL}/about-dr-david-gunn#person`,
+				name: "Dr David Gunn",
+				url: `${SITE_URL}/about-dr-david-gunn`,
+			},
+			{
+				"@type": ["Person", "Physician"],
+				"@id": `${SITE_URL}/about-dr-brendan-cronin#person`,
+				name: "Dr Brendan Cronin",
+				url: `${SITE_URL}/about-dr-brendan-cronin`,
+			},
+		],
+		publisher: { "@id": `${SITE_URL}/#org` },
+		mainEntityOfPage: `${SITE_URL}/cairsplan`,
+	},
+	getBreadcrumbSchema([
+		{
+			name: "CAIRSPlan — CAIRS Surgery Planning",
+			item: "/cairsplan",
+		},
+	]),
+];
+---
+
+<BaseLayout
+	title={title}
+	showCurve={false}
+	topColor="#f4f1ed"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+>
+	<Fragment slot="head-schema">
+		<Schema item={graph} />
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#ffffff"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+		padding="large"
+	>
+		<h1>CAIRSPlan: CAIRS Surgery Planning for Keratoconus</h1>
+		<p>
+			<a href="https://cairsplan.com" target="_blank" rel="noopener"
+				>CAIRSPlan</a
+			> is the free online planning resource for <strong
+				>Corneal Allogenic Intrastromal Ring Segment (CAIRS)</strong
+			> surgery — created by Focus Vision's surgeons, Dr David Gunn and Dr
+			Brendan Cronin, the team that introduced CAIRS to Australia and authored
+			the Brisbane nomogram for femtosecond-laser CAIRS.
+		</p>
+		<p>
+			Corneal surgeons around the world use CAIRSPlan to plan customised
+			CAIRS treatment for keratoconus. Like our
+			<a href="/free-refractive-outcomes-analyzer"
+				>Refractive Outcomes Analyzer</a
+			>, it is free, and always will be.
+		</p>
+		<Button
+			href="https://cairsplan.com"
+			text="Open CAIRSPlan"
+			openInNewTab={true}
+		/>
+	</SimpleBanner>
+
+	<Section backgroundColor="#f4f1ed" paddingTop="med">
+		<h2 class="big-text">Why CAIRSPlan Exists</h2>
+		<CardGrid
+			backgroundColor="#f4f1ed"
+			cardBackgroundColor="#ffffff"
+			alignCards={true}
+		>
+			{
+				cairsplanFeatures.map((feature) => (
+					<Card>
+						<h3>{feature.title}</h3>
+						<p>{feature.text}</p>
+					</Card>
+				))
+			}
+		</CardGrid>
+	</Section>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#ffffff"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h2>What Is CAIRS?</h2>
+		<p>
+			CAIRS — corneal allogenic intrastromal ring segments — are segments
+			of donor corneal tissue implanted within the cornea to reshape and
+			strengthen it in conditions such as keratoconus. First described by
+			Dr Soosan Jacob in 2018, CAIRS offers a tissue-based alternative to
+			synthetic ring segments, with excellent biocompatibility, and for
+			many patients it can improve vision while avoiding or delaying a
+			corneal transplant.
+		</p>
+		<p>
+			At Focus Vision, keratoconus care — including CAIRS and advanced
+			corneal collagen cross-linking — is a special interest of
+			<a href="/about-dr-brendan-cronin">Dr Brendan Cronin</a>, who
+			teaches corneal surgery techniques to ophthalmologists
+			internationally.
+		</p>
+	</SimpleBanner>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="#C2DBE3"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+		padding="large"
+	>
+		<h2>Are You a Patient With Keratoconus?</h2>
+		<p>
+			CAIRSPlan is a professional tool for surgeons — but the expertise
+			behind it is available to you in person. If you have keratoconus
+			and want to know whether CAIRS, cross-linking or another treatment
+			is right for your eyes, our Brisbane team can help.
+		</p>
+		<Button href="/contact" text="Book a Keratoconus Assessment" />
+	</SimpleBanner>
+
+	<Faq
+		title="CAIRS & CAIRSPlan — Frequently Asked Questions"
+		faqs={faqs}
+		style="eggshell"
+	/>
+
+	<ReviewedBy
+		author="Dr Brendan Cronin"
+		authorUrl="/about-dr-brendan-cronin"
+		lastReviewed={lastReviewed}
+	/>
+</BaseLayout>
