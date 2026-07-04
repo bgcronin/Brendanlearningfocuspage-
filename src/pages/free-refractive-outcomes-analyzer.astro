@@ -62,6 +62,18 @@ const analyzerFeatures = [
 		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8m0 8v4m0-8h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"/></g></svg>`,
 	},
 	{
+		title: "Toric & SIA Analysis",
+		text: "Analyses toric IOL outcomes — residual astigmatism with 95% confidence ellipses, axis misalignment, and corneal surgically induced astigmatism (SIA)",
+		icon: "compass",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76l-2.12 6.36l-6.36 2.12l2.12-6.36z"/></g></svg>`,
+	},
+	{
+		title: "Subgroup Analysis",
+		text: "Breaks results down by axial length, IOL model, formula, IOL type, eye and age band — and flags subgroups with systematic bias",
+		icon: "bar-chart",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><rect x="7" y="10" width="3" height="8"/><rect x="13" y="6" width="3" height="12"/><rect x="19" y="12" width="3" height="6"/></g></svg>`,
+	},
+	{
 		title: "Performance Tracking",
 		text: "Tracks outcomes over time to detect learning curves and equipment changes",
 		icon: "history",
@@ -118,7 +130,15 @@ const faqs = [
 	},
 	{
 		q: "What file format does the analyzer accept?",
-		a: "The analyzer accepts .xlsx and .xls (Microsoft Excel) files. A free downloadable template is provided on the tool page. The template contains all required column headers, dropdown validations, and auto-calculated fields for spherical equivalent and prediction error.",
+		a: "The analyzer accepts .xlsx and .xls (Microsoft Excel) files as well as .csv files. A free downloadable template is provided on the tool page — it contains all required column headers, dropdown validations, and auto-calculated fields for spherical equivalent and prediction error. You do not have to use the template: if your spreadsheet uses different column names, a built-in column-mapping step lets you match your headers to the analyzer's fields.",
+	},
+	{
+		q: "My spreadsheet doesn't use the template headers — can I still use the analyzer?",
+		a: "Yes. The analyzer first tries to recognise your column names automatically, including common variants such as MRN, UCVA, Sphere, Cyl and Axial Length. If any required field cannot be matched, a column-mapping dialog opens where you match each analyzer field to a column in your file, with a live sample value shown for each column. You can also re-open the mapping at any time via the 'Remap columns' link after import. The mapping applies to your session only — nothing is stored or transmitted.",
+	},
+	{
+		q: "Can I use US-format data — 20/20 Snellen, plus-cylinder refractions, MM/DD dates?",
+		a: "Yes. The tool page has data-format settings for date format (auto-detect, DD/MM/YYYY, or MM/DD/YYYY), cylinder convention (minus or plus cylinder — plus-cylinder refractions are converted to minus-cylinder form on import so all analysis uses one convention), and Snellen notation (6/6 metric or 20/20 US) for chart labels. Eye laterality is recognised automatically whether recorded as R/L, OD/OS, or Right/Left.",
 	},
 	{
 		q: "How many eyes do I need for the analysis to be meaningful?",
@@ -138,7 +158,7 @@ const faqs = [
 	},
 	{
 		q: "What is a double-angle plot (DAP) and what does it show?",
-		a: "A double-angle plot, also called a power vector or Alpins vector diagram, plots each eye's residual astigmatism as a point in a two-dimensional space (J0 vs J45 power vectors). The centroid of the distribution reveals systematic astigmatic bias — for example, a systematic against-the-rule shift in toric IOL alignment. It is the standard method for astigmatism outcomes reporting in the refractive surgery literature, based on the Alpins power vector methodology.",
+		a: "A double-angle plot, also called a power vector or Alpins vector diagram, plots each eye's residual astigmatism as a point in a two-dimensional space (J0 vs J45 power vectors). The centroid of the distribution reveals systematic astigmatic bias — for example, a systematic against-the-rule shift in toric IOL alignment. The analyzer draws a data-driven 95% confidence ellipse of the centroid and a 95% tolerance ellipse of the dataset, classifies the centroid as with-the-rule, against-the-rule or oblique, and compares toric and non-toric eyes. It is the standard method for astigmatism outcomes reporting in the refractive surgery literature, based on the Alpins power vector methodology.",
 	},
 	{
 		q: 'What does "within ±0.50 D" mean and what benchmark should I aim for?',

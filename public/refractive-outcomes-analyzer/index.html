@@ -15,7 +15,7 @@
     <title>Focus Vision Refractive Outcomes Analyzer</title>
     <meta
       name="description"
-      content="Free browser-based refractive outcomes analyzer for cataract and lens surgeons: prediction-error metrics, cumulative UDVA curves, double-angle astigmatism plots and IOL lens constant optimisation (Barrett Universal II, SRK/T, Kane, Holladay 2, EVO). No sign-up — your data never leaves your device."
+      content="Free browser-based refractive outcomes analyzer for cataract and lens surgeons: prediction-error metrics, toric and astigmatism analysis, subgroup analysis, and IOL lens constant optimisation (Barrett Universal II, SRK/T, Kane, Holladay 2, EVO). Excel or CSV import, no sign-up — your data never leaves your device."
     />
     <link
       rel="canonical"
@@ -1899,6 +1899,212 @@
         justify-content: center;
         font-size: 0.8rem;
       }
+      /* DATA FORMAT SETTINGS */
+      .settings-card {
+        margin-top: 14px;
+        padding: 14px 16px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-light);
+        border-radius: var(--radius);
+      }
+      .settings-card-title {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 10px;
+      }
+      .settings-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+      }
+      .settings-lbl {
+        font-size: 0.78rem;
+        color: var(--text-secondary);
+      }
+      .settings-note {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        margin-top: 6px;
+        line-height: 1.5;
+      }
+      .seg-group {
+        display: inline-flex;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+      }
+      .seg-btn {
+        border: none;
+        background: transparent;
+        padding: 5px 10px;
+        font-family: "Manrope", sans-serif;
+        font-size: 0.72rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: background var(--transition);
+      }
+      .seg-btn + .seg-btn {
+        border-left: 1px solid var(--border-light);
+      }
+      .seg-btn.active {
+        background: rgba(39, 102, 117, 0.16);
+        color: var(--accent-cyan);
+        font-weight: 700;
+      }
+      .seg-btn:hover:not(.active) {
+        background: var(--bg-elevated);
+      }
+
+      /* COLUMN MAPPING MODAL */
+      #map-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(5, 28, 53, 0.55);
+        backdrop-filter: blur(3px);
+        z-index: 3000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .map-modal {
+        background: var(--bg-base);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 20px 60px rgba(5, 28, 53, 0.35);
+        max-width: 720px;
+        width: 100%;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+      }
+      .map-modal-header {
+        padding: 18px 22px 10px;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .map-modal-header h3 {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 1.05rem;
+        color: var(--text-primary);
+      }
+      .map-modal-header p {
+        font-size: 0.76rem;
+        color: var(--text-secondary);
+        margin-top: 4px;
+        line-height: 1.5;
+      }
+      .map-modal-body {
+        padding: 14px 22px;
+        overflow-y: auto;
+      }
+      .map-modal-footer {
+        padding: 12px 22px;
+        border-top: 1px solid var(--border-light);
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .map-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.78rem;
+      }
+      .map-table th {
+        text-align: left;
+        color: var(--text-muted);
+        font-weight: 600;
+        padding: 4px 8px;
+        border-bottom: 1px solid var(--border-light);
+      }
+      .map-table td {
+        padding: 5px 8px;
+        border-bottom: 1px solid var(--border-light);
+        color: var(--text-secondary);
+        vertical-align: middle;
+      }
+      .map-table tr.map-req td:first-child {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+      .map-star {
+        color: var(--accent-red);
+      }
+      .map-divider {
+        background: var(--bg-surface);
+        color: var(--text-muted) !important;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .map-select {
+        width: 100%;
+        max-width: 240px;
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 4px 6px;
+        font-family: "Manrope", sans-serif;
+        font-size: 0.75rem;
+        color: var(--text-primary);
+      }
+      .map-sample {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* SUBGROUPS */
+      .subgroup-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .subgroup-controls select {
+        min-width: 160px;
+      }
+      .sg-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.78rem;
+      }
+      .sg-table th {
+        text-align: right;
+        padding: 7px 10px;
+        color: var(--text-secondary);
+        font-weight: 700;
+        border-bottom: 2px solid var(--border);
+        background: var(--bg-surface);
+        white-space: nowrap;
+      }
+      .sg-table th:first-child,
+      .sg-table td:first-child {
+        text-align: left;
+      }
+      .sg-table td {
+        text-align: right;
+        padding: 6px 10px;
+        border-bottom: 1px solid var(--border-light);
+        color: var(--text-primary);
+        white-space: nowrap;
+      }
+      .sg-table tr.sg-flag td {
+        background: var(--accent-amber-dim);
+      }
+      .sg-table tr.sg-total td {
+        font-weight: 700;
+        border-top: 2px solid var(--border);
+      }
+
       /* SITE FOOTER */
       .site-footer {
         margin: 48px auto 24px;
@@ -1950,7 +2156,7 @@
         "applicationCategory": "MedicalApplication",
         "operatingSystem": "Any (web browser)",
         "browserRequirements": "Requires JavaScript. Works in current versions of Chrome, Firefox, Safari and Edge.",
-        "softwareVersion": "1.1",
+        "softwareVersion": "1.2",
         "dateModified": "2026-07-04",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" },
@@ -1977,15 +2183,18 @@
             "url": "https://www.focusvision.com.au/about-dr-david-gunn"
           }
         ],
-        "description": "Free browser-based refractive outcomes analyzer for cataract and refractive lens surgeons. Upload an Excel spreadsheet of post-operative results to benchmark refractive prediction accuracy (mean absolute error, mean prediction error, percentage of eyes within ±0.50 D and ±1.00 D), generate cumulative UDVA distribution curves and double-angle astigmatism plots, compare IOL formula performance, and optimise IOL lens constants for Barrett Universal II, SRK/T, Kane, Holladay 2 and EVO. All analysis runs locally in the browser; no patient data is transmitted to any server.",
+        "description": "Free browser-based refractive outcomes analyzer for cataract and refractive lens surgeons. Upload an Excel or CSV spreadsheet of post-operative results to benchmark refractive prediction accuracy (mean absolute error, mean prediction error, percentage of eyes within ±0.50 D and ±1.00 D), generate cumulative UDVA distribution curves and double-angle astigmatism plots with confidence ellipses, analyse toric IOL alignment and surgically induced astigmatism, break results down by axial length and IOL subgroups, compare IOL formula performance, and optimise IOL lens constants for Barrett Universal II, SRK/T, Kane, Holladay 2 and EVO. All analysis runs locally in the browser; no patient data is transmitted to any server.",
         "featureList": [
           "Refractive prediction error analysis (MAE, MPE, % within ±0.50 D / ±1.00 D)",
           "Benchmarking against published standards (Gale et al. 2009; EUREQUO registry)",
-          "Cumulative UDVA distribution curve with Snellen equivalents",
-          "Double-angle (power vector) astigmatism plot",
+          "Cumulative UDVA distribution curve with Snellen equivalents (6/x or 20/xx)",
+          "Double-angle (power vector) astigmatism plot with 95% confidence ellipses",
+          "Toric IOL analysis: residual astigmatism, axis misalignment, corneal SIA",
+          "Subgroup analysis by axial length, IOL model, formula, IOL type, eye and age",
           "IOL formula performance comparison",
           "IOL lens constant optimisation with 95% confidence intervals",
           "Outcomes trend over time",
+          "Excel (.xlsx/.xls) and CSV import with a column-mapping step for non-template spreadsheets",
           "PDF report and CSV export"
         ]
       }
@@ -2384,6 +2593,16 @@
         >
           Outcomes Dashboard
         </button>
+        <button class="nav-tab" id="btn-tab-astig" onclick="switchTab('astig')">
+          Astigmatism &amp; Toric
+        </button>
+        <button
+          class="nav-tab"
+          id="btn-tab-subgroups"
+          onclick="switchTab('subgroups')"
+        >
+          Subgroups
+        </button>
         <button
           class="nav-tab"
           id="btn-tab-optimiser"
@@ -2432,6 +2651,44 @@
               <rect x="14" y="14" width="7" height="7" />
             </svg>
             Outcomes Dashboard
+          </button>
+          <button
+            class="sidebar-mobile-tab"
+            id="mob-tab-astig"
+            onclick="switchTab('astig');closeSidebar()"
+          >
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <line x1="12" y1="3" x2="12" y2="21" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+            </svg>
+            Astigmatism &amp; Toric
+          </button>
+          <button
+            class="sidebar-mobile-tab"
+            id="mob-tab-subgroups"
+            onclick="switchTab('subgroups');closeSidebar()"
+          >
+            <svg
+              width="15"
+              height="15"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M3 3v18h18" />
+              <rect x="7" y="10" width="3" height="8" />
+              <rect x="13" y="6" width="3" height="12" />
+            </svg>
+            Subgroups
           </button>
           <button
             class="sidebar-mobile-tab"
@@ -2599,6 +2856,28 @@
           </label>
         </div>
 
+        <div class="sidebar-section">
+          <div class="sidebar-label">Display — Snellen Notation</div>
+          <div class="seg-group">
+            <button
+              class="seg-btn active"
+              data-setting="snellen"
+              data-value="metric"
+              onclick="setSetting('snellen','metric',this)"
+            >
+              6/6
+            </button>
+            <button
+              class="seg-btn"
+              data-setting="snellen"
+              data-value="us"
+              onclick="setSetting('snellen','us',this)"
+            >
+              20/20
+            </button>
+          </div>
+        </div>
+
         <button class="btn btn-outline sidebar-reset" onclick="resetFilters()">
           ↺ Reset All Filters
         </button>
@@ -2622,8 +2901,10 @@
               <ul class="upload-sb-features">
                 <li>Visual acuity &amp; prediction error analysis</li>
                 <li>IOL constant optimisation per formula</li>
-                <li>Biometry outcome correlations</li>
+                <li>Astigmatism, toric &amp; SIA analysis</li>
+                <li>Subgroup analysis (axial length, IOL, formula)</li>
                 <li>Published benchmark comparisons (NHS · EUREQUO)</li>
+                <li>Excel or CSV import with column mapping</li>
                 <li>PDF export &amp; surgeon reports</li>
               </ul>
             </div>
@@ -2720,11 +3001,93 @@
                 Choose File
               </button>
               <div class="upload-formats" style="margin-top: 12px">
-                Accepts .xlsx &middot; .xls &middot; or use the sample data
-                below
+                Accepts .xlsx &middot; .xls &middot; .csv &middot; or use the
+                sample data below. Non-template headers? A column-mapping step
+                will guide you.
               </div>
             </div>
-            <input type="file" id="file-input" accept=".xlsx,.xls" />
+            <input type="file" id="file-input" accept=".xlsx,.xls,.csv" />
+
+            <!-- Data format settings -->
+            <div class="settings-card">
+              <div class="settings-card-title">Data format settings</div>
+              <div class="settings-row">
+                <span class="settings-lbl">Date format</span>
+                <div class="seg-group">
+                  <button
+                    class="seg-btn active"
+                    data-setting="dateFormat"
+                    data-value="auto"
+                    onclick="setSetting('dateFormat','auto',this)"
+                  >
+                    Auto
+                  </button>
+                  <button
+                    class="seg-btn"
+                    data-setting="dateFormat"
+                    data-value="dmy"
+                    onclick="setSetting('dateFormat','dmy',this)"
+                  >
+                    DD/MM/YYYY
+                  </button>
+                  <button
+                    class="seg-btn"
+                    data-setting="dateFormat"
+                    data-value="mdy"
+                    onclick="setSetting('dateFormat','mdy',this)"
+                  >
+                    MM/DD/YYYY
+                  </button>
+                </div>
+              </div>
+              <div class="settings-row">
+                <span class="settings-lbl">Cylinder convention</span>
+                <div class="seg-group">
+                  <button
+                    class="seg-btn active"
+                    data-setting="cylConvention"
+                    data-value="minus"
+                    onclick="setSetting('cylConvention','minus',this)"
+                  >
+                    Minus (−)
+                  </button>
+                  <button
+                    class="seg-btn"
+                    data-setting="cylConvention"
+                    data-value="plus"
+                    onclick="setSetting('cylConvention','plus',this)"
+                  >
+                    Plus (+)
+                  </button>
+                </div>
+              </div>
+              <div class="settings-row">
+                <span class="settings-lbl">Snellen notation</span>
+                <div class="seg-group">
+                  <button
+                    class="seg-btn active"
+                    data-setting="snellen"
+                    data-value="metric"
+                    onclick="setSetting('snellen','metric',this)"
+                  >
+                    6/6
+                  </button>
+                  <button
+                    class="seg-btn"
+                    data-setting="snellen"
+                    data-value="us"
+                    onclick="setSetting('snellen','us',this)"
+                  >
+                    20/20
+                  </button>
+                </div>
+              </div>
+              <div class="settings-note">
+                Plus-cylinder data is converted to minus-cylinder form on
+                import. Changing date or cylinder settings re-parses the loaded
+                file automatically.
+              </div>
+            </div>
 
             <!-- Divider -->
             <div class="upload-modal-divider">
@@ -3272,13 +3635,210 @@
           </div>
         </div>
         <!-- /tab-optimiser -->
+
+        <!-- TAB: ASTIGMATISM & TORIC -->
+        <div id="tab-astig" style="display: none">
+          <div class="section-title">Astigmatism &amp; Toric Analysis</div>
+          <div class="kpi-strip" id="astig-kpi-strip"></div>
+
+          <div class="chart-grid">
+            <div class="chart-card" id="card-astig-dap">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">
+                    Double-Angle Plot — Confidence Ellipses
+                  </div>
+                  <div class="chart-sub">
+                    Residual refractive astigmatism (J0 / J45) · solid ellipse =
+                    95% CI of centroid · dashed = 95% tolerance (dataset)
+                  </div>
+                </div>
+                <div style="display: flex; gap: 4px">
+                  <button
+                    class="chart-info"
+                    title="Each point is one eye's residual astigmatism as a power vector (Thibos J0/J45, minus-cylinder). The star marks the centroid; the solid ellipse is the 95% confidence ellipse of the centroid and the dashed ellipse contains ~95% of eyes. A centroid displaced from the origin indicates systematic astigmatic bias (J0 > 0 with-the-rule, J0 < 0 against-the-rule). Left eyes are not mirrored."
+                  >
+                    ⓘ
+                  </button>
+                  <button
+                    class="chart-download btn btn-ghost"
+                    onclick="downloadChart('chart-astig-dap','Double_Angle_Plot')"
+                  >
+                    ⬇
+                  </button>
+                </div>
+              </div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-astig-dap"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card" id="card-astig-hist">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">
+                    Residual Refractive Cylinder — Toric vs Non-Toric
+                  </div>
+                  <div class="chart-sub">
+                    % of eyes per residual cylinder magnitude band
+                  </div>
+                </div>
+                <button
+                  class="chart-info"
+                  title="Distribution of residual refractive cylinder magnitude. Toric IOL eyes (IOL_Type contains 'Toric') are shown separately from non-toric eyes when both groups are present."
+                >
+                  ⓘ
+                </button>
+              </div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-astig-hist"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card" id="card-astig-misalign">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">Toric IOL Axis Misalignment</div>
+                  <div class="chart-sub">
+                    Misalignment vs residual cylinder · ~3.3% of cylinder
+                    correction is lost per degree of misalignment
+                  </div>
+                </div>
+                <button
+                  class="chart-info"
+                  title="Requires the optional columns Toric_Intended_Axis_deg and Toric_Implanted_Axis_deg. Misalignment is the angular difference between intended and implanted axis (0–90°)."
+                >
+                  ⓘ
+                </button>
+              </div>
+              <div id="astig-misalign-stats" class="polar-stats"></div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-astig-misalign"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card" id="card-astig-sia">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">
+                    Surgically Induced Astigmatism (SIA)
+                  </div>
+                  <div class="chart-sub">
+                    Corneal SIA from pre/post keratometry (vector analysis)
+                  </div>
+                </div>
+                <button
+                  class="chart-info"
+                  title="Corneal SIA is the vector difference between post-operative and pre-operative corneal astigmatism in double-angle space. Requires Pre_K1_D, Pre_K2_D, Pre_K_Steep_Axis_deg, Post_K1_D, Post_K2_D and Post_K_Steep_Axis_deg. The centroid SIA is the value to enter in toric calculators; the mean magnitude overstates the effective SIA."
+                >
+                  ⓘ
+                </button>
+              </div>
+              <div id="astig-sia-body"></div>
+            </div>
+          </div>
+        </div>
+        <!-- /tab-astig -->
+
+        <!-- TAB: SUBGROUPS -->
+        <div id="tab-subgroups" style="display: none">
+          <div class="section-title">Subgroup Analysis</div>
+          <div class="subgroup-controls">
+            <label class="settings-lbl" for="subgroup-by">Group by</label>
+            <select
+              id="subgroup-by"
+              class="nav-cohort"
+              onchange="renderSubgroupsTab()"
+            >
+              <option value="al" selected>Axial length</option>
+              <option value="model">IOL model</option>
+              <option value="formula">IOL formula</option>
+              <option value="type">IOL type</option>
+              <option value="eye">Eye (R/L)</option>
+              <option value="age">Age band</option>
+            </select>
+            <button
+              class="btn btn-ghost"
+              style="font-size: 0.75rem"
+              onclick="exportSubgroupCSV()"
+            >
+              ⬇ Export subgroup CSV
+            </button>
+          </div>
+          <div id="subgroup-bias-note"></div>
+          <div class="chart-grid">
+            <div class="chart-card chart-full" id="card-subgroups">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">Refractive Accuracy by Subgroup</div>
+                  <div class="chart-sub">
+                    Bars: % within ±0.50 D (NHS benchmark 55% · target 85%) ·
+                    Line: mean absolute error
+                  </div>
+                </div>
+                <button
+                  class="chart-download btn btn-ghost"
+                  onclick="downloadChart('chart-subgroups','Subgroup_Analysis')"
+                >
+                  ⬇
+                </button>
+              </div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-subgroups"></canvas>
+              </div>
+            </div>
+            <div class="chart-card chart-full">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">Subgroup Statistics</div>
+                  <div class="chart-sub">
+                    ⚠ marks subgroups whose mean prediction error deviates from
+                    the overall cohort by more than 0.25 D (n ≥ 10) —
+                    formula-specific bias often hides here
+                  </div>
+                </div>
+              </div>
+              <div id="subgroup-table-wrap" style="overflow-x: auto"></div>
+            </div>
+          </div>
+        </div>
+        <!-- /tab-subgroups -->
       </main>
     </div>
     <!-- /app-body -->
 
+    <!-- COLUMN MAPPING MODAL -->
+    <div
+      id="map-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="map-modal-title"
+      style="display: none"
+    >
+      <div class="map-modal">
+        <div class="map-modal-header">
+          <h3 id="map-modal-title">Map Your Spreadsheet Columns</h3>
+          <p>
+            Tell the analyzer which column in your file corresponds to each
+            field. Your mapping applies to this session only — nothing is stored
+            or transmitted.
+          </p>
+        </div>
+        <div class="map-modal-body" id="map-modal-body"></div>
+        <div class="map-modal-footer">
+          <button class="btn btn-outline" onclick="closeMappingModal()">
+            Cancel
+          </button>
+          <button class="btn btn-primary" onclick="applyMapping()">
+            Apply Mapping &amp; Import
+          </button>
+        </div>
+      </div>
+    </div>
+
     <footer class="site-footer">
       <div>
-        <strong>Focus Vision Refractive Outcomes Analyzer</strong> · v1.1 · Free
+        <strong>Focus Vision Refractive Outcomes Analyzer</strong> · v1.2 · Free
         for the global ophthalmology community — all analysis runs locally in
         your browser and no patient data is ever transmitted to any server.
       </div>
@@ -3305,26 +3865,392 @@
       // ============================================================
       // 1. CONSTANTS & CONFIGURATION
       // ============================================================
-      const REQUIRED_COLS = [
-        "patient_id",
-        "eye (r/l)",
-        "age_at_surgery",
-        "surgery_date",
-        "iol_power_d",
-        "post_udva_logmar",
-        "post_sphere_d",
-        "post_cylinder_d",
-        "post_axis_deg",
+      // Field registry: drives header auto-detection, the column-mapping
+      // dialog, and parsing. `syns` are normalised (lowercase, alphanumeric
+      // only) alternative header names seen in real-world exports.
+      // `req` fields are the minimum needed for any analysis.
+      const FIELD_DEFS = [
+        {
+          key: "id",
+          label: "Patient ID",
+          tpl: "Patient_ID",
+          req: true,
+          syns: [
+            "patientid",
+            "id",
+            "patient",
+            "mrn",
+            "urn",
+            "patientcode",
+            "subjectid",
+            "patientnumber",
+          ],
+        },
+        {
+          key: "eye",
+          label: "Eye (R/L or OD/OS)",
+          tpl: "Eye (R/L)",
+          req: true,
+          syns: [
+            "eyerl",
+            "eye",
+            "side",
+            "laterality",
+            "odos",
+            "operatedeye",
+            "eyeoperated",
+          ],
+        },
+        {
+          key: "udva",
+          label: "Post-op UDVA (logMAR)",
+          tpl: "Post_UDVA_logMAR",
+          req: true,
+          syns: [
+            "postudvalogmar",
+            "udva",
+            "ucva",
+            "udvalogmar",
+            "ucvalogmar",
+            "postopudva",
+            "uncorrectedva",
+            "uncorrecteddistanceva",
+          ],
+        },
+        {
+          key: "sph",
+          label: "Post-op Sphere (D)",
+          tpl: "Post_Sphere_D",
+          req: true,
+          syns: [
+            "postsphered",
+            "sphere",
+            "sph",
+            "postopsphere",
+            "postsphere",
+            "mrsphere",
+            "manifestsphere",
+          ],
+        },
+        {
+          key: "cyl",
+          label: "Post-op Cylinder (D)",
+          tpl: "Post_Cylinder_D",
+          req: true,
+          syns: [
+            "postcylinderd",
+            "cylinder",
+            "cyl",
+            "postopcylinder",
+            "postcyl",
+            "mrcylinder",
+            "manifestcylinder",
+          ],
+        },
+        {
+          key: "axis",
+          label: "Post-op Axis (°)",
+          tpl: "Post_Axis_deg",
+          req: false,
+          syns: [
+            "postaxisdeg",
+            "axis",
+            "cylaxis",
+            "postopaxis",
+            "postaxis",
+            "mraxis",
+          ],
+        },
+        {
+          key: "age",
+          label: "Age at Surgery",
+          tpl: "Age_at_Surgery",
+          req: false,
+          syns: ["ageatsurgery", "age", "patientage"],
+        },
+        {
+          key: "sex",
+          label: "Sex",
+          tpl: "Sex",
+          req: false,
+          syns: ["sex", "gender"],
+        },
+        {
+          key: "date",
+          label: "Surgery Date",
+          tpl: "Surgery_Date",
+          req: false,
+          syns: [
+            "surgerydate",
+            "dateofsurgery",
+            "dos",
+            "opdate",
+            "operationdate",
+            "surgdate",
+            "proceduredate",
+            "date",
+          ],
+        },
+        {
+          key: "al",
+          label: "Axial Length (mm)",
+          tpl: "Pre_Axial_Length_mm",
+          req: false,
+          syns: [
+            "preaxiallengthmm",
+            "axiallength",
+            "al",
+            "axl",
+            "axiallengthmm",
+          ],
+        },
+        {
+          key: "k1",
+          label: "Pre-op K1 (D)",
+          tpl: "Pre_K1_D",
+          req: false,
+          syns: ["prek1d", "k1", "prek1", "flatk", "k1pre"],
+        },
+        {
+          key: "k2",
+          label: "Pre-op K2 (D)",
+          tpl: "Pre_K2_D",
+          req: false,
+          syns: ["prek2d", "k2", "prek2", "steepk", "k2pre"],
+        },
+        {
+          key: "preKAxis",
+          label: "Pre-op Steep K Axis (°)",
+          tpl: "Pre_K_Steep_Axis_deg",
+          req: false,
+          syns: [
+            "preksteepaxisdeg",
+            "presteepaxis",
+            "prekaxis",
+            "steepaxispre",
+            "prek2axis",
+          ],
+        },
+        {
+          key: "postK1",
+          label: "Post-op K1 (D)",
+          tpl: "Post_K1_D",
+          req: false,
+          syns: ["postk1d", "postk1", "k1post"],
+        },
+        {
+          key: "postK2",
+          label: "Post-op K2 (D)",
+          tpl: "Post_K2_D",
+          req: false,
+          syns: ["postk2d", "postk2", "k2post"],
+        },
+        {
+          key: "postKAxis",
+          label: "Post-op Steep K Axis (°)",
+          tpl: "Post_K_Steep_Axis_deg",
+          req: false,
+          syns: [
+            "postksteepaxisdeg",
+            "poststeepaxis",
+            "postkaxis",
+            "steepaxispost",
+            "postk2axis",
+          ],
+        },
+        {
+          key: "iolModel",
+          label: "IOL Model",
+          tpl: "IOL_Model",
+          req: false,
+          syns: ["iolmodel", "model", "lensmodel", "iol", "lens", "implant"],
+        },
+        {
+          key: "iolType",
+          label: "IOL Type",
+          tpl: "IOL_Type",
+          req: false,
+          syns: ["ioltype", "lenstype", "type"],
+        },
+        {
+          key: "iolPower",
+          label: "IOL Power (D)",
+          tpl: "IOL_Power_D",
+          req: false,
+          syns: [
+            "iolpowerd",
+            "iolpower",
+            "power",
+            "implantpower",
+            "lenspower",
+            "sephakic",
+          ],
+        },
+        {
+          key: "toricCyl",
+          label: "Toric IOL Cylinder (D)",
+          tpl: "Toric_IOL_Cylinder_D",
+          req: false,
+          syns: [
+            "toriciolcylinderd",
+            "toriccylinder",
+            "iolcylinder",
+            "toricpower",
+            "cylinderpoweriol",
+          ],
+        },
+        {
+          key: "toricIntAxis",
+          label: "Toric Intended Axis (°)",
+          tpl: "Toric_Intended_Axis_deg",
+          req: false,
+          syns: [
+            "toricintendedaxisdeg",
+            "intendedaxis",
+            "plannedaxis",
+            "targetaxis",
+          ],
+        },
+        {
+          key: "toricImplAxis",
+          label: "Toric Implanted Axis (°)",
+          tpl: "Toric_Implanted_Axis_deg",
+          req: false,
+          syns: [
+            "toricimplantedaxisdeg",
+            "implantedaxis",
+            "achievedaxis",
+            "finalaxis",
+            "actualaxis",
+          ],
+        },
+        {
+          key: "target",
+          label: "Target Refraction (D)",
+          tpl: "IOL_Target_Refraction_D",
+          req: false,
+          syns: [
+            "ioltargetrefractiond",
+            "target",
+            "targetrefraction",
+            "predictedrefraction",
+            "predictedse",
+            "targetse",
+            "aimedrefraction",
+            "intendedrefraction",
+          ],
+        },
+        {
+          key: "formula",
+          label: "IOL Formula",
+          tpl: "IOL_Formula_Used",
+          req: false,
+          syns: ["iolformulaused", "formula", "iolformula", "formulaused"],
+        },
+        {
+          key: "cdva",
+          label: "Post-op CDVA (logMAR)",
+          tpl: "Post_CDVA_logMAR",
+          req: false,
+          syns: [
+            "postcdvalogmar",
+            "cdva",
+            "bcva",
+            "bscva",
+            "correctedva",
+            "cdvalogmar",
+          ],
+        },
+        {
+          key: "uiva",
+          label: "Post-op UIVA (logMAR)",
+          tpl: "Post_UIVA_logMAR",
+          req: false,
+          syns: ["postuivalogmar", "uiva", "intermediateva"],
+        },
+        {
+          key: "unva",
+          label: "Post-op UNVA (logMAR)",
+          tpl: "Post_UNVA_logMAR",
+          req: false,
+          syns: ["postunvalogmar", "unva", "nearva"],
+        },
+        {
+          key: "se",
+          label: "Post-op SE (D)",
+          tpl: "Post_SE_D",
+          req: false,
+          syns: [
+            "postsed",
+            "se",
+            "sphericalequivalent",
+            "postopse",
+            "postse",
+            "seq",
+          ],
+        },
+        {
+          key: "weeks",
+          label: "Post-op Weeks",
+          tpl: "Post_Weeks",
+          req: false,
+          syns: ["postweeks", "weeks", "followupweeks", "postopweeks"],
+        },
+        {
+          key: "pe",
+          label: "Prediction Error (D)",
+          tpl: "Prediction_Error_D",
+          req: false,
+          syns: [
+            "predictionerrord",
+            "predictionerror",
+            "pe",
+            "refractiveerror",
+            "errord",
+          ],
+        },
+        {
+          key: "intraComp",
+          label: "Intraop Complication",
+          tpl: "Intraop_Complication",
+          req: false,
+          syns: [
+            "intraopcomplication",
+            "intracomp",
+            "intraoperativecomplication",
+          ],
+        },
+        {
+          key: "postComp",
+          label: "Postop Complication",
+          tpl: "Postop_Complication",
+          req: false,
+          syns: ["postopcomplication", "postcomp", "postoperativecomplication"],
+        },
+        {
+          key: "yag",
+          label: "YAG Capsulotomy",
+          tpl: "YAG_Capsulotomy",
+          req: false,
+          syns: ["yagcapsulotomy", "yag"],
+        },
+        {
+          key: "notes",
+          label: "Notes",
+          tpl: "Notes",
+          req: false,
+          syns: ["notes", "comments", "comment"],
+        },
       ];
       const SNELLEN_MAP = [
-        { lm: 0.0, s: "6/6" },
-        { lm: 0.1, s: "6/7.5" },
-        { lm: 0.18, s: "6/9" },
-        { lm: 0.3, s: "6/12" },
-        { lm: 0.48, s: "6/18" },
-        { lm: 0.6, s: "6/24" },
-        { lm: 0.78, s: "6/36" },
-        { lm: 1.0, s: "6/60" },
+        { lm: 0.0, s: "6/6", us: "20/20" },
+        { lm: 0.1, s: "6/7.5", us: "20/25" },
+        { lm: 0.18, s: "6/9", us: "20/30" },
+        { lm: 0.3, s: "6/12", us: "20/40" },
+        { lm: 0.48, s: "6/18", us: "20/60" },
+        { lm: 0.6, s: "6/24", us: "20/80" },
+        { lm: 0.78, s: "6/36", us: "20/120" },
+        { lm: 1.0, s: "6/60", us: "20/200" },
       ];
       const IOL_TYPE_COLORS = {
         Monofocal: "#3A8B9E",
@@ -3461,6 +4387,52 @@
       let iolTypeOptions = [];
       let debounceTimer = null;
 
+      // Import / display settings (session-only; no localStorage per policy)
+      const settings = {
+        dateFormat: "auto", // "auto" | "dmy" | "mdy"
+        cylConvention: "minus", // "minus" | "plus"
+        snellen: "metric", // "metric" (6/x) | "us" (20/xx)
+      };
+      // Raw sheet + mapping kept in memory so settings changes or a manual
+      // remap can re-parse without re-uploading.
+      let lastRaw = null;
+      let lastFilename = "";
+      let columnMapping = null;
+      let currentTab = "dashboard";
+      let astigDirty = true;
+      let subgroupsDirty = true;
+
+      function snellenName(lm) {
+        const e = SNELLEN_MAP.find((s) => Math.abs(s.lm - lm) < 0.01);
+        if (!e) return "";
+        return settings.snellen === "us" ? e.us : e.s;
+      }
+
+      function setSetting(key, val, btn) {
+        if (settings[key] === val) return;
+        settings[key] = val;
+        if (btn && btn.parentElement) {
+          [...btn.parentElement.querySelectorAll(".seg-btn")].forEach((b) =>
+            b.classList.toggle("active", b === btn),
+          );
+        }
+        // Keep the two segmented controls (upload zone + sidebar) in sync
+        document
+          .querySelectorAll(`.seg-btn[data-setting="${key}"]`)
+          .forEach((b) =>
+            b.classList.toggle("active", b.dataset.value === val),
+          );
+        if (key === "snellen") {
+          if (allData.length) applyFilters();
+          return;
+        }
+        // Date format and cylinder convention affect parsing — re-parse the
+        // stored sheet if data is already loaded.
+        if (lastRaw && columnMapping) {
+          parseData(lastRaw, lastFilename, columnMapping);
+        }
+      }
+
       // ============================================================
       // 2. DOM UTILITIES
       // ============================================================
@@ -3532,11 +4504,11 @@
       function handleFile(file) {
         if (!file) return;
         const ext = file.name.split(".").pop().toLowerCase();
-        if (!["xlsx", "xls"].includes(ext)) {
+        if (!["xlsx", "xls", "csv"].includes(ext)) {
           showBanner(
             "parse-banner",
             "error",
-            "Invalid file type. Please upload an .xlsx or .xls file.",
+            "Invalid file type. Please upload an .xlsx, .xls or .csv file.",
           );
           return;
         }
@@ -3556,92 +4528,246 @@
               ) || wb.SheetNames[0];
             const ws = wb.Sheets[sheetName];
             const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
-            parseData(raw, file.name);
+            const hdrIdx = findHeaderRow(raw);
+            const { map, missing } = autoMapColumns(raw[hdrIdx] || []);
+            map.__headerRow = hdrIdx;
+            lastRaw = raw;
+            lastFilename = file.name;
+            if (missing.length) {
+              // Headers don't match the template — let the user map columns
+              openMappingModal(map, missing);
+            } else {
+              parseData(raw, file.name, map);
+            }
           } catch (err) {
             showBanner(
               "parse-banner",
               "error",
-              `Could not read file: ${esc(err.message)}. Please check the file is a valid Excel spreadsheet.`,
+              `Could not read file: ${esc(err.message)}. Please check the file is a valid spreadsheet or CSV.`,
             );
           }
         };
         reader.readAsArrayBuffer(file);
       }
 
+      const normCol = (s) =>
+        String(s)
+          .toLowerCase()
+          .replace(/\*/g, "")
+          .replace(/[^a-z0-9]/g, "");
+
+      // Map header cells to FIELD_DEFS via template names + synonyms.
+      // Returns { map: {fieldKey: colIndex|null}, missing: [required keys] }.
+      function autoMapColumns(headerRow) {
+        const headers = headerRow.map(normCol);
+        const map = {};
+        const used = new Set();
+        FIELD_DEFS.forEach((f) => {
+          const names = [normCol(f.tpl), ...f.syns];
+          let idx = null;
+          for (const name of names) {
+            const i = headers.findIndex((h, hi) => h === name && !used.has(hi));
+            if (i >= 0) {
+              idx = i;
+              break;
+            }
+          }
+          map[f.key] = idx;
+          if (idx != null) used.add(idx);
+        });
+        const missing = FIELD_DEFS.filter(
+          (f) => f.req && map[f.key] == null,
+        ).map((f) => f.key);
+        return { map, missing };
+      }
+
+      // Pick the sheet row that maps the most fields (handles template
+      // preamble rows and arbitrary exports alike).
       function findHeaderRow(raw) {
+        let bestIdx = 0,
+          bestScore = -1;
         for (let i = 0; i < Math.min(10, raw.length); i++) {
-          const rowLower = raw[i].map((c) => String(c).toLowerCase().trim());
-          const hits = REQUIRED_COLS.filter((r) =>
-            rowLower.some(
-              (c) =>
-                c === r ||
-                c.replace(/[^a-z0-9]/g, "") === r.replace(/[^a-z0-9]/g, ""),
-            ),
-          );
-          if (hits.length >= 4) return i;
+          const { map } = autoMapColumns(raw[i] || []);
+          const score = Object.values(map).filter((v) => v != null).length;
+          if (score > bestScore) {
+            bestScore = score;
+            bestIdx = i;
+          }
+          if (score >= 8) break; // confident match
         }
-        return 0;
+        return bestIdx;
+      }
+
+      // ── Column-mapping dialog ────────────────────────────────────────────
+      function openMappingModal(prefill, missing) {
+        if (!lastRaw) return;
+        if (typeof prefill === "object" && prefill && prefill.preventDefault) {
+          // invoked from the "Remap columns" banner link
+          prefill.preventDefault();
+          prefill = columnMapping;
+          missing = [];
+        }
+        const hdrIdx = (prefill && prefill.__headerRow) || 0;
+        const headerRow = lastRaw[hdrIdx] || [];
+        const sample = (ci) => {
+          for (
+            let r = hdrIdx + 1;
+            r < Math.min(hdrIdx + 30, lastRaw.length);
+            r++
+          ) {
+            const v = lastRaw[r] && lastRaw[r][ci];
+            if (v !== "" && v != null)
+              return v instanceof Date
+                ? v.toLocaleDateString("en-AU")
+                : String(v);
+          }
+          return "";
+        };
+        const options = (sel) =>
+          `<option value="">— not present —</option>` +
+          headerRow
+            .map((h, i) => {
+              const label = String(h).trim() || `Column ${i + 1}`;
+              return `<option value="${i}" ${sel === i ? "selected" : ""}>${esc(label)}</option>`;
+            })
+            .join("");
+        const rowHtml = (f) => {
+          const sel = prefill ? prefill[f.key] : null;
+          return `<tr class="${f.req ? "map-req" : ""}">
+            <td>${esc(f.label)}${f.req ? ' <span class="map-star">*</span>' : ""}</td>
+            <td><select class="map-select" data-key="${f.key}" onchange="updateMapSample(this)">${options(sel)}</select></td>
+            <td class="map-sample" id="map-sample-${f.key}">${esc(sel != null ? sample(sel) : "")}</td>
+          </tr>`;
+        };
+        const reqRows = FIELD_DEFS.filter((f) => f.req)
+          .map(rowHtml)
+          .join("");
+        const optRows = FIELD_DEFS.filter((f) => !f.req)
+          .map(rowHtml)
+          .join("");
+        $("map-modal-body").innerHTML = `
+          ${
+            missing && missing.length
+              ? `<div class="warn-badge" style="margin-bottom:12px">⚠ Your file's headers don't match the Focus Vision template. Match each field below to a column in your file — required fields are marked *.</div>`
+              : `<div class="info-msg" style="margin-bottom:12px">ℹ Adjust which spreadsheet column feeds each field, then re-apply.</div>`
+          }
+          <table class="map-table">
+            <thead><tr><th>Analyzer field</th><th>Your column</th><th>Sample value</th></tr></thead>
+            <tbody>${reqRows}
+              <tr><td colspan="3" class="map-divider">Optional fields — map any that exist in your file</td></tr>
+              ${optRows}</tbody>
+          </table>`;
+        window._mapSample = sample;
+        window._mapHdrIdx = hdrIdx;
+        $("map-overlay").style.display = "flex";
+      }
+
+      function updateMapSample(sel) {
+        const cell = $("map-sample-" + sel.dataset.key);
+        if (cell)
+          cell.textContent =
+            sel.value === "" ? "" : window._mapSample(+sel.value);
+      }
+
+      function closeMappingModal() {
+        $("map-overlay").style.display = "none";
+        if (!allData.length) {
+          showBanner(
+            "parse-banner",
+            "error",
+            "Import cancelled — required columns were not mapped.",
+          );
+        }
+      }
+
+      function applyMapping() {
+        const map = { __headerRow: window._mapHdrIdx ?? 0 };
+        document.querySelectorAll(".map-select").forEach((sel) => {
+          map[sel.dataset.key] = sel.value === "" ? null : +sel.value;
+        });
+        const missing = FIELD_DEFS.filter(
+          (f) => f.req && map[f.key] == null,
+        ).map((f) => f.label);
+        if (missing.length) {
+          alert("Required fields not mapped: " + missing.join(", "));
+          return;
+        }
+        $("map-overlay").style.display = "none";
+        parseData(lastRaw, lastFilename, map);
       }
 
       function normaliseKey(s) {
         return String(s).toLowerCase().trim().replace(/\s+/g, " ");
       }
 
-      function parseData(raw, filename) {
-        const hdrIdx = findHeaderRow(raw);
-        const headers = raw[hdrIdx].map(normaliseKey);
-        const col = (name) => {
-          const lname = normaliseKey(name);
-          const i = headers.findIndex(
-            (h) =>
-              h === lname ||
-              h.replace(/[^a-z0-9]/g, "") === lname.replace(/[^a-z0-9]/g, ""),
-          );
-          return i >= 0 ? i : null;
-        };
+      // Normalise eye laterality: accepts R/L, OD/OS, RE/LE, Right/Left.
+      const EYE_MAP = {
+        R: "R",
+        RIGHT: "R",
+        OD: "R",
+        RE: "R",
+        RIGHTEYE: "R",
+        L: "L",
+        LEFT: "L",
+        OS: "L",
+        LE: "L",
+        LEFTEYE: "L",
+      };
 
-        const C = {
-          id: col("patient_id"),
-          eye: col("eye (r/l)"),
-          age: col("age_at_surgery"),
-          sex: col("sex"),
-          date: col("surgery_date"),
-          al: col("pre_axial_length_mm"),
-          k1: col("pre_k1_d"),
-          k2: col("pre_k2_d"),
-          iolModel: col("iol_model"),
-          iolType: col("iol_type"),
-          iolPower: col("iol_power_d"),
-          target: col("iol_target_refraction_d"),
-          formula: col("iol_formula_used"),
-          udva: col("post_udva_logmar"),
-          cdva: col("post_cdva_logmar"),
-          uiva: col("post_uiva_logmar"),
-          unva: col("post_unva_logmar"),
-          sph: col("post_sphere_d"),
-          cyl: col("post_cylinder_d"),
-          axis: col("post_axis_deg"),
-          se: col("post_se_d"),
-          weeks: col("post_weeks"),
-          pe: col("prediction_error_d"),
-          intraComp: col("intraop_complication"),
-          postComp: col("postop_complication"),
-          yag: col("yag_capsulotomy"),
-          notes: col("notes"),
-        };
+      function parseData(raw, filename, mapping) {
+        const hdrIdx = mapping.__headerRow || 0;
+        const C = mapping;
+        columnMapping = mapping;
+        lastRaw = raw;
+        lastFilename = filename;
 
         const g = (row, k) => (C[k] != null ? row[C[k]] : null);
         const num = (v) => {
           const n = parseFloat(v);
           return isNaN(n) ? null : n;
         };
+        // Numeric d/m/y vs m/d/y is governed by the date-format setting.
+        // "auto" resolves per value when one component exceeds 12, otherwise
+        // defaults to DD/MM (AU convention). Out-of-range parts return null
+        // instead of JavaScript's silent month rollover.
         const parseDate = (v) => {
           if (!v) return null;
           if (v instanceof Date) return v;
           const s = String(v).trim();
-          // DD/MM/YYYY
-          const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-          if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+          const m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+          if (m) {
+            const a = +m[1],
+              b = +m[2],
+              y = +m[3];
+            let day, mon;
+            if (settings.dateFormat === "mdy") {
+              mon = a;
+              day = b;
+            } else if (settings.dateFormat === "dmy") {
+              day = a;
+              mon = b;
+            } else {
+              // auto
+              if (a > 12 && b <= 12) {
+                day = a;
+                mon = b;
+              } else if (b > 12 && a <= 12) {
+                mon = a;
+                day = b;
+              } else {
+                day = a;
+                mon = b;
+              }
+            }
+            if (mon < 1 || mon > 12 || day < 1 || day > 31) return null;
+            const d = new Date(y, mon - 1, day);
+            return d.getMonth() === mon - 1 && d.getDate() === day ? d : null;
+          }
+          const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+          if (iso) {
+            const d = new Date(+iso[1], +iso[2] - 1, +iso[3]);
+            return isNaN(d) ? null : d;
+          }
           const d = new Date(s);
           return isNaN(d) ? null : d;
         };
@@ -3652,11 +4778,14 @@
           const row = raw[i];
           if (row.every((c) => !c)) continue; // blank row
           const id = g(row, "id");
-          const eye = String(g(row, "eye") || "")
-            .toUpperCase()
-            .trim();
-          const sph = num(g(row, "sph"));
-          const cyl = num(g(row, "cyl"));
+          const eye =
+            EYE_MAP[
+              String(g(row, "eye") || "")
+                .toUpperCase()
+                .replace(/[^A-Z]/g, "")
+            ] || "";
+          let sph = num(g(row, "sph"));
+          let cyl = num(g(row, "cyl"));
           const udva = num(g(row, "udva"));
           if (
             !id ||
@@ -3667,6 +4796,14 @@
           ) {
             skipped++;
             continue;
+          }
+          let axisIn = num(g(row, "axis"));
+          // Plus-cylinder data is converted to minus-cylinder form so all
+          // downstream analysis (SE, J0/J45, DAP) uses one convention.
+          if (settings.cylConvention === "plus" && cyl !== 0) {
+            sph = sph + cyl;
+            cyl = -cyl;
+            if (axisIn != null) axisIn = (axisIn + 90) % 180 || 180;
           }
           const se_raw = num(g(row, "se"));
           const target = num(g(row, "target"));
@@ -3683,7 +4820,7 @@
               : se != null && target != null
                 ? se - target
                 : null;
-          const axis = num(g(row, "axis")) || 0;
+          const axis = axisIn || 0;
           const cyl2 = cyl || 0;
           const axRad = ((axis || 0) * Math.PI) / 180;
           const j0 = -(cyl2 / 2) * Math.cos(2 * axRad);
@@ -3697,9 +4834,16 @@
             al: num(g(row, "al")),
             k1: num(g(row, "k1")),
             k2: num(g(row, "k2")),
+            preKAxis: num(g(row, "preKAxis")),
+            postK1: num(g(row, "postK1")),
+            postK2: num(g(row, "postK2")),
+            postKAxis: num(g(row, "postKAxis")),
             iolModel: String(g(row, "iolModel") || "").trim(),
             iolType: String(g(row, "iolType") || "Other").trim(),
             iolPower: num(g(row, "iolPower")),
+            toricCyl: num(g(row, "toricCyl")),
+            toricIntAxis: num(g(row, "toricIntAxis")),
+            toricImplAxis: num(g(row, "toricImplAxis")),
             target,
             formula: String(g(row, "formula") || "").trim(),
             udva,
@@ -3749,10 +4893,12 @@
           msgs.push(
             "⚠ Some UDVA values > 2.0 detected — please verify logMAR format.",
           );
+        msgs.push(
+          `<a href="#" onclick="openMappingModal(event)" style="color:inherit;text-decoration:underline">Remap columns</a>`,
+        );
         showBanner("parse-banner", "success", msgs.join(" "));
 
         $("upload-zone").style.display = "none";
-        $("tab-dashboard").style.display = "block";
         $("nav-upload-title").style.display = "none";
         $("hamburger-btn").style.removeProperty("display");
         $("cohort-name").style.display = "";
@@ -3760,6 +4906,7 @@
         $("nav-actions").style.display = "";
 
         buildSidebarChips();
+        switchTab("dashboard");
         applyFilters();
         buildOptimiserInputs(missingTarget, missingFormula);
       }
@@ -3910,6 +5057,10 @@
         renderAllCharts();
         renderTable();
         renderStatsTable();
+        astigDirty = true;
+        subgroupsDirty = true;
+        if (currentTab === "astig") renderAstigTab();
+        if (currentTab === "subgroups") renderSubgroupsTab();
       }
 
       // ============================================================
@@ -4051,13 +5202,13 @@
             status: "",
           },
           {
-            label: "UDVA ≥ 6/12",
+            label: `UDVA ≥ ${snellenName(0.3)}`,
             val: pct(udva612),
             sub: "logMAR ≤ 0.30",
             status: udva612 > 90 ? "good" : udva612 > 80 ? "warn" : "bad",
           },
           {
-            label: "UDVA ≥ 6/6",
+            label: `UDVA ≥ ${snellenName(0.0)}`,
             val: pct(udva66),
             sub: "logMAR ≤ 0.00",
             status: udva66 > 70 ? "good" : udva66 > 50 ? "warn" : "bad",
@@ -4455,9 +5606,7 @@
         const points = [];
         const sortLM = [0.0, 0.1, 0.18, 0.3, 0.48, 0.6, 0.78, 1.0];
         const labels = sortLM.map((v) => `${v.toFixed(2)}`);
-        const snellen = sortLM.map(
-          (lm) => SNELLEN_MAP.find((s) => Math.abs(s.lm - lm) < 0.01)?.s || "",
-        );
+        const snellen = sortLM.map((lm) => snellenName(lm));
 
         const udvas = d
           .map((r) => r.udva)
@@ -4511,7 +5660,7 @@
                     borderWidth: 1.5,
                     borderDash: [4, 4],
                     label: {
-                      content: "6/12",
+                      content: snellenName(0.3),
                       display: true,
                       position: "end",
                       color: "#F59E0B",
@@ -4526,7 +5675,7 @@
                     borderWidth: 1.5,
                     borderDash: [4, 4],
                     label: {
-                      content: "6/6",
+                      content: snellenName(0.0),
                       display: true,
                       position: "end",
                       color: "#10B981",
@@ -4707,6 +5856,21 @@
           borderWidth: 2,
           pointHoverRadius: 12,
         });
+        // Data-driven 95% confidence ellipse of the centroid (the fixed
+        // 0.5/1.0/1.5 D circles are reference rings, not statistics).
+        const dapCE = covEllipse(d.map((r) => ({ x: r.j0, y: r.j45 })));
+        if (dapCE) {
+          datasets.push({
+            label: "95% CI of centroid",
+            data: ellipsePoints(dapCE, 1 / dapCE.n),
+            type: "line",
+            borderColor: "#276675",
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false,
+            tension: 0,
+          });
+        }
 
         charts["dap"] = new Chart($("chart-dap"), {
           type: "scatter",
@@ -5362,17 +6526,850 @@
       // ============================================================
       // 10. TAB SWITCHING
       // ============================================================
+      const TAB_IDS = ["dashboard", "astig", "subgroups", "optimiser"];
       function switchTab(tab) {
-        $("tab-dashboard").style.display =
-          tab === "dashboard" ? "block" : "none";
-        $("tab-optimiser").style.display =
-          tab === "optimiser" ? "block" : "none";
-        $("btn-tab-dashboard").classList.toggle("active", tab === "dashboard");
-        $("btn-tab-optimiser").classList.toggle("active", tab === "optimiser");
-        const mD = $("mob-tab-dashboard"),
-          mO = $("mob-tab-optimiser");
-        if (mD) mD.classList.toggle("active", tab === "dashboard");
-        if (mO) mO.classList.toggle("active", tab === "optimiser");
+        currentTab = tab;
+        TAB_IDS.forEach((t) => {
+          const panel = $("tab-" + t);
+          if (panel) panel.style.display = t === tab ? "block" : "none";
+          const btn = $("btn-tab-" + t);
+          if (btn) btn.classList.toggle("active", t === tab);
+          const mob = $("mob-tab-" + t);
+          if (mob) mob.classList.toggle("active", t === tab);
+        });
+        // Charts created while their tab is hidden get zero size, so the new
+        // tabs render lazily on first show (and re-render after filtering).
+        if (tab === "astig" && astigDirty) renderAstigTab();
+        if (tab === "subgroups" && subgroupsDirty) renderSubgroupsTab();
+      }
+
+      // ============================================================
+      // 10a. ASTIGMATISM & TORIC ANALYSIS
+      // ============================================================
+      // Sample covariance of point cloud [{x,y}] → ellipse geometry.
+      function covEllipse(pts) {
+        const n = pts.length;
+        if (n < 3) return null;
+        const mx = pts.reduce((s, p) => s + p.x, 0) / n;
+        const my = pts.reduce((s, p) => s + p.y, 0) / n;
+        let sxx = 0,
+          syy = 0,
+          sxy = 0;
+        pts.forEach((p) => {
+          sxx += (p.x - mx) ** 2;
+          syy += (p.y - my) ** 2;
+          sxy += (p.x - mx) * (p.y - my);
+        });
+        sxx /= n - 1;
+        syy /= n - 1;
+        sxy /= n - 1;
+        const t = (sxx + syy) / 2;
+        const dd = Math.sqrt(((sxx - syy) / 2) ** 2 + sxy ** 2);
+        const l1 = Math.max(t + dd, 0),
+          l2 = Math.max(t - dd, 0);
+        const theta = 0.5 * Math.atan2(2 * sxy, sxx - syy);
+        return { mx, my, l1, l2, theta, n };
+      }
+
+      // Parametric ellipse points in DATA space (exact regardless of the
+      // chart's pixel aspect ratio — annotation-plugin ellipses rotate in
+      // pixel space and would distort).
+      // chi2(2 df): 5.991 = 95%. scale=1 → tolerance (dataset) ellipse;
+      // scale=1/n → confidence ellipse of the centroid.
+      function ellipsePoints(ce, scale) {
+        const a = Math.sqrt(ce.l1 * 5.991 * scale);
+        const b = Math.sqrt(ce.l2 * 5.991 * scale);
+        const pts = [];
+        for (let i = 0; i <= 64; i++) {
+          const t = (i / 64) * Math.PI * 2;
+          pts.push({
+            x:
+              ce.mx +
+              a * Math.cos(t) * Math.cos(ce.theta) -
+              b * Math.sin(t) * Math.sin(ce.theta),
+            y:
+              ce.my +
+              a * Math.cos(t) * Math.sin(ce.theta) +
+              b * Math.sin(t) * Math.cos(ce.theta),
+          });
+        }
+        return pts;
+      }
+
+      // Angular difference between two meridians (0–90°, mod 180).
+      function angularDiff(a, b) {
+        let d = Math.abs(a - b) % 180;
+        if (d > 90) d = 180 - d;
+        return d;
+      }
+
+      // Convert a centroid in J0/J45 space back to cylinder notation.
+      function centroidToCyl(cj0, cj45) {
+        const M = Math.hypot(cj0, cj45);
+        const cylMag = 2 * M;
+        let axis = ((Math.atan2(cj45, cj0) / 2) * 180) / Math.PI;
+        axis = ((axis % 180) + 180) % 180;
+        let cls = "Neutral";
+        if (cylMag >= 0.1) {
+          if (axis <= 30 || axis >= 150) cls = "WTR";
+          else if (axis >= 60 && axis <= 120) cls = "ATR";
+          else cls = "Oblique";
+        }
+        return { cylMag, axis, cls };
+      }
+
+      function buildKpiCards(el, kpis) {
+        el.innerHTML = "";
+        kpis.forEach((k) => {
+          const card = document.createElement("div");
+          card.className = `kpi-card ${k.status || ""}`;
+          let html = `<div class="kpi-label">${esc(k.label)}</div><div class="kpi-value">${esc(String(k.val))}</div>`;
+          if (k.sub) html += `<div class="kpi-sub">${esc(k.sub)}</div>`;
+          if (k.badge)
+            html += `<div class="kpi-badge ${k.badgeStatus || ""}">${esc(k.badge)}</div>`;
+          card.innerHTML = html;
+          el.appendChild(card);
+        });
+      }
+
+      const isToricRow = (r) => /toric/i.test(r.iolType || "");
+
+      function renderAstigTab() {
+        astigDirty = false;
+        const d = filteredData.filter(
+          (r) => r.j0 != null && r.j45 != null && r.cyl != null,
+        );
+        const strip = $("astig-kpi-strip");
+        destroyChart("astig-dap");
+        destroyChart("astig-hist");
+        destroyChart("astig-misalign");
+        if (!d.length) {
+          strip.innerHTML =
+            '<div class="empty-state" style="grid-column:1/-1">No astigmatism data in the current filter. Post_Sphere_D, Post_Cylinder_D and Post_Axis_deg are required.</div>';
+          setEmptyState("card-astig-dap", "No astigmatism data available.");
+          setEmptyState("card-astig-hist", "No astigmatism data available.");
+          setEmptyState(
+            "card-astig-misalign",
+            "No astigmatism data available.",
+          );
+          $("astig-misalign-stats").innerHTML = "";
+          $("astig-sia-body").innerHTML = "";
+          return;
+        }
+        clearEmptyState("card-astig-dap");
+        clearEmptyState("card-astig-hist");
+
+        const toric = d.filter(isToricRow);
+        const nonToric = d.filter((r) => !isToricRow(r));
+        const meanAbsCyl = (arr) =>
+          arr.length
+            ? arr.reduce((s, r) => s + Math.abs(r.cyl), 0) / arr.length
+            : null;
+        const pctLE = (arr, t) =>
+          arr.length
+            ? (100 * arr.filter((r) => Math.abs(r.cyl) <= t).length) /
+              arr.length
+            : null;
+
+        const cj0 = d.reduce((s, r) => s + r.j0, 0) / d.length;
+        const cj45 = d.reduce((s, r) => s + r.j45, 0) / d.length;
+        const cen = centroidToCyl(cj0, cj45);
+
+        buildKpiCards(strip, [
+          {
+            label: "Eyes with Astigmatism Data",
+            val: d.length,
+            sub: `${toric.length} toric · ${nonToric.length} non-toric`,
+          },
+          {
+            label: "Mean Residual Cylinder",
+            val: `${fmt(meanAbsCyl(d))} D`,
+            sub:
+              toric.length && nonToric.length
+                ? `Toric ${fmt(meanAbsCyl(toric))} · Non-toric ${fmt(meanAbsCyl(nonToric))} D`
+                : "",
+          },
+          {
+            label: "Cylinder ≤ 0.50 D",
+            val: pct(pctLE(d, 0.5)),
+            sub: toric.length ? `Toric: ${pct(pctLE(toric, 0.5))}` : "of eyes",
+          },
+          {
+            label: "Cylinder ≤ 1.00 D",
+            val: pct(pctLE(d, 1.0)),
+            sub: toric.length ? `Toric: ${pct(pctLE(toric, 1.0))}` : "of eyes",
+          },
+          {
+            label: "Centroid Residual Astigmatism",
+            val: `${fmt(cen.cylMag)} D`,
+            sub:
+              cen.cylMag >= 0.1
+                ? `× ${Math.round(cen.axis)}° · ${cen.cls}`
+                : "centred at origin",
+          },
+        ]);
+
+        // ── Double-angle plot with real confidence ellipses ──
+        const mkPts = (arr) => arr.map((r) => ({ x: r.j0, y: r.j45, raw: r }));
+        const datasets = [];
+        if (nonToric.length)
+          datasets.push({
+            label: `Non-toric (n=${nonToric.length})`,
+            data: mkPts(nonToric),
+            backgroundColor: "rgba(58,139,158,.65)",
+            pointRadius: 4,
+            borderColor: "transparent",
+          });
+        if (toric.length)
+          datasets.push({
+            label: `Toric (n=${toric.length})`,
+            data: mkPts(toric),
+            backgroundColor: "rgba(232,168,56,.8)",
+            pointRadius: 4,
+            borderColor: "transparent",
+          });
+        datasets.push({
+          label: `Centroid ${fmt(cen.cylMag)} D × ${Math.round(cen.axis)}°`,
+          data: [{ x: cj0, y: cj45 }],
+          backgroundColor: "#C8860A",
+          borderColor: "#051C35",
+          borderWidth: 2,
+          pointStyle: "star",
+          pointRadius: 10,
+          pointHoverRadius: 12,
+        });
+        const ce = covEllipse(d.map((r) => ({ x: r.j0, y: r.j45 })));
+        if (ce) {
+          datasets.push({
+            label: "95% CI of centroid",
+            data: ellipsePoints(ce, 1 / ce.n),
+            type: "line",
+            borderColor: "#276675",
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false,
+            tension: 0,
+          });
+          datasets.push({
+            label: "95% tolerance (dataset)",
+            data: ellipsePoints(ce, 1),
+            type: "line",
+            borderColor: "rgba(74,108,133,.55)",
+            borderWidth: 1.5,
+            borderDash: [5, 4],
+            pointRadius: 0,
+            fill: false,
+            tension: 0,
+          });
+        }
+        charts["astig-dap"] = new Chart($("chart-astig-dap"), {
+          type: "scatter",
+          data: { datasets },
+          options: {
+            ...JSON.parse(JSON.stringify(CHART_DEFAULTS)),
+            plugins: {
+              ...CHART_DEFAULTS.plugins,
+              legend: { labels: { color: "#4A6C85", font: { size: 9 } } },
+              annotation: {
+                annotations: {
+                  hline: {
+                    type: "line",
+                    yMin: 0,
+                    yMax: 0,
+                    borderColor: "rgba(138,175,196,.5)",
+                    borderWidth: 1,
+                  },
+                  vline: {
+                    type: "line",
+                    xMin: 0,
+                    xMax: 0,
+                    borderColor: "rgba(138,175,196,.5)",
+                    borderWidth: 1,
+                  },
+                },
+              },
+              tooltip: {
+                callbacks: {
+                  label: (p) => {
+                    const r = p.raw && p.raw.raw;
+                    if (!r) return p.dataset.label;
+                    return [
+                      `${r.iolType || "—"} · ${fmt(r.cyl)} D × ${r.axis}°`,
+                      `J0 ${fmt(r.j0)} · J45 ${fmt(r.j45)}`,
+                    ];
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                min: -2,
+                max: 2,
+                title: {
+                  display: true,
+                  text: "J0 (D)",
+                  color: "#4A6C85",
+                  font: { size: 10 },
+                },
+                ticks: { color: "#4A6C85", font: { size: 9 } },
+                grid: { color: "rgba(197,213,224,.8)" },
+              },
+              y: {
+                min: -2,
+                max: 2,
+                title: {
+                  display: true,
+                  text: "J45 (D)",
+                  color: "#4A6C85",
+                  font: { size: 10 },
+                },
+                ticks: { color: "#4A6C85", font: { size: 9 } },
+                grid: { color: "rgba(197,213,224,.8)" },
+              },
+            },
+          },
+        });
+
+        // ── Residual cylinder histogram: toric vs non-toric ──
+        const bands = [
+          { max: 0.25, label: "≤ 0.25" },
+          { max: 0.5, label: "0.26–0.50" },
+          { max: 0.75, label: "0.51–0.75" },
+          { max: 1.0, label: "0.76–1.00" },
+          { max: 1.5, label: "1.01–1.50" },
+          { max: Infinity, label: "> 1.50" },
+        ];
+        const bandPcts = (arr) => {
+          const counts = bands.map(() => 0);
+          arr.forEach((r) => {
+            const c = Math.abs(r.cyl);
+            const bi = bands.findIndex((b) => c <= b.max);
+            counts[bi >= 0 ? bi : bands.length - 1]++;
+          });
+          return counts.map((c) => (arr.length ? (100 * c) / arr.length : 0));
+        };
+        const histSets = [];
+        if (toric.length && nonToric.length) {
+          histSets.push({
+            label: `Toric (n=${toric.length})`,
+            data: bandPcts(toric),
+            backgroundColor: "rgba(232,168,56,.8)",
+            borderColor: "#E8A838",
+            borderWidth: 1,
+          });
+          histSets.push({
+            label: `Non-toric (n=${nonToric.length})`,
+            data: bandPcts(nonToric),
+            backgroundColor: "rgba(58,139,158,.65)",
+            borderColor: "#3A8B9E",
+            borderWidth: 1,
+          });
+        } else {
+          histSets.push({
+            label: `All eyes (n=${d.length})`,
+            data: bandPcts(d),
+            backgroundColor: "rgba(58,139,158,.65)",
+            borderColor: "#3A8B9E",
+            borderWidth: 1,
+          });
+        }
+        charts["astig-hist"] = new Chart($("chart-astig-hist"), {
+          type: "bar",
+          data: {
+            labels: bands.map((b) => b.label + " D"),
+            datasets: histSets,
+          },
+          options: {
+            ...JSON.parse(JSON.stringify(CHART_DEFAULTS)),
+            plugins: {
+              ...CHART_DEFAULTS.plugins,
+              legend: { labels: { color: "#4A6C85", font: { size: 10 } } },
+            },
+            scales: {
+              x: {
+                ticks: { color: "#4A6C85", font: { size: 9 } },
+                grid: { display: false },
+              },
+              y: {
+                ticks: {
+                  callback: (v) => v + "%",
+                  color: "#4A6C85",
+                  font: { size: 10 },
+                },
+                grid: { color: "rgba(197,213,224,.8)" },
+                title: {
+                  display: true,
+                  text: "% of eyes",
+                  color: "#4A6C85",
+                  font: { size: 10 },
+                },
+              },
+            },
+          },
+        });
+
+        // ── Toric axis misalignment (optional columns) ──
+        const mis = d
+          .filter((r) => r.toricIntAxis != null && r.toricImplAxis != null)
+          .map((r) => ({
+            mis: angularDiff(r.toricIntAxis, r.toricImplAxis),
+            cyl: Math.abs(r.cyl),
+            raw: r,
+          }));
+        const misStats = $("astig-misalign-stats");
+        if (!mis.length) {
+          misStats.innerHTML = "";
+          setEmptyState(
+            "card-astig-misalign",
+            "Toric alignment data not present.<br>Add the optional columns <strong>Toric_Intended_Axis_deg</strong> and <strong>Toric_Implanted_Axis_deg</strong> to your spreadsheet (or map them via “Remap columns”) to analyse rotational misalignment.",
+          );
+        } else {
+          clearEmptyState("card-astig-misalign");
+          const mvals = mis.map((m) => m.mis).sort((a, b) => a - b);
+          const mMean = mvals.reduce((s, v) => s + v, 0) / mvals.length;
+          const mid = Math.floor(mvals.length / 2);
+          const mMed =
+            mvals.length % 2 ? mvals[mid] : (mvals[mid - 1] + mvals[mid]) / 2;
+          const pctLE5 =
+            (100 * mvals.filter((v) => v <= 5).length) / mvals.length;
+          const pctLE10 =
+            (100 * mvals.filter((v) => v <= 10).length) / mvals.length;
+          misStats.innerHTML = `
+            <div class="polar-stat"><div class="polar-stat-val">${mis.length}</div><div class="polar-stat-lbl">Eyes</div></div>
+            <div class="polar-stat"><div class="polar-stat-val">${fmt(mMean, 1)}°</div><div class="polar-stat-lbl">Mean |misalignment|</div></div>
+            <div class="polar-stat"><div class="polar-stat-val">${fmt(mMed, 1)}°</div><div class="polar-stat-lbl">Median</div></div>
+            <div class="polar-stat"><div class="polar-stat-val">${Math.round(pctLE5)}%</div><div class="polar-stat-lbl">≤ 5°</div></div>
+            <div class="polar-stat"><div class="polar-stat-val">${Math.round(pctLE10)}%</div><div class="polar-stat-lbl">≤ 10°</div></div>`;
+          const misDatasets = [
+            {
+              label: "Eyes",
+              data: mis.map((m) => ({ x: m.mis, y: m.cyl, raw: m.raw })),
+              backgroundColor: "rgba(232,168,56,.75)",
+              pointRadius: 4,
+              borderColor: "transparent",
+            },
+          ];
+          const reg = linReg(
+            mis.map((m) => m.mis),
+            mis.map((m) => m.cyl),
+          );
+          if (reg.m != null) {
+            const maxX = Math.max(...mvals, 10);
+            misDatasets.push({
+              label: `Trend (R²=${reg.r2.toFixed(2)})`,
+              data: [
+                { x: 0, y: reg.b },
+                { x: maxX, y: reg.m * maxX + reg.b },
+              ],
+              type: "line",
+              borderColor: "rgba(192,64,64,.6)",
+              borderWidth: 1.5,
+              borderDash: [4, 4],
+              pointRadius: 0,
+            });
+          }
+          charts["astig-misalign"] = new Chart($("chart-astig-misalign"), {
+            type: "scatter",
+            data: { datasets: misDatasets },
+            options: {
+              ...JSON.parse(JSON.stringify(CHART_DEFAULTS)),
+              plugins: {
+                ...CHART_DEFAULTS.plugins,
+                legend: { labels: { color: "#4A6C85", font: { size: 9 } } },
+              },
+              scales: {
+                x: {
+                  min: 0,
+                  title: {
+                    display: true,
+                    text: "|Misalignment| (°)",
+                    color: "#4A6C85",
+                    font: { size: 10 },
+                  },
+                  ticks: { color: "#4A6C85", font: { size: 9 } },
+                  grid: { color: "rgba(197,213,224,.8)" },
+                },
+                y: {
+                  min: 0,
+                  title: {
+                    display: true,
+                    text: "Residual cylinder (D)",
+                    color: "#4A6C85",
+                    font: { size: 10 },
+                  },
+                  ticks: { color: "#4A6C85", font: { size: 9 } },
+                  grid: { color: "rgba(197,213,224,.8)" },
+                },
+              },
+            },
+          });
+        }
+
+        // ── Corneal SIA (optional pre/post K columns) ──
+        const siaRows = filteredData.filter(
+          (r) =>
+            r.k1 != null &&
+            r.k2 != null &&
+            r.preKAxis != null &&
+            r.postK1 != null &&
+            r.postK2 != null &&
+            r.postKAxis != null,
+        );
+        const siaBody = $("astig-sia-body");
+        if (!siaRows.length) {
+          siaBody.innerHTML = `<div class="empty-state">Corneal SIA requires pre- and post-operative keratometry with steep-meridian axes.<br>Optional columns: <strong>Pre_K1_D, Pre_K2_D, Pre_K_Steep_Axis_deg, Post_K1_D, Post_K2_D, Post_K_Steep_Axis_deg</strong> — map them via “Remap columns” if your file uses different headers.</div>`;
+        } else {
+          const kaVec = (k1, k2, ax) => {
+            const C = Math.abs(k2 - k1);
+            const a = (ax * Math.PI) / 180;
+            return { x: C * Math.cos(2 * a), y: C * Math.sin(2 * a) };
+          };
+          const siaVecs = siaRows.map((r) => {
+            const pre = kaVec(r.k1, r.k2, r.preKAxis);
+            const post = kaVec(r.postK1, r.postK2, r.postKAxis);
+            return { x: post.x - pre.x, y: post.y - pre.y, eye: r.eye };
+          });
+          const siaGroupRow = (label, vecs) => {
+            if (!vecs.length) return "";
+            const mx = vecs.reduce((s, v) => s + v.x, 0) / vecs.length;
+            const my = vecs.reduce((s, v) => s + v.y, 0) / vecs.length;
+            const mag = Math.hypot(mx, my);
+            let ax = ((Math.atan2(my, mx) / 2) * 180) / Math.PI;
+            ax = ((ax % 180) + 180) % 180;
+            const meanMag =
+              vecs.reduce((s, v) => s + Math.hypot(v.x, v.y), 0) / vecs.length;
+            return `<tr><td>${esc(label)}</td><td>${vecs.length}</td><td><strong>${fmt(mag)} D × ${Math.round(ax)}°</strong></td><td>${fmt(meanMag)} D</td></tr>`;
+          };
+          siaBody.innerHTML = `
+            <table class="sg-table" style="margin-top:6px">
+              <thead><tr><th>Group</th><th>n</th><th>Centroid SIA</th><th>Mean |SIA|</th></tr></thead>
+              <tbody>
+                ${siaGroupRow("All eyes", siaVecs)}
+                ${siaGroupRow(
+                  "Right eyes",
+                  siaVecs.filter((v) => v.eye === "R"),
+                )}
+                ${siaGroupRow(
+                  "Left eyes",
+                  siaVecs.filter((v) => v.eye === "L"),
+                )}
+              </tbody>
+            </table>
+            <p style="margin-top:10px;font-size:.72rem;color:var(--text-muted);line-height:1.5">Centroid SIA (vector mean) is the value to use in toric IOL calculators. The mean magnitude includes random measurement noise and overstates the effective SIA — modern practice typically uses centroid values of ~0.1 D or the Abulafia-Koch regression.</p>`;
+        }
+      }
+
+      // ============================================================
+      // 10b. SUBGROUP ANALYSIS
+      // ============================================================
+      const AL_BINS = [
+        { max: 22.0, label: "Short (< 22.0 mm)" },
+        { max: 24.5, label: "Normal (22.0–24.4 mm)" },
+        { max: 26.0, label: "Medium-long (24.5–25.9 mm)" },
+        { max: Infinity, label: "Long (≥ 26.0 mm)" },
+      ];
+      const AGE_BINS = [
+        { max: 60, label: "< 60" },
+        { max: 70, label: "60–69" },
+        { max: 80, label: "70–79" },
+        { max: Infinity, label: "80+" },
+      ];
+      function subgroupLabel(r, by) {
+        switch (by) {
+          case "al":
+            if (r.al == null) return null;
+            return AL_BINS.find((b) => r.al < b.max).label;
+          case "model":
+            return r.iolModel || null;
+          case "formula":
+            return r.formula || null;
+          case "type":
+            return r.iolType || null;
+          case "eye":
+            return r.eye === "R" ? "Right (R)" : "Left (L)";
+          case "age":
+            if (r.age == null) return null;
+            return AGE_BINS.find((b) => r.age < b.max).label;
+        }
+        return null;
+      }
+
+      function medianAbs(arr) {
+        const a = arr.map(Math.abs).sort((x, y) => x - y);
+        if (!a.length) return null;
+        const mid = Math.floor(a.length / 2);
+        return a.length % 2 ? a[mid] : (a[mid - 1] + a[mid]) / 2;
+      }
+
+      let lastSubgroupRows = [];
+
+      function renderSubgroupsTab() {
+        subgroupsDirty = false;
+        const by = $("subgroup-by").value;
+        const d = filteredData.filter((r) => r.pe != null && !isNaN(r.pe));
+        destroyChart("subgroups");
+        const wrap = $("subgroup-table-wrap");
+        const note = $("subgroup-bias-note");
+        if (!d.length) {
+          wrap.innerHTML =
+            '<div class="empty-state">Prediction error data required — ensure IOL_Target_Refraction_D is present and mapped.</div>';
+          note.innerHTML = "";
+          setEmptyState(
+            "card-subgroups",
+            "No prediction error data available.",
+          );
+          lastSubgroupRows = [];
+          return;
+        }
+        clearEmptyState("card-subgroups");
+
+        const groupsMap = {};
+        let unassigned = 0;
+        d.forEach((r) => {
+          const label = subgroupLabel(r, by);
+          if (label == null) {
+            unassigned++;
+            return;
+          }
+          (groupsMap[label] = groupsMap[label] || []).push(r);
+        });
+
+        let order = Object.keys(groupsMap);
+        if (by === "al") {
+          order = AL_BINS.map((b) => b.label).filter((l) => groupsMap[l]);
+        } else if (by === "age") {
+          order = AGE_BINS.map((b) => b.label).filter((l) => groupsMap[l]);
+        } else if (by === "eye") {
+          order = ["Right (R)", "Left (L)"].filter((l) => groupsMap[l]);
+        } else {
+          order.sort((a, b) => groupsMap[b].length - groupsMap[a].length);
+        }
+
+        const allPes = d.map((r) => r.pe);
+        const overallMPE = allPes.reduce((s, v) => s + v, 0) / allPes.length;
+
+        const groupRow = (label, rows) => {
+          const pes = rows.map((r) => r.pe);
+          const st = stats(pes);
+          const udvas = rows.map((r) => r.udva).filter((v) => v != null);
+          return {
+            label,
+            n: rows.length,
+            mpe: st.mean,
+            sd: st.sd,
+            mae: st.mae,
+            medae: medianAbs(pes),
+            w50: pctWithin(pes, 0.5),
+            w100: pctWithin(pes, 1.0),
+            udva: udvas.length
+              ? udvas.reduce((s, v) => s + v, 0) / udvas.length
+              : null,
+            flag: rows.length >= 10 && Math.abs(st.mean - overallMPE) > 0.25,
+          };
+        };
+        const rows = order.map((l) => groupRow(l, groupsMap[l]));
+        const total = groupRow("All filtered eyes", d);
+        total.flag = false;
+        lastSubgroupRows = [...rows, total];
+
+        // Bias note
+        const flagged = rows.filter((r) => r.flag);
+        note.innerHTML = flagged.length
+          ? `<div class="warn-badge" style="margin-bottom:12px">⚠ Possible systematic bias: <strong>${flagged
+              .map((f) => esc(f.label))
+              .join(
+                ", ",
+              )}</strong> — mean prediction error differs from the overall cohort by &gt; 0.25 D. Consider reviewing formula choice or constants for ${flagged.length > 1 ? "these subgroups" : "this subgroup"}.</div>`
+          : `<div class="info-msg" style="margin-bottom:12px">ℹ No subgroup (n ≥ 10) deviates from the overall mean prediction error by more than 0.25 D.</div>`;
+
+        // Table
+        const cell = (v, dp = 2, suffix = "") =>
+          v == null || isNaN(v) ? "—" : v.toFixed(dp) + suffix;
+        wrap.innerHTML = `<table class="sg-table">
+          <thead><tr><th>Subgroup</th><th>n</th><th>Mean PE (D)</th><th>SD (D)</th><th>MAE (D)</th><th>MedAE (D)</th><th>% ±0.50 D</th><th>% ±1.00 D</th><th>Mean UDVA</th></tr></thead>
+          <tbody>
+          ${rows
+            .map(
+              (r) => `<tr class="${r.flag ? "sg-flag" : ""}">
+                <td>${r.flag ? "⚠ " : ""}${esc(r.label)}</td>
+                <td>${r.n}</td><td>${cell(r.mpe)}</td><td>${cell(r.sd)}</td>
+                <td>${cell(r.mae)}</td><td>${cell(r.medae)}</td>
+                <td>${cell(r.w50, 1, "%")}</td><td>${cell(r.w100, 1, "%")}</td>
+                <td>${cell(r.udva)}</td></tr>`,
+            )
+            .join("")}
+          <tr class="sg-total"><td>${esc(total.label)}</td><td>${total.n}</td><td>${cell(total.mpe)}</td><td>${cell(total.sd)}</td><td>${cell(total.mae)}</td><td>${cell(total.medae)}</td><td>${cell(total.w50, 1, "%")}</td><td>${cell(total.w100, 1, "%")}</td><td>${cell(total.udva)}</td></tr>
+          </tbody></table>
+          ${unassigned ? `<p style="margin-top:8px;font-size:.72rem;color:var(--text-muted)">${unassigned} eyes had no value for this grouping variable and are excluded from the subgroup rows (still included in the total).</p>` : ""}`;
+
+        // Chart: % within ±0.50 D bars (benchmark tiers) + MAE line
+        const barColors = rows.map((r) =>
+          r.w50 >= 85
+            ? "rgba(16,185,129,.8)"
+            : r.w50 >= 55
+              ? "rgba(245,158,11,.8)"
+              : "rgba(239,68,68,.8)",
+        );
+        charts["subgroups"] = new Chart($("chart-subgroups"), {
+          type: "bar",
+          data: {
+            labels: rows.map((r) => `${r.label} (n=${r.n})`),
+            datasets: [
+              {
+                label: "% within ±0.50 D",
+                data: rows.map((r) => r.w50),
+                backgroundColor: barColors,
+                borderWidth: 0,
+                yAxisID: "y",
+                order: 2,
+              },
+              {
+                label: "MAE (D)",
+                data: rows.map((r) => r.mae),
+                type: "line",
+                borderColor: "#5A8FA8",
+                backgroundColor: "#5A8FA8",
+                pointRadius: 4,
+                borderWidth: 2,
+                tension: 0.3,
+                yAxisID: "y2",
+                order: 1,
+              },
+            ],
+          },
+          options: {
+            ...JSON.parse(JSON.stringify(CHART_DEFAULTS)),
+            plugins: {
+              ...CHART_DEFAULTS.plugins,
+              legend: { labels: { color: "#4A6C85", font: { size: 10 } } },
+              annotation: {
+                annotations: {
+                  nhs: {
+                    type: "line",
+                    yMin: 55,
+                    yMax: 55,
+                    yScaleID: "y",
+                    borderColor: "rgba(110,181,200,.6)",
+                    borderWidth: 1.5,
+                    borderDash: [4, 4],
+                    label: {
+                      content: "NHS 55%",
+                      display: true,
+                      position: "start",
+                      color: "#3A8B9E",
+                      font: { size: 8 },
+                    },
+                  },
+                  tgt: {
+                    type: "line",
+                    yMin: 85,
+                    yMax: 85,
+                    yScaleID: "y",
+                    borderColor: "rgba(16,185,129,.6)",
+                    borderWidth: 1.5,
+                    borderDash: [4, 4],
+                    label: {
+                      content: "85% target",
+                      display: true,
+                      position: "start",
+                      color: "#10B981",
+                      font: { size: 8 },
+                    },
+                  },
+                },
+              },
+            },
+            scales: {
+              x: {
+                ticks: {
+                  color: "#4A6C85",
+                  font: { size: 9 },
+                  maxRotation: 30,
+                },
+                grid: { display: false },
+              },
+              y: {
+                min: 0,
+                max: 100,
+                position: "left",
+                title: {
+                  display: true,
+                  text: "% within ±0.50 D",
+                  color: "#2A9470",
+                  font: { size: 9 },
+                },
+                ticks: {
+                  callback: (v) => v + "%",
+                  color: "#4A6C85",
+                  font: { size: 9 },
+                },
+                grid: { color: "rgba(197,213,224,.8)" },
+              },
+              y2: {
+                min: 0,
+                position: "right",
+                title: {
+                  display: true,
+                  text: "MAE (D)",
+                  color: "#5A8FA8",
+                  font: { size: 9 },
+                },
+                ticks: { color: "#4A6C85", font: { size: 9 } },
+                grid: { display: false },
+              },
+            },
+          },
+        });
+      }
+
+      function exportSubgroupCSV() {
+        if (!lastSubgroupRows.length) {
+          alert("No subgroup data to export yet.");
+          return;
+        }
+        const by = $("subgroup-by");
+        const byLabel = by.options[by.selectedIndex].text;
+        const head = [
+          "Subgroup (" + byLabel + ")",
+          "n",
+          "Mean PE (D)",
+          "SD (D)",
+          "MAE (D)",
+          "MedAE (D)",
+          "% within 0.50 D",
+          "% within 1.00 D",
+          "Mean UDVA (logMAR)",
+          "Bias flag",
+        ];
+        const csvCell = (v) =>
+          v == null || (typeof v === "number" && isNaN(v))
+            ? ""
+            : typeof v === "number"
+              ? v.toFixed(2)
+              : `"${String(v).replace(/"/g, '""')}"`;
+        const lines = [head.map((h) => `"${h}"`).join(",")];
+        lastSubgroupRows.forEach((r) => {
+          lines.push(
+            [
+              csvCell(r.label),
+              r.n,
+              csvCell(r.mpe),
+              csvCell(r.sd),
+              csvCell(r.mae),
+              csvCell(r.medae),
+              csvCell(r.w50),
+              csvCell(r.w100),
+              csvCell(r.udva),
+              r.flag ? "FLAGGED" : "",
+            ].join(","),
+          );
+        });
+        const a = document.createElement("a");
+        a.href =
+          "data:text/csv;charset=utf-8," +
+          encodeURIComponent("\uFEFF" + lines.join("\n"));
+        a.download = "subgroup_analysis.csv";
+        a.click();
       }
 
       // ============================================================
