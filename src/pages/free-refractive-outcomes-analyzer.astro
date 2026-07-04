@@ -16,17 +16,18 @@ import {
 	getBreadcrumbSchema,
 } from "../utils/seo";
 import usImage from "../assets/images/img-Focus-Brisbane-Eye-ICL-Cronin-Gunn.webp";
+import dashboardImage from "../assets/images/dashboard.png";
 import { Image } from "astro:assets";
 
 const title = "Free Refractive Outcomes Analyzer | Focus Vision Brisbane";
 const description =
-	"Analyse your cataract surgery refractive outcomes, benchmark against ESCRS standards and optimise your IOL lens constants — free forever, from the surgeons at Focus Vision Brisbane.";
+	"Analyse your cataract surgery refractive outcomes, benchmark against published international standards and optimise your IOL lens constants — free forever, from the surgeons at Focus Vision Brisbane.";
 const ogType = "website";
 
 const analyzerFeatures = [
 	{
 		title: "Benchmarks Accuracy",
-		text: "Benchmarks your refractive prediction accuracy against ESCRS 2024 standards",
+		text: "Benchmarks your refractive prediction accuracy against published international standards (NHS benchmark and EUREQUO registry outcomes)",
 		icon: "target",
 		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></g></svg>`,
 	},
@@ -87,7 +88,7 @@ const clinicalBenefits = [
 	},
 	{
 		title: "Benchmark Performance",
-		text: "Benchmark performance against ESCRS published standards — 85% of eyes within ±0.50 D of target",
+		text: "Benchmark performance against published standards — from the NHS benchmark of 55% of eyes within ±0.50 D to the high-performer target of 85%",
 		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978m7-7.318v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978M18 9h1.5a1 1 0 0 0 0-5H18M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm0 0H4.5a1 1 0 0 1 0-5H6"/></g></svg>`,
 	},
 	{
@@ -121,11 +122,11 @@ const faqs = [
 	},
 	{
 		q: "How many eyes do I need for the analysis to be meaningful?",
-		a: "A minimum of 30 eyes is recommended for reliable outcomes benchmarking. For lens constant optimisation, the ESCRS recommends a minimum of 50 eyes per IOL model per formula. The analyzer will display a warning if your sample size falls below this threshold for any optimisation calculation.",
+		a: "A minimum of 30 eyes is recommended for reliable outcomes benchmarking. For lens constant optimisation, at least 50 eyes per IOL model per formula is a widely used minimum, and 100 or more eyes further improves the reliability of the optimised constant (Aristodemou et al., JCRS 2011). The analyzer will display a warning if your sample size falls below 50 eyes for any optimisation calculation.",
 	},
 	{
 		q: "What is refractive prediction error and why does it matter?",
-		a: "Refractive prediction error (PE) is the difference between the post-operative spherical equivalent refraction and the pre-operative target refraction calculated by the IOL power formula. It is the primary measure of IOL formula accuracy. A mean prediction error close to zero indicates no systematic bias; a non-zero mean PE indicates that lens constant optimisation may improve outcomes. The ESCRS benchmark is 85% of eyes within ±0.50 D of target.",
+		a: "Refractive prediction error (PE) is the difference between the post-operative spherical equivalent refraction and the pre-operative target refraction calculated by the IOL power formula. It is the primary measure of IOL formula accuracy. A mean prediction error close to zero indicates no systematic bias; a non-zero mean PE indicates that lens constant optimisation may improve outcomes. The published NHS benchmark is 55% of eyes within ±0.50 D and 85% within ±1.00 D (Gale et al., Eye 2009); high-performing surgeons using optimised constants and modern formulas typically achieve 85% or more within ±0.50 D.",
 	},
 	{
 		q: "What is lens constant optimisation and how does it improve outcomes?",
@@ -133,15 +134,15 @@ const faqs = [
 	},
 	{
 		q: "Which IOL formulas does the lens constant optimiser support?",
-		a: "The Focus Vision Refractive Outcomes Analyzer supports lens constant optimisation for Barrett Universal II (Lens Factor), SRK/T (A-constant), Kane Formula (Kane Constant), Holladay 2 (Surgeon Factor), and EVO (EVO Constant). The correction factors applied are consistent with ESCRS published optimisation guidelines.",
+		a: "The Focus Vision Refractive Outcomes Analyzer supports lens constant optimisation for Barrett Universal II (Lens Factor), SRK/T (A-constant), Kane, Holladay 2 (Surgeon Factor), and EVO. Note that the Kane and EVO calculators take the manufacturer's SRK/T A-constant as their nominal input constant. The optimiser applies a formula-specific linear correction factor — an approximation of full iterative optimisation — and all optimised constants should be validated prospectively before routine clinical use.",
 	},
 	{
 		q: "What is a double-angle plot (DAP) and what does it show?",
-		a: "A double-angle plot, also called a power vector or Alpins vector diagram, plots each eye's residual astigmatism as a point in a two-dimensional space (J0 vs J45 power vectors). The centroid of the distribution reveals systematic astigmatic bias — for example, a systematic against-the-rule shift in toric IOL alignment. It is the recommended method for astigmatism outcomes analysis by the ESCRS and Alpins methodology.",
+		a: "A double-angle plot, also called a power vector or Alpins vector diagram, plots each eye's residual astigmatism as a point in a two-dimensional space (J0 vs J45 power vectors). The centroid of the distribution reveals systematic astigmatic bias — for example, a systematic against-the-rule shift in toric IOL alignment. It is the standard method for astigmatism outcomes reporting in the refractive surgery literature, based on the Alpins power vector methodology.",
 	},
 	{
-		q: 'What does "within ±0.50 D" mean and what is the ESCRS benchmark?',
-		a: "The proportion of eyes within ±0.50 D of the IOL target refraction is the primary global benchmark for IOL formula accuracy. The European Society of Cataract and Refractive Surgeons (ESCRS) published benchmark is 85% of eyes within ±0.50 D. High-performing formulas with optimised constants in experienced hands routinely achieve 90% or above. The analyzer displays your result with a colour-coded badge indicating whether you meet or fall below this standard.",
+		q: 'What does "within ±0.50 D" mean and what benchmark should I aim for?',
+		a: "The proportion of eyes within ±0.50 D of the IOL target refraction is the primary global measure of IOL formula accuracy. The published NHS benchmark is 55% of eyes within ±0.50 D and 85% within ±1.00 D (Gale et al., Eye 2009), while the European EUREQUO registry average is 73% within ±0.50 D (Lundström et al., JCRS 2018, analysis of 282,811 cataract extractions). High-performing surgeons with optimised lens constants and modern formulas routinely achieve 85% or above within ±0.50 D. The analyzer displays your result with colour-coded badges against both the published benchmarks and this high-performer target.",
 	},
 	{
 		q: "How do I calculate spherical equivalent from a manifest refraction?",
@@ -161,7 +162,7 @@ const faqs = [
 	},
 	{
 		q: "Is this tool endorsed by the ESCRS or any professional body?",
-		a: "The Focus Vision Refractive Outcomes Analyzer has been designed in alignment with ESCRS published benchmarks and outcomes analysis guidelines. It is not formally endorsed by the ESCRS or any other professional body. Surgeons are encouraged to validate any optimised constants prospectively before routine clinical use, as recommended by ESCRS guidelines.",
+		a: "The Focus Vision Refractive Outcomes Analyzer has been designed in alignment with published benchmarks and outcomes-analysis methodology from the peer-reviewed literature, including standard power vector (double-angle) astigmatism reporting. It is not formally endorsed by the ESCRS or any other professional body. Surgeons are encouraged to validate any optimised constants prospectively before routine clinical use, as recommended throughout the IOL calculation literature.",
 	},
 	{
 		q: "Can I use this tool for audit, credentialling, or medico-legal documentation?",
@@ -186,12 +187,14 @@ const graph = [
 ---
 
 <BaseLayout
+	title="Free Refractive Outcomes Analyzer & IOL Constant Optimiser"
 	showCurve={false}
 	topColor="#f4f1ed"
 	direction="down"
 	bottomColor="transparent"
 	description={description}
 	ogType={ogType}
+	ogImage={dashboardImage}
 >
 	<Fragment slot="head-schema">
 		<Schema item={graph} />

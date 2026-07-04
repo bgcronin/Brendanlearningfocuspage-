@@ -3,12 +3,13 @@
 > Focus Vision is a premier laser eye surgery and vision correction clinic based in Brisbane (Woolloongabba), Australia. Led by internationally trained cornea specialists, the clinic provides advanced surgical solutions including LASIK, PRK, and Ray Tracing technology.
 
 ## Core Services
-- [Laser Eye Surgery](https://www.focusvision.com.au/laser-eye-surgery/) - LASIK, PRK, and Lenticule Extraction for short-sightedness and long-sightedness.
-- [Implantable Contact Lens (ICL)](https://www.focusvision.com.au/implantable-contact-lens/) - Treatment for high prescriptions or those unsuitable for laser surgery.
-- [Laser for Reading Glasses](https://www.focusvision.com.au/laser-blended-vision/) - Laser Blended Vision (LBV) to treat presbyopia.
-- [Refractive Lens Exchange (RLE)](https://www.focusvision.com.au/refractive-lens-exchange/) - Replacing the natural lens to improve vision for older patients.
-- [Premium Cataract Surgery](https://www.focusvision.com.au/premium-cataract-surgery/) - Advanced cataract removal with lens replacement.
-- [Premium Pterygium Surgery](https://www.focusvision.com.au/premium-pterygium-surgery/) - Suture-free pterygium removal.
+- [Laser Eye Surgery](https://www.focusvision.com.au/vision-correction/laser-eye-surgery/) - LASIK, PRK, and Lenticule Extraction for short-sightedness and long-sightedness.
+- [Ray Tracing LASIK](https://www.focusvision.com.au/vision-correction/ray-tracing-lasik/) - Personalised ray-tracing-guided laser vision correction.
+- [Implantable Contact Lens (ICL)](https://www.focusvision.com.au/vision-correction/implantable-contact-lens/) - Treatment for high prescriptions or those unsuitable for laser surgery.
+- [Laser for Reading Glasses](https://www.focusvision.com.au/vision-correction/laser-for-reading-glasses/) - Laser Blended Vision (LBV) to treat presbyopia.
+- [Refractive Lens Exchange (RLE)](https://www.focusvision.com.au/vision-correction/refractive-lens-exchange/) - Replacing the natural lens to improve vision for older patients.
+- [Premium Cataract Surgery](https://www.focusvision.com.au/vision-correction/cataract-surgery/) - Advanced cataract removal with lens replacement.
+- [Premium Pterygium Surgery](https://www.focusvision.com.au/vision-correction/pterygium-surgery/) - Suture-free pterygium removal.
 
 ## Key Information
 - **Founding Surgeons:** [Dr. Brendan Cronin](https://www.focusvision.com.au/about-dr-brendan-cronin/) and [Dr. David Gunn](https://www.focusvision.com.au/about-dr-david-gunn/).
@@ -24,8 +25,9 @@
 - **Website:** [focusvision.com.au](https://www.focusvision.com.au/)
 
 ## Technical Tools
-- [Refractive Outcomes Analyzer](https://www.focusvision.com.au/refractive-outcomes-analyzer/) - A tool for monitoring and analyzing surgical results.
-- [Laser Suitability Test](https://www.focusvision.com.au/take-the-test/) - Online assessment for prospective patients.
+- [Free Refractive Outcomes Analyzer — overview, benchmarks & FAQ](https://www.focusvision.com.au/free-refractive-outcomes-analyzer/) - Why Focus Vision built the tool, what it does, published benchmark explanations (Gale et al. 2009 NHS standard; EUREQUO registry) and answers to common questions about prediction error, lens constant optimisation and data privacy.
+- [Refractive Outcomes Analyzer — launch the app](https://www.focusvision.com.au/refractive-outcomes-analyzer/) - Free browser-based tool for cataract and lens surgeons, built by Dr Brendan Cronin and Dr David Gunn. Upload an Excel spreadsheet to benchmark refractive prediction accuracy (MAE, MPE, % within ±0.50 D / ±1.00 D), generate cumulative UDVA curves and double-angle astigmatism plots, compare IOL formula performance, and optimise IOL lens constants (Barrett Universal II, SRK/T, Kane, Holladay 2, EVO). No sign-up, no cost; all analysis runs locally in the browser and no patient data is transmitted to any server. Includes a free data template and 416-eye sample dataset.
+- [Laser Suitability Test](https://www.focusvision.com.au/laser-suitability-test/) - Online assessment for prospective patients.
 
 ## Sitemap & Socials
 - [About Us](https://www.focusvision.com.au/about-focus-vision/)

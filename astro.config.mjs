@@ -46,6 +46,11 @@ export default defineConfig({
   integrations: [
     sitemap({
       filter: (page) => !page.includes("/blog/tag/"),
+      // Static tool served from public/ — not an Astro route, so it must be
+      // added to the sitemap explicitly.
+      customPages: [
+        "https://www.focusvision.com.au/refractive-outcomes-analyzer/",
+      ],
       serialize(item) {
         if (item.url.includes("/blog/")) {
           // Extract slug from URL - handles trailing slashes
