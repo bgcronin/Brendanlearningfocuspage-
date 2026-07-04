@@ -44,3 +44,7 @@
 /dr-brendan-cronin              /about-dr-brendan-cronin/        301!
 /dr-david-gunn                  /about-dr-david-gunn/            301!
 /about-focus                    /about-focus-vision/             301!
+
+# AU/UK spelling variants (analyser -> analyzer)
+/refractive-outcomes-analyser        /refractive-outcomes-analyzer/        301!
+/free-refractive-outcomes-analyser   /free-refractive-outcomes-analyzer/   301!

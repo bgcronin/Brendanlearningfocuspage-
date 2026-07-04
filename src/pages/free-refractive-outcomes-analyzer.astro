@@ -9,6 +9,7 @@ import Card from "../components/Card.astro";
 import TwoColumnContent from "../components/TwoColumnContent.astro";
 import StyledList from "../components/StyledList.astro";
 import Faq from "../components/Faq.astro";
+import ReviewedBy from "../components/ReviewedBy.astro";
 import Schema from "../components/Schema.astro";
 import {
 	getMedicalClinicSchema,
@@ -142,11 +143,11 @@ const faqs = [
 	},
 	{
 		q: "How many eyes do I need for the analysis to be meaningful?",
-		a: "A minimum of 30 eyes is recommended for reliable outcomes benchmarking. For lens constant optimisation, at least 50 eyes per IOL model per formula is a widely used minimum, and 100 or more eyes further improves the reliability of the optimised constant (Aristodemou et al., JCRS 2011). The analyzer will display a warning if your sample size falls below 50 eyes for any optimisation calculation.",
+		a: 'A minimum of 30 eyes is recommended for reliable outcomes benchmarking. For lens constant optimisation, at least 50 eyes per IOL model per formula is a widely used minimum, and 100 or more eyes further improves the reliability of the optimised constant (<a href="https://pubmed.ncbi.nlm.nih.gov/21183099/" target="_blank" rel="noopener">Aristodemou et al., JCRS 2011</a>). The analyzer will display a warning if your sample size falls below 50 eyes for any optimisation calculation.',
 	},
 	{
 		q: "What is refractive prediction error and why does it matter?",
-		a: "Refractive prediction error (PE) is the difference between the post-operative spherical equivalent refraction and the pre-operative target refraction calculated by the IOL power formula. It is the primary measure of IOL formula accuracy. A mean prediction error close to zero indicates no systematic bias; a non-zero mean PE indicates that lens constant optimisation may improve outcomes. The published NHS benchmark is 55% of eyes within ±0.50 D and 85% within ±1.00 D (Gale et al., Eye 2009); high-performing surgeons using optimised constants and modern formulas typically achieve 85% or more within ±0.50 D.",
+		a: 'Refractive prediction error (PE) is the difference between the post-operative spherical equivalent refraction and the pre-operative target refraction calculated by the IOL power formula. It is the primary measure of IOL formula accuracy. A mean prediction error close to zero indicates no systematic bias; a non-zero mean PE indicates that lens constant optimisation may improve outcomes. The published NHS benchmark is 55% of eyes within ±0.50 D and 85% within ±1.00 D (<a href="https://pubmed.ncbi.nlm.nih.gov/17721503/" target="_blank" rel="noopener">Gale et al., Eye 2009</a>); high-performing surgeons using optimised constants and modern formulas typically achieve 85% or more within ±0.50 D.',
 	},
 	{
 		q: "What is lens constant optimisation and how does it improve outcomes?",
@@ -162,7 +163,7 @@ const faqs = [
 	},
 	{
 		q: 'What does "within ±0.50 D" mean and what benchmark should I aim for?',
-		a: "The proportion of eyes within ±0.50 D of the IOL target refraction is the primary global measure of IOL formula accuracy. The published NHS benchmark is 55% of eyes within ±0.50 D and 85% within ±1.00 D (Gale et al., Eye 2009), while the European EUREQUO registry average is 73% within ±0.50 D (Lundström et al., JCRS 2018, analysis of 282,811 cataract extractions). High-performing surgeons with optimised lens constants and modern formulas routinely achieve 85% or above within ±0.50 D. The analyzer displays your result with colour-coded badges against both the published benchmarks and this high-performer target.",
+		a: 'The proportion of eyes within ±0.50 D of the IOL target refraction is the primary global measure of IOL formula accuracy. The published NHS benchmark is 55% of eyes within ±0.50 D and 85% within ±1.00 D (<a href="https://pubmed.ncbi.nlm.nih.gov/17721503/" target="_blank" rel="noopener">Gale et al., Eye 2009</a>), while the European EUREQUO registry average is 73% within ±0.50 D (<a href="https://www.sciencedirect.com/science/article/abs/pii/S0886335018302293" target="_blank" rel="noopener">Lundström et al., JCRS 2018</a>, analysis of 282,811 cataract extractions). High-performing surgeons with optimised lens constants and modern formulas routinely achieve 85% or above within ±0.50 D. The analyzer displays your result with colour-coded badges against both the published benchmarks and this high-performer target.',
 	},
 	{
 		q: "How do I calculate spherical equivalent from a manifest refraction?",
@@ -190,13 +191,26 @@ const faqs = [
 	},
 ];
 
+const lastReviewed = "2026-07-04";
+
 const graph = [
 	getMedicalClinicSchema(),
-	getMedicalWebPageSchema(
-		"/free-refractive-outcomes-analyzer",
-		title,
-		description,
-	),
+	{
+		...getMedicalWebPageSchema(
+			"/free-refractive-outcomes-analyzer",
+			title,
+			description,
+			undefined,
+			lastReviewed,
+			lastReviewed,
+		),
+		// AU/UK spelling variant so "refractive outcomes analyser" searches
+		// and AI assistants resolve to the same entity
+		alternateName: [
+			"Free Refractive Outcomes Analyser",
+			"IOL Refractive Outcomes Analyser",
+		],
+	},
 	getBreadcrumbSchema([
 		{
 			name: "Free Refractive Outcomes Analyzer",
@@ -395,6 +409,12 @@ const graph = [
 	</SimpleBanner>
 
 	<Faq title="Frequently Asked Questions" faqs={faqs} style="eggshell" />
+
+	<ReviewedBy
+		author="Dr Brendan Cronin"
+		authorUrl="/about-dr-brendan-cronin"
+		lastReviewed={lastReviewed}
+	/>
 
 	<Section backgroundColor="#C2DBE3">
 		<h2 class="big-text" style="color: #1C2F49;">

@@ -1,0 +1,99 @@
+---
+title: "How to Audit Your Cataract Surgery Refractive Outcomes: A Practical Guide"
+category: innovation-research
+coverImage: >-
+  ../../assets/images/blog/how-to-audit-your-cataract-surgery-refractive-outcomes/dashboard.png
+description: >-
+  A step-by-step guide for cataract and lens surgeons: what data to collect,
+  the metrics and published benchmarks that matter, how to optimise your IOL
+  constants — and a free browser-based analyzer that keeps patient data on
+  your own computer.
+author: brendan-cronin
+tags:
+  - iol-calculations
+  - refractive-surgery
+  - digital-tools
+  - cataract-surgery
+datePublished: 2026-07-04T00:00:00.000Z
+dateModified: 2026-07-04T00:00:00.000Z
+---
+
+Modern cataract surgery is refractive surgery. Patients — especially those choosing premium multifocal, EDOF or toric lenses — expect to hit a refractive target, and the only way to know how often you hit it is to measure. A regular refractive outcomes audit is one of the most clinically impactful habits a cataract or lens surgeon can build: it exposes systematic bias you can actually fix, usually with nothing more than a lens constant adjustment.
+
+This guide sets out how we audit our own outcomes at Focus Vision, and how any surgeon can do the same in an afternoon using the free, browser-based [Refractive Outcomes Analyzer](/free-refractive-outcomes-analyzer) (or "outcomes analyser", for fellow Australians) that we built and share with the global ophthalmology community.
+
+### What data do you need?
+
+One row per operated eye. The essentials:
+
+- **Patient identifier** (de-identified), **eye** (R/L or OD/OS), **age** and **surgery date**
+- **IOL details**: model, type, implanted power, the formula used, and the **target refraction** the formula predicted
+- **Post-operative refraction**: sphere, cylinder and axis at a stable review (4–6 weeks is typical), plus **uncorrected distance visual acuity** in logMAR
+- Optional extras that unlock deeper analysis: axial length, pre/post keratometry with steep-meridian axes, and toric IOL intended vs implanted axes
+
+Most practice management or biometry systems can export this in minutes. If your spreadsheet uses its own column names, a column-mapping step in the analyzer matches them for you — no reformatting required.
+
+### The four numbers that matter
+
+**Prediction error (PE)** is the post-operative spherical equivalent minus the formula's predicted refraction, per eye. Everything else builds on it:
+
+1. **Mean prediction error (MPE)** — your systematic bias. A cohort MPE meaningfully different from zero means your lens constant, not your surgery, is costing you accuracy.
+2. **Mean and median absolute error (MAE / MedAE)** — your scatter. Modern formulas in experienced hands typically achieve an MAE around 0.30–0.40 D.
+3. **Percentage within ±0.50 D of target** — the headline accuracy figure used across the literature.
+4. **Percentage within ±1.00 D of target** — the safety-net figure; almost all eyes should sit inside it.
+
+### What counts as a good result?
+
+Anchor your audit to the published numbers rather than folklore:
+
+- The **NHS benchmark** is 55% of eyes within ±0.50 D and 85% within ±1.00 D ([Gale et al., Eye 2009](https://pubmed.ncbi.nlm.nih.gov/17721503/)).
+- The **EUREQUO European registry average** — 282,811 cataract extractions — is about 73% within ±0.50 D ([Lundström et al., JCRS 2018](https://www.sciencedirect.com/science/article/abs/pii/S0886335018302293)).
+- **High-performing practices** with optimised constants and modern formulas routinely reach **85% or better within ±0.50 D** — a target, not a published standard, but an achievable one.
+
+If you're between the benchmark and the target, you're in good company. If you're below the benchmark, the audit has just paid for itself — the next two sections are usually why.
+
+### Optimising your lens constants
+
+Manufacturer constants are population averages. Your biometer, your technique and your refraction protocol all shift results, which is why a personalised constant is the single cheapest accuracy upgrade available. The essentials:
+
+- Optimise **per IOL model, per formula**, using at least **50 eyes** — and preferably 100 or more, which measurably improves the reliability of the optimised constant ([Aristodemou et al., JCRS 2011](https://pubmed.ncbi.nlm.nih.gov/21183099/)).
+- Note that the **Kane and EVO calculators take the manufacturer's SRK/T A-constant** as their nominal input, so optimised A-constants carry across.
+- Always **validate an optimised constant prospectively** before adopting it routinely, and cross-check against published values on IOLCon.
+
+The [free analyzer](/free-refractive-outcomes-analyzer) performs this optimisation automatically for Barrett Universal II, SRK/T, Kane, Holladay 2 and EVO, reports a 95% confidence interval on the optimised constant, and warns you when a group is too small to trust.
+
+### Don't forget astigmatism
+
+Spherical equivalent hides half the story. A proper audit includes a **double-angle (power vector) plot** of residual astigmatism: the centroid reveals systematic with-the-rule or against-the-rule bias, and a 95% confidence ellipse tells you whether it's real or noise. If you implant toric IOLs, track **intended vs implanted axis** — roughly 3.3% of the cylinder correction is lost per degree of misalignment — and, if you record pre- and post-operative keratometry, your **surgically induced astigmatism (SIA) centroid** is the value your toric calculator actually wants.
+
+### Look for bias hiding in subgroups
+
+A respectable overall result can conceal a subgroup problem. Break your outcomes down by **axial length** (short, normal and long eyes are where formulas disagree most), by **IOL model** and by **formula**. A subgroup whose mean prediction error sits more than about a quarter of a dioptre away from your overall cohort is a flag worth investigating — often it means a different formula, or a separately optimised constant, for that group.
+
+### A step-by-step audit in five steps
+
+1. **Export** your last 12–24 months of cataract and lens cases (aim for 30+ eyes; 50+ per IOL model if you want constant optimisation).
+2. **Open** the [Refractive Outcomes Analyzer](/free-refractive-outcomes-analyzer) — it runs entirely in your browser, with no sign-up, and **no patient data ever leaves your computer**.
+3. **Upload** your Excel or CSV file (a free template and a 416-eye sample dataset are provided) and map any non-standard column names.
+4. **Review** the dashboard: prediction error against the published benchmarks, the cumulative UDVA curve, the double-angle plot, formula comparison and subgroup breakdowns.
+5. **Act**: adopt (and prospectively validate) optimised constants, then re-audit in six months and export the PDF report for your CPD or audit records.
+
+### Frequently asked questions
+
+**How many eyes do I need before an audit is meaningful?**
+Around 30 eyes gives a useful first look at your benchmarks; constant optimisation needs at least 50 eyes per IOL model per formula, and 100+ is better.
+
+**Should I use both eyes of the same patient?**
+Fellow eyes are correlated, so treating them as independent slightly overstates statistical confidence. For benchmarking percentages it's common practice to include both; for formal statistics, be aware of the limitation.
+
+**When should I measure the post-operative refraction?**
+After refractive stability — most surgeons use 3–6 weeks for uncomplicated phacoemulsification. Record the interval so you can filter on it.
+
+**Is a web-based tool safe for patient data?**
+It depends on the tool. The Focus Vision analyzer processes everything locally in your browser and its security policy blocks all outbound data connections — nothing is uploaded to any server. De-identify your spreadsheet regardless; it's good practice.
+
+---
+
+Auditing your refractive outcomes isn't an academic exercise — it's the fastest, cheapest way to make next year's patients see better than last year's. If this guide helps you run your first audit, that's exactly why we [built the analyzer and made it free](/free-refractive-outcomes-analyzer).
+
+_Dr Brendan Cronin and Dr David Gunn are corneal, cataract and refractive surgeons at Focus Vision, Brisbane, and the developers of the Focus Vision Refractive Outcomes Analyzer._
