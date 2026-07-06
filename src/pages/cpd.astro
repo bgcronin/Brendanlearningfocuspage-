@@ -1,0 +1,241 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SimpleBanner from "../components/SimpleBanner.astro";
+import Section from "../components/Section.astro";
+import CardGrid from "../components/CardGrid.astro";
+import Card from "../components/Card.astro";
+import Button from "../components/Button.astro";
+import Faq from "../components/Faq.astro";
+import ReviewedBy from "../components/ReviewedBy.astro";
+import Schema from "../components/Schema.astro";
+import {
+	getMedicalClinicSchema,
+	getMedicalWebPageSchema,
+	getBreadcrumbSchema,
+	SITE_URL,
+} from "../utils/seo";
+
+// The CPD portal deploys as its own Netlify site (see focus-cpd-portal/ in
+// this repo). Update this constant once the subdomain is live.
+const PORTAL_URL = "https://cpd.focusvision.com.au";
+
+const title = "Free CPD Portal for Optometrists";
+const description =
+	"Focus Vision's free online CPD portal for optometrists: watch presentations from our corneal specialists, complete a short quiz, and receive your CPD certificate by email instantly — with a permanent CPD record and public certificate verification.";
+const lastReviewed = "2026-07-06";
+
+const steps = [
+	{
+		title: "1. Create Your Free Account",
+		text: "Register with your name and practice details (AHPRA number optional), verify your email, and browse the course catalogue — filtered by topics such as cornea, glaucoma and refractive surgery.",
+	},
+	{
+		title: "2. Learn",
+		text: "Each course lists its presenter, learning objectives and allocated CPD hours. Complete any pre-reading, then watch the video presentation at your own pace.",
+	},
+	{
+		title: "3. Complete the Quiz",
+		text: "Answer a short multiple-choice quiz. Your score is shown with the correct answers and explanations — and you can retake courses at any time.",
+	},
+	{
+		title: "4. Receive Your Certificate Instantly",
+		text: "Your CPD certificate — with your name, the course, learning objectives, presenter and CPD hours — appears on screen immediately and is emailed to you as a PDF.",
+	},
+];
+
+const features = [
+	{
+		title: "A Permanent CPD Record",
+		text: "Every completed course is stored in your personal My CPD Record, with the date, hours, score and a certificate download button — so your certificates are always re-downloadable.",
+	},
+	{
+		title: "Verifiable Certificates",
+		text: "Every certificate carries a unique ID that anyone can confirm on the portal's public verification page — useful for audits and employers.",
+	},
+	{
+		title: "Presented By Specialists",
+		text: "Courses are presented by Focus Vision's corneal, cataract and refractive specialists — the team behind CAIRSPlan and the Refractive Outcomes Analyzer.",
+	},
+];
+
+const faqs = [
+	{
+		q: "Who can use the Focus Vision CPD portal?",
+		a: "The portal is designed for optometrists. You register with your full name, email and practice name — your AHPRA registration number is optional. Account creation requires email verification.",
+	},
+	{
+		q: "Is the CPD portal free?",
+		a: "Yes. Like our Refractive Outcomes Analyzer and CAIRSPlan, the CPD portal is provided free by Focus Vision as a contribution to the eye-care community. There are no fees or subscriptions.",
+	},
+	{
+		q: "How do the courses work?",
+		a: "Each course has up to three steps: pre-reading (if the course includes it, confirmed with a tick-box), a video presentation, and a short multiple-choice quiz. Courses display their presenter, learning objectives and allocated CPD hours up front.",
+	},
+	{
+		q: "Do I need to pass the quiz to get my certificate?",
+		a: "No pass mark gates your certificate — completing the course (watching the presentation and submitting the quiz) is sufficient. Your score is recorded and shown to you with the correct answers and explanations, and you can retake a course at any time.",
+	},
+	{
+		q: "How do I receive and keep my CPD certificates?",
+		a: "Your certificate appears on screen the moment you finish — ready to screenshot — and the PDF is emailed to you immediately. It also remains permanently downloadable from the My CPD Record page whenever you log back in.",
+	},
+	{
+		q: "What appears on the certificate?",
+		a: "Your full name, the course title, the CPD hours allocated to the course, the learning objectives, the presenter, the completion date, and a unique certificate ID.",
+	},
+	{
+		q: "Can my employer or an auditor verify my certificate?",
+		a: "Yes. Every certificate carries a unique ID (for example FV-2026-A1B2C3) that anyone can check — without a login — on the portal's public certificate verification page.",
+	},
+];
+
+const graph = [
+	getMedicalClinicSchema(),
+	{
+		...getMedicalWebPageSchema(
+			"/cpd",
+			title,
+			description,
+			undefined,
+			lastReviewed,
+			lastReviewed,
+		),
+		alternateName: [
+			"Focus Vision CPD Portal",
+			"CPD for optometrists Brisbane",
+			"Optometry CPD courses online",
+		],
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		"@id": `${PORTAL_URL}/#app`,
+		name: "Focus Vision CPD Portal",
+		url: PORTAL_URL,
+		applicationCategory: "EducationalApplication",
+		operatingSystem: "Any (web browser)",
+		isAccessibleForFree: true,
+		offers: { "@type": "Offer", price: "0", priceCurrency: "AUD" },
+		description:
+			"Free online continuing professional development portal for optometrists: video presentations from Focus Vision's specialists, multiple-choice quizzes, instant emailed CPD certificates, a permanent CPD record, and public certificate verification.",
+		audience: {
+			"@type": "ProfessionalAudience",
+			audienceType: "Optometrists",
+		},
+		provider: { "@id": `${SITE_URL}/#org` },
+		publisher: { "@id": `${SITE_URL}/#org` },
+		mainEntityOfPage: `${SITE_URL}/cpd`,
+	},
+	getBreadcrumbSchema([
+		{
+			name: "CPD Portal for Optometrists",
+			item: "/cpd",
+		},
+	]),
+];
+---
+
+<BaseLayout
+	title={title}
+	showCurve={false}
+	topColor="#f4f1ed"
+	direction="down"
+	bottomColor="transparent"
+	description={description}
+>
+	<Fragment slot="head-schema">
+		<Schema item={graph} />
+	</Fragment>
+
+	<SimpleBanner
+		textAlign="left"
+		backgroundColor="#ffffff"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+		padding="large"
+	>
+		<h1>Focus Vision CPD Portal for Optometrists</h1>
+		<p>
+			Free online continuing professional development for optometrists —
+			watch presentations from Focus Vision's corneal, cataract and
+			refractive specialists, complete a short quiz, and receive your CPD
+			certificate by email the moment you finish.
+		</p>
+		<p>
+			Every course states its learning objectives and allocated CPD hours,
+			your completed courses live permanently in your personal CPD record,
+			and every certificate can be independently verified online.
+		</p>
+		<Button href={PORTAL_URL} text="Open the CPD Portal" openInNewTab={true} />
+	</SimpleBanner>
+
+	<Section backgroundColor="#f4f1ed" paddingTop="med">
+		<h2 class="big-text">How It Works</h2>
+		<CardGrid
+			backgroundColor="#f4f1ed"
+			cardBackgroundColor="#ffffff"
+			alignCards={true}
+		>
+			{
+				steps.map((step) => (
+					<Card>
+						<h3>{step.title}</h3>
+						<p>{step.text}</p>
+					</Card>
+				))
+			}
+		</CardGrid>
+	</Section>
+
+	<Section backgroundColor="#ffffff" paddingTop="med">
+		<h2 class="big-text">Built For Your CPD Record</h2>
+		<CardGrid
+			backgroundColor="#ffffff"
+			cardBackgroundColor="#f4f1ed"
+			alignCards={true}
+		>
+			{
+				features.map((feature) => (
+					<Card>
+						<h3>{feature.title}</h3>
+						<p>{feature.text}</p>
+					</Card>
+				))
+			}
+		</CardGrid>
+	</Section>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="#C2DBE3"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+		padding="large"
+	>
+		<h2>Education Is How We Say Thank You</h2>
+		<p>
+			Optometrists are our most important clinical partners. The CPD
+			portal is our way of sharing what we see in surgery every day —
+			so the whole eye-care team around each patient keeps getting
+			better. It sits alongside our other free tools for the profession:
+			the <a href="/free-refractive-outcomes-analyzer"
+				>Refractive Outcomes Analyzer</a
+			> and <a href="/cairsplan">CAIRSPlan</a>.
+		</p>
+		<Button href={PORTAL_URL} text="Browse CPD Courses" openInNewTab={true} />
+	</SimpleBanner>
+
+	<Faq
+		title="CPD Portal — Frequently Asked Questions"
+		faqs={faqs}
+		style="eggshell"
+	/>
+
+	<ReviewedBy
+		author="Dr Brendan Cronin"
+		authorUrl="/about-dr-brendan-cronin"
+		lastReviewed={lastReviewed}
+	/>
+</BaseLayout>

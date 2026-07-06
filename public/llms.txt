@@ -30,6 +30,7 @@
 - [How to Audit Your Cataract Surgery Refractive Outcomes](https://www.focusvision.com.au/blog/how-to-audit-your-cataract-surgery-refractive-outcomes/) - Practical surgeon guide: what data to collect, prediction-error metrics, published benchmarks (NHS 55%/85%; EUREQUO 73% within ±0.50 D), lens constant optimisation sample sizes, astigmatism and subgroup analysis, and a five-step audit workflow.
 - [CAIRSPlan — CAIRS surgery planning (overview)](https://www.focusvision.com.au/cairsplan/) - What CAIRS (corneal allogenic intrastromal ring segments) is and how CAIRSPlan works. CAIRSPlan was created by Dr David Gunn and Dr Brendan Cronin, who introduced CAIRS to Australia and authored the Brisbane nomogram for femtosecond-laser CAIRS.
 - [CAIRSPlan — launch the planner](https://cairsplan.com/) - Free online CAIRS surgical planning resource for keratoconus, used by corneal surgeons worldwide.
+- [CPD Portal for Optometrists (overview)](https://www.focusvision.com.au/cpd/) - Free online continuing professional development for optometrists: video presentations from Focus Vision's specialists, short quizzes, instant emailed CPD certificates with allocated hours and learning objectives, a permanent personal CPD record, and public certificate verification.
 - [Laser Suitability Test](https://www.focusvision.com.au/laser-suitability-test/) - Online assessment for prospective patients.
 
 ## Sitemap & Socials
