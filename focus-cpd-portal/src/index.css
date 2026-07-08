@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cream text-slate-800 antialiased;
+  }
+}
+
+@layer components {
+  /* Pill CTA matching the focusvision.com.au buttons:
+     gradient, fully rounded, uppercase, weight 500 */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-cta px-7 py-3 text-sm font-medium uppercase tracking-wide text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-navy/25 bg-white px-7 py-3 text-sm font-medium uppercase tracking-wide text-navy transition hover:bg-teal-pale disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-danger {
+    @apply inline-flex items-center justify-center rounded-full border border-red-200 bg-white px-4 py-1.5 text-sm font-medium text-red-600 transition hover:bg-red-50;
+  }
+  .input {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-teal focus:ring-2 focus:ring-teal/20;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-semibold text-navy;
+  }
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full bg-teal-pale px-2.5 py-0.5 text-xs font-semibold text-teal-dark;
+  }
+}
