@@ -405,16 +405,16 @@ export const getAboutPageSchema = (
 export const getPersonSchema = (author: any): Person | Physician => {
   const cleanId = author.id.replace(/\.[^/.]+$/, "");
   const personId =
-    author.id === "brendan-cronin"
+    cleanId === "brendan-cronin"
       ? `${SITE_URL}/about-dr-brendan-cronin#person`
-      : author.id === "david-gunn"
+      : cleanId === "david-gunn"
         ? `${SITE_URL}/about-dr-david-gunn#person`
         : `${SITE_URL}/blog/author/${cleanId}#person`;
 
   const personUrl =
-    author.id === "brendan-cronin"
+    cleanId === "brendan-cronin"
       ? `${SITE_URL}/about-dr-brendan-cronin`
-      : author.id === "david-gunn"
+      : cleanId === "david-gunn"
         ? `${SITE_URL}/about-dr-david-gunn`
         : `${SITE_URL}/blog/author/${cleanId}`;
 
@@ -423,7 +423,7 @@ export const getPersonSchema = (author: any): Person | Physician => {
     "@id": personId,
     name: author.data.name,
     description: author.data.fullBio || author.data.bio,
-    jobTitle: author.data.credentials || "Medical Author",
+    jobTitle: author.data.jobTitle || author.data.credentials || "Medical Author",
     url: personUrl,
     image: author.data.avatar
       ? new URL(author.data.avatar.src, SITE_URL).href
@@ -442,6 +442,12 @@ export const getPersonSchema = (author: any): Person | Physician => {
 
   if (author.data.ahpraNumber) {
     base.identifier = author.data.ahpraNumber;
+    base.honorificPrefix = "Dr";
+    base.alternateName = `Dr ${author.data.name}`;
+    if (author.data.credentials) {
+      base.honorificSuffix = author.data.credentials;
+    }
+    base.worksFor = { "@id": `${SITE_URL}/#org` };
     // medicalSpecialty as a plain string can cause validation issues for some Physician subtypes,
     // so we provide it correctly via knowsAbout and MedicalSpecialty type
     base.knowsAbout = [
@@ -449,6 +455,7 @@ export const getPersonSchema = (author: any): Person | Physician => {
         "@type": "MedicalSpecialty",
         name: author.data.medicalSpecialty || "Ophthalmology",
       },
+      ...(author.data.knowsAbout ?? []),
     ];
   }
 
