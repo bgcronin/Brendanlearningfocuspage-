@@ -17,12 +17,66 @@ import readingIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryre
 import rleIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryRefractiveLens.png";
 import cataractIcon from "../assets/images/cards/img-FocusVisionCataractEyeSurger.png";
 import costIcon from "../assets/images/cards/Focus-Vision-costs-of-Laser-Eye-Surgery-reading-glasses.webp";
-import rayTracingIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+Laser.png";
-import pterygiumIcon from "../assets/images/cards/img-FocusVisionPterygiumSurgeryR.png";
+import Schema from "../components/Schema.astro";
+import {
+	getMedicalClinicSchema,
+	getMedicalWebPageSchema,
+	getBreadcrumbSchema,
+	SITE_URL,
+} from "../utils/seo";
 
 const title = "Vision Correction Brisbane – Compare Your Options";
 const description = `Focus Vision offers comprehensive ophthalmology services, from advanced eye treatments to surgical care. Contact us today to schedule your consultation!`;
 const ogType = "website";
+
+const graph = [
+	getMedicalClinicSchema(),
+	{
+		...getMedicalWebPageSchema("/all-ophthalmology", title, description),
+		"@type": ["CollectionPage", "MedicalWebPage"],
+	},
+	{
+		"@context": "https://schema.org",
+		"@type": "ItemList",
+		"@id": `${SITE_URL}/all-ophthalmology#procedures`,
+		name: "Vision Correction Procedures at Focus Vision Brisbane",
+		itemListElement: [
+			{
+				"@type": "ListItem",
+				position: 1,
+				name: "Laser Eye Surgery (LASIK, PRK & Lenticule Extraction)",
+				url: `${SITE_URL}/vision-correction/laser-eye-surgery/`,
+			},
+			{
+				"@type": "ListItem",
+				position: 2,
+				name: "Implantable Contact Lens (ICL)",
+				url: `${SITE_URL}/vision-correction/implantable-contact-lens/`,
+			},
+			{
+				"@type": "ListItem",
+				position: 3,
+				name: "Laser for Reading Glasses (Laser Blended Vision)",
+				url: `${SITE_URL}/vision-correction/laser-for-reading-glasses/`,
+			},
+			{
+				"@type": "ListItem",
+				position: 4,
+				name: "Refractive Lens Exchange (RLE)",
+				url: `${SITE_URL}/vision-correction/refractive-lens-exchange/`,
+			},
+			{
+				"@type": "ListItem",
+				position: 5,
+				name: "Premium Cataract Surgery",
+				url: `${SITE_URL}/vision-correction/cataract-surgery/`,
+			},
+		],
+	},
+	getBreadcrumbSchema([
+		{ name: "Vision Correction", item: "/all-ophthalmology" },
+	]),
+];
 ---
 
 <BaseLayout
@@ -34,6 +88,10 @@ const ogType = "website";
 	description={description}
 	ogType={ogType}
 >
+	<Fragment slot="head-schema">
+		<Schema item={graph} />
+	</Fragment>
+
 	<FeatureHero
 		backgroundImage={heroImage}
 		textPosition="center"
@@ -60,22 +118,6 @@ const ogType = "website";
 			</p>
 			<Button
 				href="/vision-correction/laser-eye-surgery"
-				text="Learn More"
-			/>
-		</Card>
-
-		<Card layout="icon">
-			<div slot="image">
-				<Image src={rayTracingIcon} alt="Ray Tracing LASIK Icon" />
-			</div>
-			<h3>Ray Tracing LASIK</h3>
-			<p>
-				The only clinic in Queensland offering Ray Tracing LASIK —
-				laser vision correction personalised from a 3D model of your
-				eye.
-			</p>
-			<Button
-				href="/vision-correction/ray-tracing-lasik/"
 				text="Learn More"
 			/>
 		</Card>
@@ -137,22 +179,6 @@ const ogType = "website";
 			</p>
 			<Button
 				href="/vision-correction/cataract-surgery"
-				text="Learn More"
-			/>
-		</Card>
-
-		<Card layout="icon">
-			<div slot="image">
-				<Image src={pterygiumIcon} alt="Premium Pterygium Surgery Icon" />
-			</div>
-			<h3>Premium Pterygium Surgery</h3>
-			<p>
-				Suture-free pterygium removal using our no-stitch, glue-based
-				technique — less pain, faster recovery and a better cosmetic
-				result.
-			</p>
-			<Button
-				href="/vision-correction/pterygium-surgery"
 				text="Learn More"
 			/>
 		</Card>
