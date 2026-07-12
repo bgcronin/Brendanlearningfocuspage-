@@ -23,6 +23,7 @@ import {
 	getMedicalClinicSchema,
 	getMedicalWebPageSchema,
 	getBreadcrumbSchema,
+	SITE_URL,
 } from "../utils/seo";
 
 const faqs = [
@@ -56,12 +57,102 @@ const faqs = [
 	},
 ];
 
-const title = "Laser Eye Surgery Cost Brisbane – Prices & Payment Plans";
-const description = `Vision Correction Prices at Focus Vision. Join over 40 million people worldwide who live a life free of glasses and contact lenses.`;
+const title = "Laser Eye Surgery Cost Brisbane 2026 – Prices & Payment Plans";
+const description = `Brisbane laser eye surgery prices 2026: LASIK $4,250 per eye, TransPRK $3,500, CLEAR $4,250, ICL $7,000 incl. anaesthetist. All-inclusive, 24-month interest-free plans.`;
 
 const graph = [
 	getMedicalClinicSchema(),
 	getMedicalWebPageSchema("/costs", title, description),
+	{
+		"@context": "https://schema.org",
+		"@type": "OfferCatalog",
+		"@id": `${SITE_URL}/costs#prices`,
+		name: "Vision Correction Surgery Prices — Focus Vision Brisbane",
+		description:
+			"All-inclusive per-eye prices covering pre-operative assessments, the procedure and 12 months of follow-up appointments. No extra charge for higher prescriptions.",
+		itemListElement: [
+			{
+				"@type": "Offer",
+				name: "All-Laser Femto LASIK (Ray Tracing LASIK included)",
+				price: "4250",
+				priceCurrency: "AUD",
+				description:
+					"Per eye, all-inclusive. 24-month interest-free plans from $41/week.",
+				url: `${SITE_URL}/costs`,
+				itemOffered: {
+					"@id": `${SITE_URL}/vision-correction/laser-eye-surgery#procedure`,
+				},
+			},
+			{
+				"@type": "Offer",
+				name: "PRK & TransPRK",
+				price: "3500",
+				priceCurrency: "AUD",
+				description:
+					"Per eye, all-inclusive. 24-month interest-free plans from $34/week.",
+				url: `${SITE_URL}/costs`,
+				itemOffered: {
+					"@type": "MedicalProcedure",
+					name: "PRK & no-touch transepithelial PRK (TransPRK)",
+					url: `${SITE_URL}/vision-correction/laser-eye-surgery/`,
+				},
+			},
+			{
+				"@type": "Offer",
+				name: "CLEAR / SMILE lenticule extraction",
+				price: "4250",
+				priceCurrency: "AUD",
+				description:
+					"Per eye, all-inclusive. 24-month interest-free plans from $41/week.",
+				url: `${SITE_URL}/costs`,
+				itemOffered: {
+					"@type": "MedicalProcedure",
+					name: "CLEAR / SMILE flapless lenticule extraction",
+					url: `${SITE_URL}/vision-correction/laser-eye-surgery/`,
+				},
+			},
+			{
+				"@type": "Offer",
+				name: "Implantable Contact Lens (ICL) — anaesthetist included",
+				price: "7000",
+				priceCurrency: "AUD",
+				description:
+					"Per eye, all-inclusive including hospital, lens and anaesthetist fees. 24-month interest-free plans from $68/week.",
+				url: `${SITE_URL}/costs`,
+				itemOffered: {
+					"@id": `${SITE_URL}/vision-correction/implantable-contact-lens#procedure`,
+				},
+			},
+			{
+				"@type": "Offer",
+				name: "Refractive Lens Exchange (RLE) — anaesthetist included",
+				price: "6000",
+				priceCurrency: "AUD",
+				description:
+					"Per eye, all-inclusive including hospital, premium lens and anaesthetist fees. 24-month interest-free plans from $58/week.",
+				url: `${SITE_URL}/costs`,
+				itemOffered: {
+					"@id": `${SITE_URL}/vision-correction/refractive-lens-exchange#procedure`,
+				},
+			},
+			{
+				"@type": "Offer",
+				name: "Premium cataract surgery",
+				priceSpecification: {
+					"@type": "PriceSpecification",
+					minPrice: 2500,
+					maxPrice: 5500,
+					priceCurrency: "AUD",
+				},
+				description:
+					"Per eye. Final fee depends on your health fund and lens selection; a transparent quote including theatre fees is provided at your free assessment.",
+				url: `${SITE_URL}/costs`,
+				itemOffered: {
+					"@id": `${SITE_URL}/vision-correction/cataract-surgery#procedure`,
+				},
+			},
+		],
+	},
 	getBreadcrumbSchema([{ name: "Costs", item: "/costs" }]),
 ];
 
@@ -88,7 +179,7 @@ const ogType = "website";
 		mobileImagePosition="75% 0%"
 		addOverlay={true}
 	>
-		<h1>What is the Cost of Laser Eye <br /> Surgery in Brisbane?</h1>
+		<h1>What is the Cost of Laser Eye <br /> Surgery in Brisbane in 2026?</h1>
 	</FeatureHero>
 
 	<div
@@ -102,6 +193,59 @@ const ogType = "website";
 			and corrective lenses thanks to LASIK laser eye surgery and other
 			advanced procedures.
 		</p>
+
+		<div class="price-summary">
+			<table>
+				<caption>
+					Focus Vision surgery prices per eye (2026) — all-inclusive,
+					with no extra charge for higher prescriptions
+				</caption>
+				<thead>
+					<tr>
+						<th>Procedure</th>
+						<th>Price per eye</th>
+						<th>Interest-free plan</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>All-Laser Femto LASIK (Ray Tracing included)</td>
+						<td>$4,250</td>
+						<td>from $41/week</td>
+					</tr>
+					<tr>
+						<td>PRK &amp; TransPRK</td>
+						<td>$3,500</td>
+						<td>from $34/week</td>
+					</tr>
+					<tr>
+						<td>CLEAR / SMILE lenticule extraction</td>
+						<td>$4,250</td>
+						<td>from $41/week</td>
+					</tr>
+					<tr>
+						<td>Implantable Contact Lens (ICL), incl. anaesthetist</td>
+						<td>$7,000</td>
+						<td>from $68/week</td>
+					</tr>
+					<tr>
+						<td>Refractive Lens Exchange (RLE), incl. anaesthetist</td>
+						<td>$6,000</td>
+						<td>from $58/week</td>
+					</tr>
+					<tr>
+						<td>Premium cataract surgery</td>
+						<td>$2,500–$5,500</td>
+						<td>quoted at your free assessment</td>
+					</tr>
+				</tbody>
+			</table>
+			<p class="price-summary-note">
+				Every price includes all pre-operative assessments, the
+				procedure itself and 12 months of follow-up appointments,
+				on a 24-month interest-free payment plan if you choose.
+			</p>
+		</div>
 
 		<CardGrid backgroundColor="#FFFFFF" cardBackgroundColor="#FFFFFF">
 			<Card layout="icon">
@@ -138,7 +282,7 @@ const ogType = "website";
 						"All aftercare and follow up visits for one year",
 					]}
 					buttonText="Learn more about PRK"
-					buttonLink="/vision-correction/laser-for-reading-glasses"
+					buttonLink="/vision-correction/laser-eye-surgery"
 				>
 					<p>
 						PRK eye surgery is recommended for many patients who may
@@ -160,7 +304,7 @@ const ogType = "website";
 						"Full aftercare and postoperative appointments for one year",
 					]}
 					buttonText="Learn more about CLEAR"
-					buttonLink="/vision-correction/laser-for-reading-glasses"
+					buttonLink="/vision-correction/laser-eye-surgery"
 				>
 					<p>
 						CLEAR is a cutting-edge surgical technique that corrects
@@ -374,3 +518,55 @@ const ogType = "website";
 
 	<AboutUs backgroundColor="#F4F1ED" stylePreset="Eggshell" />
 </BaseLayout>
+
+<style>
+	.price-summary {
+		max-width: 900px;
+		margin: 2rem auto 1rem;
+		overflow-x: auto;
+	}
+
+	.price-summary table {
+		width: 100%;
+		border-collapse: collapse;
+		border: 1px solid #d1d9e0;
+	}
+
+	.price-summary caption {
+		caption-side: top;
+		text-align: left;
+		font-weight: 700;
+		color: var(--dark-blue-color, #1c2f49);
+		padding-bottom: 0.75rem;
+		font-size: 1.05rem;
+	}
+
+	.price-summary th {
+		background-color: var(--dark-blue-color, #1c2f49);
+		color: #ffffff;
+		text-align: left;
+		padding: 12px 15px;
+		font-weight: 600;
+	}
+
+	.price-summary td {
+		padding: 12px 15px;
+		border-bottom: 1px solid #d1d9e0;
+	}
+
+	.price-summary td:nth-child(2) {
+		font-weight: 700;
+		color: var(--dark-blue-color, #1c2f49);
+		white-space: nowrap;
+	}
+
+	.price-summary tr:nth-child(even) {
+		background-color: #fafafa;
+	}
+
+	.price-summary-note {
+		font-size: 0.9rem;
+		color: #555;
+		margin-top: 0.75rem;
+	}
+</style>
