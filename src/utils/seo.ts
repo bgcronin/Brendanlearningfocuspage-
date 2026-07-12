@@ -428,9 +428,12 @@ export const getPersonSchema = (author: any): Person | Physician => {
     image: author.data.avatar
       ? new URL(author.data.avatar.src, SITE_URL).href
       : undefined,
-    sameAs: author.data.social
-      ? (Object.values(author.data.social).filter(Boolean) as string[])
-      : [],
+    sameAs: [
+      ...(author.data.social
+        ? (Object.values(author.data.social).filter(Boolean) as string[])
+        : []),
+      ...((author.data.sameAs as string[] | undefined) ?? []),
+    ],
     affiliation: author.data.affiliations
       ? author.data.affiliations.map((aff: any) => ({
           "@type": "Organization",

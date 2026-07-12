@@ -48,6 +48,7 @@ const authorsCollection = defineCollection({
         })
         .optional()
         .default({}),
+      sameAs: z.array(z.string()).optional(),
       affiliations: z
         .array(
           z.object({
