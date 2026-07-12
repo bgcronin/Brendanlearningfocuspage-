@@ -17,13 +17,16 @@ import readingIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryre
 import rleIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryRefractiveLens.png";
 import cataractIcon from "../assets/images/cards/img-FocusVisionCataractEyeSurger.png";
 import costIcon from "../assets/images/cards/Focus-Vision-costs-of-Laser-Eye-Surgery-reading-glasses.webp";
+import rayTracingIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+Laser.png";
+import pterygiumIcon from "../assets/images/cards/img-FocusVisionPterygiumSurgeryR.png";
 
-const title = "All Ophthalmology | Focus Vision | Woolloongabba, QLD";
+const title = "Vision Correction Brisbane – Compare Your Options";
 const description = `Focus Vision offers comprehensive ophthalmology services, from advanced eye treatments to surgical care. Contact us today to schedule your consultation!`;
 const ogType = "website";
 ---
 
 <BaseLayout
+	title={title}
 	showCurve={false}
 	topColor="#ffffff"
 	direction="down"
@@ -57,6 +60,22 @@ const ogType = "website";
 			</p>
 			<Button
 				href="/vision-correction/laser-eye-surgery"
+				text="Learn More"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={rayTracingIcon} alt="Ray Tracing LASIK Icon" />
+			</div>
+			<h3>Ray Tracing LASIK</h3>
+			<p>
+				The only clinic in Queensland offering Ray Tracing LASIK —
+				laser vision correction personalised from a 3D model of your
+				eye.
+			</p>
+			<Button
+				href="/vision-correction/ray-tracing-lasik/"
 				text="Learn More"
 			/>
 		</Card>
@@ -118,6 +137,22 @@ const ogType = "website";
 			</p>
 			<Button
 				href="/vision-correction/cataract-surgery"
+				text="Learn More"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={pterygiumIcon} alt="Premium Pterygium Surgery Icon" />
+			</div>
+			<h3>Premium Pterygium Surgery</h3>
+			<p>
+				Suture-free pterygium removal using our no-stitch, glue-based
+				technique — less pain, faster recovery and a better cosmetic
+				result.
+			</p>
+			<Button
+				href="/vision-correction/pterygium-surgery"
 				text="Learn More"
 			/>
 		</Card>

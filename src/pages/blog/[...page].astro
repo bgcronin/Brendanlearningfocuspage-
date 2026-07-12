@@ -32,7 +32,10 @@ interface Props {
 // The page prop is now available because of getStaticPaths
 const { page } = Astro.props;
 
-const title = "Laser Eye Surgery Blog | Focus Vision | Woolloongabba, QLD";
+const title =
+	page.currentPage > 1
+		? `Laser Eye Surgery Blog – Page ${page.currentPage}`
+		: "Laser Eye Surgery Blog";
 const description = `Stay informed with our eye health blogs covering laser eye surgery, LASIK, 
 and vision care tips. Visit our website for expert insights!`;
 const ogType = "website";
@@ -63,7 +66,7 @@ const activeTags = tagsData.items.filter((t) =>
 );
 ---
 
-<BaseLayout description={description} ogType={ogType}>
+<BaseLayout title={title} description={description} ogType={ogType}>
 	<Fragment slot="head-schema">
 		<script
 			type="application/ld+json"

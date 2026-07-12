@@ -67,6 +67,11 @@ const generatedTitle =
 				.replace(/\b\w/g, (char) => char.toUpperCase());
 
 const title = customTitle || generatedTitle;
+
+// Pages that already include the brand keep full control of their <title>
+const fullTitle = title.includes("Focus Vision")
+	? title
+	: `${title} | Focus Vision`;
 ---
 
 <!doctype html>
@@ -94,7 +99,7 @@ const title = customTitle || generatedTitle;
 			src="https://cloud.umami.is/script.js"
 			data-website-id="3363d9e7-f01f-47fa-b3a8-2d5c04eb4ec9"></script>
 		<link rel="preconnect" href="https://healthengine.com.au" crossorigin />
-		<title>{title} | Focus Vision | Woolloongabba, QLD</title>
+		<title>{fullTitle}</title>
 	</head>
 	<body class:list={[bodyClass]}>
 		<slot name="bodyStart" />
