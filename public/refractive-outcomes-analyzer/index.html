@@ -2215,7 +2215,7 @@
         "applicationCategory": "MedicalApplication",
         "operatingSystem": "Any (web browser)",
         "browserRequirements": "Requires JavaScript. Works in current versions of Chrome, Firefox, Safari and Edge.",
-        "softwareVersion": "1.4.1",
+        "softwareVersion": "1.5",
         "dateModified": "2026-07-04",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" },
@@ -2248,6 +2248,11 @@
           "Benchmarking against published standards (Gale et al. 2009; EUREQUO registry)",
           "Cumulative UDVA distribution curve with Snellen equivalents (6/x or 20/xx)",
           "Visual acuity input as logMAR, decimal VA or Snellen fractions (6/x and 20/xx)",
+          "Standard graphs: post-op UDVA vs pre-op CDVA and attempted-vs-achieved SEQ",
+          "Efficacy & safety indices with CDVA lines gained/lost safety analysis",
+          "Wilson 95% confidence intervals on headline percentages",
+          "Complications & YAG capsulotomy incidence table; UIVA/UNVA cumulative curves",
+          "Save/load local session file (no browser storage, no server)",
           "Double-angle (power vector) astigmatism plot with 95% confidence ellipses",
           "Toric IOL analysis: residual astigmatism, axis misalignment, corneal SIA",
           "Subgroup analysis by axial length, IOL model, formula, IOL type, eye and age",
@@ -2676,6 +2681,13 @@
           ⬆ Upload New File
         </button>
         <button
+          class="btn btn-outline"
+          onclick="saveSession()"
+          title="Save the loaded data, column mapping and settings to a local file you can re-open later — nothing is stored in the browser."
+        >
+          💾 Save Session
+        </button>
+        <button
           class="btn btn-primary"
           id="btn-export-pdf"
           onclick="exportPDF()"
@@ -3091,7 +3103,11 @@
                 will guide you.
               </div>
             </div>
-            <input type="file" id="file-input" accept=".xlsx,.xls,.csv" />
+            <input
+              type="file"
+              id="file-input"
+              accept=".xlsx,.xls,.csv,.json"
+            />
 
             <!-- Data format settings -->
             <div class="settings-card">
@@ -3608,6 +3624,89 @@
                 <canvas id="chart-trend"></canvas>
               </div>
             </div>
+
+            <!-- Panel I: Standard Graph — UDVA vs Pre-op CDVA -->
+            <div class="chart-card" id="card-stdva" style="display: none">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">
+                    UDVA vs Pre-op CDVA (Standard Graph)
+                  </div>
+                  <div class="chart-sub">
+                    Cumulative % of eyes at each Snellen line — JRS/JCRS
+                    standard format
+                  </div>
+                </div>
+                <button
+                  class="chart-info"
+                  title="Post-op uncorrected VA against pre-op best-corrected VA. Post-op UDVA approaching pre-op CDVA means the eye's full visual potential was realised without correction."
+                >
+                  ⓘ
+                </button>
+              </div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-stdva"></canvas>
+              </div>
+            </div>
+
+            <!-- Panel J: CDVA lines gained/lost (safety) -->
+            <div class="chart-card" id="card-lines" style="display: none">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">Change in CDVA (Safety)</div>
+                  <div class="chart-sub" id="lines-sub">
+                    Snellen lines of corrected vision gained or lost
+                  </div>
+                </div>
+                <button
+                  class="chart-info"
+                  title="1 line = 0.1 logMAR. The % of eyes losing 2 or more lines of corrected vision is the standard safety signal for refractive procedures."
+                >
+                  ⓘ
+                </button>
+              </div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-lines"></canvas>
+              </div>
+            </div>
+
+            <!-- Panel K: Attempted vs Achieved SEQ -->
+            <div class="chart-card" id="card-attained" style="display: none">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">
+                    SEQ: Attempted vs Achieved (Standard Graph)
+                  </div>
+                  <div class="chart-sub">
+                    Target refraction vs achieved SE — identity line with
+                    ±0.50 / ±1.00 D bands
+                  </div>
+                </div>
+                <button
+                  class="chart-info"
+                  title="Each point is one eye: x = attempted (target) spherical equivalent, y = achieved. Points on the diagonal hit target exactly; the dashed bands mark ±0.50 D and ±1.00 D."
+                >
+                  ⓘ
+                </button>
+              </div>
+              <div class="chart-canvas-wrap">
+                <canvas id="chart-attained"></canvas>
+              </div>
+            </div>
+
+            <!-- Panel L: Complications & YAG -->
+            <div class="chart-card" id="card-comps" style="display: none">
+              <div class="chart-card-header">
+                <div>
+                  <div class="chart-title">Complications &amp; YAG</div>
+                  <div class="chart-sub">
+                    Recorded intra-/post-operative events and YAG capsulotomy
+                    incidence
+                  </div>
+                </div>
+              </div>
+              <div id="comps-table-wrap" style="overflow-x: auto"></div>
+            </div>
           </div>
 
           <!-- Stats summary -->
@@ -3864,6 +3963,7 @@
               <option value="type">IOL type</option>
               <option value="eye">Eye (R/L)</option>
               <option value="age">Age band</option>
+              <option value="period">Surgery period</option>
             </select>
             <button
               class="btn btn-ghost"
@@ -4300,6 +4400,37 @@
           syns: ["postunvalogmar", "unva", "nearva"],
         },
         {
+          key: "preUdva",
+          label: "Pre-op UDVA (logMAR)",
+          tpl: "Pre_UDVA_logMAR",
+          req: false,
+          syns: [
+            "preudvalogmar",
+            "preopudva",
+            "preudva",
+            "udvapre",
+            "preopucva",
+            "preucva",
+          ],
+        },
+        {
+          key: "preCdva",
+          label: "Pre-op CDVA (logMAR)",
+          tpl: "Pre_CDVA_logMAR",
+          req: false,
+          syns: [
+            "precdvalogmar",
+            "preopcdva",
+            "precdva",
+            "cdvapre",
+            "preopbcva",
+            "prebcva",
+            "bcvapre",
+            "preopbscva",
+            "bscvapre",
+          ],
+        },
+        {
           key: "se",
           label: "Post-op SE (D)",
           tpl: "Post_SE_D",
@@ -4705,12 +4836,28 @@
       function handleFile(file) {
         if (!file) return;
         const ext = file.name.split(".").pop().toLowerCase();
-        if (!["xlsx", "xls", "csv"].includes(ext)) {
+        if (!["xlsx", "xls", "csv", "json"].includes(ext)) {
           showBanner(
             "parse-banner",
             "error",
-            "Invalid file type. Please upload an .xlsx, .xls or .csv file.",
+            "Invalid file type. Please upload an .xlsx, .xls, .csv or saved .json session file.",
           );
+          return;
+        }
+        if (ext === "json") {
+          const jr = new FileReader();
+          jr.onload = (ev) => {
+            try {
+              loadSessionData(JSON.parse(ev.target.result), file.name);
+            } catch (err) {
+              showBanner(
+                "parse-banner",
+                "error",
+                `Could not read session file: ${esc(err.message)}`,
+              );
+            }
+          };
+          jr.readAsText(file);
           return;
         }
         // Everything parses synchronously on the main thread — cap the input
@@ -5159,6 +5306,8 @@
             cdva: parseVA(g(row, "cdva")),
             uiva: parseVA(g(row, "uiva")),
             unva: parseVA(g(row, "unva")),
+            preUdva: parseVA(g(row, "preUdva")),
+            preCdva: parseVA(g(row, "preCdva")),
             sph,
             cyl: cyl2,
             axis,
@@ -5560,6 +5709,36 @@
       // ============================================================
       // 6. KPI RENDERING
       // ============================================================
+      // Wilson 95% score interval for a proportion, returned in percent.
+      function wilsonCI(k, n) {
+        if (!n) return null;
+        const z = 1.96;
+        const p = k / n;
+        const den = 1 + z ** 2 / n;
+        const centre = (p + z ** 2 / (2 * n)) / den;
+        const half =
+          (z * Math.sqrt((p * (1 - p)) / n + z ** 2 / (4 * n ** 2))) / den;
+        return [
+          Math.max(0, (centre - half) * 100),
+          Math.min(100, (centre + half) * 100),
+        ];
+      }
+      function ciTxt(pctVal, n) {
+        if (pctVal == null || !n) return "";
+        const ci = wilsonCI(Math.round((pctVal / 100) * n), n);
+        return ` · 95% CI ${ci[0].toFixed(0)}–${ci[1].toFixed(0)}%`;
+      }
+      // Mean decimal VA (10^−logMAR) — the basis of efficacy/safety indices.
+      function vaDecimalMean(arr) {
+        const a = arr.filter((v) => v != null && !isNaN(v));
+        if (!a.length) return null;
+        return a.reduce((s, v) => s + Math.pow(10, -v), 0) / a.length;
+      }
+      // Whole Snellen lines of CDVA change (0.1 logMAR = 1 line); + = gained.
+      function linesChange(pre, post) {
+        return Math.round((pre - post) / 0.1);
+      }
+
       function renderKPIs() {
         const d = filteredData;
         const n = d.length;
@@ -5573,6 +5752,18 @@
           udva66 = pctBelow(udvas, 0.001);
         const w50 = pctWithin(pes, 0.5),
           w100 = pctWithin(pes, 1.0);
+        // Efficacy/safety indices need pre-op CDVA (ratio of mean decimal
+        // acuities — the JRS convention). Only shown when the data exists.
+        const preCdvas = d.map((r) => r.preCdva).filter((v) => v != null);
+        const postCdvas = d.map((r) => r.cdva).filter((v) => v != null);
+        const efficacy =
+          preCdvas.length >= 5 && udvas.length
+            ? vaDecimalMean(udvas) / vaDecimalMean(preCdvas)
+            : null;
+        const safety =
+          preCdvas.length >= 5 && postCdvas.length
+            ? vaDecimalMean(postCdvas) / vaDecimalMean(preCdvas)
+            : null;
 
         const kpis = [
           { label: "Total Eyes", val: n, sub: "", status: "" },
@@ -5585,13 +5776,13 @@
           {
             label: `UDVA ≥ ${snellenName(0.3)}`,
             val: pct(udva612),
-            sub: "logMAR ≤ 0.30",
+            sub: "logMAR ≤ 0.30" + ciTxt(udva612, udvas.length),
             status: udva612 > 90 ? "good" : udva612 > 80 ? "warn" : "bad",
           },
           {
             label: `UDVA ≥ ${snellenName(0.0)}`,
             val: pct(udva66),
-            sub: "logMAR ≤ 0.00",
+            sub: "logMAR ≤ 0.00" + ciTxt(udva66, udvas.length),
             status: udva66 >= 70 ? "good" : udva66 >= 50 ? "warn" : "bad",
             badge: udva66 >= 70 ? "✓ 70% target met" : "✗ Below 70% target",
             badgeStatus: udva66 >= 70 ? "good" : "bad",
@@ -5608,7 +5799,7 @@
             // standard.
             label: "Within ±0.50 D",
             val: pct(w50),
-            sub: "of IOL target",
+            sub: "of IOL target" + ciTxt(w50, pes.length),
             status: w50 >= 85 ? "good" : w50 >= 55 ? "warn" : "bad",
             badge:
               w50 >= 85
@@ -5622,7 +5813,7 @@
             // Published benchmark: 85% within ±1.00 D (Gale et al., Eye 2009)
             label: "Within ±1.00 D",
             val: pct(w100),
-            sub: "of IOL target",
+            sub: "of IOL target" + ciTxt(w100, pes.length),
             status: w100 >= 95 ? "good" : w100 >= 85 ? "warn" : "bad",
             badge:
               w100 >= 85
@@ -5642,6 +5833,20 @@
                   : "bad",
           },
         ];
+        if (efficacy != null)
+          kpis.push({
+            label: "Efficacy Index",
+            val: efficacy.toFixed(2),
+            sub: `mean decimal UDVA ÷ pre-op CDVA · n=${Math.min(udvas.length, preCdvas.length)}`,
+            status: efficacy >= 1 ? "good" : efficacy >= 0.8 ? "warn" : "bad",
+          });
+        if (safety != null)
+          kpis.push({
+            label: "Safety Index",
+            val: safety.toFixed(2),
+            sub: `mean decimal CDVA ÷ pre-op CDVA · n=${Math.min(postCdvas.length, preCdvas.length)}`,
+            status: safety >= 1 ? "good" : safety >= 0.9 ? "warn" : "bad",
+          });
 
         const strip = $("kpi-strip");
         strip.innerHTML = "";
@@ -5743,6 +5948,272 @@
         renderScatter();
         renderALChart();
         renderTrendChart();
+        renderStdVA();
+        renderLinesChart();
+        renderAttainedChart();
+        renderCompsTable();
+      }
+
+      // Shared axis styling for the standard-graph charts.
+      const STD_TICKS = { color: "#4A6C85", font: { family: "'Manrope'", size: 10 } };
+      const STD_GRID = { color: "rgba(197,213,224,.3)" };
+
+      // Standard Graph 1: cumulative % of eyes seeing each Snellen line or
+      // better — post-op UDVA vs pre-op CDVA, in the JRS grouped-bar format.
+      function renderStdVA() {
+        destroyChart("stdva");
+        const card = $("card-stdva");
+        const post = filteredData
+          .map((r) => r.udva)
+          .filter((v) => v != null && !isNaN(v));
+        const pre = filteredData
+          .map((r) => r.preCdva)
+          .filter((v) => v != null && !isNaN(v));
+        if (pre.length < 5 || !post.length) {
+          card.style.display = "none";
+          return;
+        }
+        card.style.display = "";
+        const steps = [0.0, 0.1, 0.18, 0.3, 0.48, 0.6, 1.0];
+        const labels = steps.map(
+          (lm) => `≥ ${snellenName(lm) || lm.toFixed(2)}`,
+        );
+        const cum = (arr) => steps.map((lm) => pctBelow(arr, lm));
+        charts["stdva"] = new Chart($("chart-stdva"), {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: `Post-op UDVA (n=${post.length})`,
+                data: cum(post),
+                backgroundColor: "rgba(58,139,158,.85)",
+              },
+              {
+                label: `Pre-op CDVA (n=${pre.length})`,
+                data: cum(pre),
+                backgroundColor: "rgba(148,163,184,.55)",
+              },
+            ],
+          },
+          options: {
+            ...JSON.parse(JSON.stringify(CHART_DEFAULTS)),
+            scales: {
+              x: { ticks: STD_TICKS, grid: { display: false } },
+              y: {
+                min: 0,
+                max: 100,
+                ticks: { ...STD_TICKS, callback: (v) => v + "%" },
+                grid: STD_GRID,
+              },
+            },
+          },
+        });
+      }
+
+      // Standard Graph 3: change in corrected vision — the safety histogram.
+      function renderLinesChart() {
+        destroyChart("lines");
+        const card = $("card-lines");
+        const d = filteredData.filter(
+          (r) => r.preCdva != null && r.cdva != null,
+        );
+        if (d.length < 5) {
+          card.style.display = "none";
+          return;
+        }
+        card.style.display = "";
+        const cats = [
+          "Lost ≥2",
+          "Lost 1",
+          "Unchanged",
+          "Gained 1",
+          "Gained ≥2",
+        ];
+        const counts = [0, 0, 0, 0, 0];
+        d.forEach((r) => {
+          const ch = linesChange(r.preCdva, r.cdva);
+          const idx =
+            ch <= -2 ? 0 : ch === -1 ? 1 : ch === 0 ? 2 : ch === 1 ? 3 : 4;
+          counts[idx]++;
+        });
+        const linePcts = counts.map((c) => (100 * c) / d.length);
+        $("lines-sub").textContent =
+          `n=${d.length} · ${linePcts[0].toFixed(1)}% lost ≥2 lines of CDVA` +
+          (counts[0] === 0 ? " ✓" : " ⚠");
+        charts["lines"] = new Chart($("chart-lines"), {
+          type: "bar",
+          data: {
+            labels: cats,
+            datasets: [
+              {
+                data: linePcts,
+                backgroundColor: [
+                  "rgba(239,68,68,.85)",
+                  "rgba(245,158,11,.8)",
+                  "rgba(148,163,184,.65)",
+                  "rgba(16,185,129,.7)",
+                  "rgba(16,185,129,.9)",
+                ],
+              },
+            ],
+          },
+          options: {
+            ...JSON.parse(JSON.stringify(CHART_DEFAULTS)),
+            plugins: {
+              ...JSON.parse(JSON.stringify(CHART_DEFAULTS.plugins)),
+              legend: { display: false },
+            },
+            scales: {
+              x: { ticks: STD_TICKS, grid: { display: false } },
+              y: {
+                min: 0,
+                ticks: { ...STD_TICKS, callback: (v) => v + "%" },
+                grid: STD_GRID,
+              },
+            },
+          },
+        });
+      }
+
+      // Standard Graph 4: attempted vs achieved spherical equivalent.
+      function renderAttainedChart() {
+        destroyChart("attained");
+        const card = $("card-attained");
+        const d = filteredData.filter(
+          (r) => r.target != null && r.se != null,
+        );
+        if (d.length < 5) {
+          card.style.display = "none";
+          return;
+        }
+        card.style.display = "";
+        const pts = d.map((r) => ({ x: r.target, y: r.se }));
+        const lim =
+          Math.max(
+            1,
+            Math.ceil(
+              Math.max(
+                ...pts.flatMap((p) => [Math.abs(p.x), Math.abs(p.y)]),
+              ) * 2,
+            ) / 2,
+          ) + 0.5;
+        const band = (off, dash, col, width) => ({
+          type: "line",
+          data: [
+            { x: -lim, y: -lim + off },
+            { x: lim, y: lim + off },
+          ],
+          borderColor: col,
+          borderWidth: width,
+          borderDash: dash,
+          pointRadius: 0,
+          fill: false,
+        });
+        charts["attained"] = new Chart($("chart-attained"), {
+          type: "scatter",
+          data: {
+            datasets: [
+              {
+                data: pts,
+                backgroundColor: "rgba(58,139,158,.55)",
+                pointRadius: 3.5,
+              },
+              band(0, [], "rgba(39,102,117,.8)", 1.5),
+              band(0.5, [4, 4], "rgba(245,158,11,.5)", 1),
+              band(-0.5, [4, 4], "rgba(245,158,11,.5)", 1),
+              band(1.0, [3, 5], "rgba(239,68,68,.4)", 1),
+              band(-1.0, [3, 5], "rgba(239,68,68,.4)", 1),
+            ],
+          },
+          options: {
+            ...JSON.parse(JSON.stringify(CHART_DEFAULTS)),
+            plugins: {
+              ...JSON.parse(JSON.stringify(CHART_DEFAULTS.plugins)),
+              legend: { display: false },
+            },
+            scales: {
+              x: {
+                min: -lim,
+                max: lim,
+                title: {
+                  display: true,
+                  text: "Attempted SEQ (D)",
+                  color: "#4A6C85",
+                  font: { size: 10 },
+                },
+                ticks: STD_TICKS,
+                grid: STD_GRID,
+              },
+              y: {
+                min: -lim,
+                max: lim,
+                title: {
+                  display: true,
+                  text: "Achieved SEQ (D)",
+                  color: "#4A6C85",
+                  font: { size: 10 },
+                },
+                ticks: STD_TICKS,
+                grid: STD_GRID,
+              },
+            },
+          },
+        });
+      }
+
+      // Complications & YAG incidence table — the columns were parsed and
+      // filterable but never reported anywhere.
+      function renderCompsTable() {
+        const card = $("card-comps");
+        const d = filteredData;
+        const mapped = d.some((r) => r.intraComp || r.postComp || r.yag);
+        if (!mapped || !d.length) {
+          card.style.display = "none";
+          return;
+        }
+        card.style.display = "";
+        const tally = (get) => {
+          const m = Object.create(null);
+          d.forEach((r) => {
+            const v = String(get(r) || "None").trim() || "None";
+            if (/^(none|n\/?a|nil|no|-)$/i.test(v)) return;
+            m[v] = (m[v] || 0) + 1;
+          });
+          return Object.entries(m).sort((a, b) => b[1] - a[1]);
+        };
+        const intra = tally((r) => r.intraComp);
+        const post = tally((r) => r.postComp);
+        const yagN = d.filter((r) =>
+          String(r.yag || "")
+            .toUpperCase()
+            .startsWith("Y"),
+        ).length;
+        const pctOf = (k) => ((100 * k) / d.length).toFixed(1) + "%";
+        const row = (a, b, c) =>
+          `<tr style="border-bottom:1px solid var(--border)"><td style="padding:6px 10px">${a}</td><td style="padding:6px 10px;text-align:right;font-family:'Manrope', sans-serif">${b}</td><td style="padding:6px 10px;text-align:right;font-family:'Manrope', sans-serif">${c}</td></tr>`;
+        let html =
+          `<table style="width:100%;border-collapse:collapse;font-size:.8rem"><thead><tr>` +
+          ["Event", "n", `% of ${d.length} eyes`]
+            .map(
+              (h, i) =>
+                `<th style="padding:6px 10px;text-align:${i === 0 ? "left" : "right"};font-size:.68rem;text-transform:uppercase;color:#4A6C85;border-bottom:1px solid var(--border)">${h}</th>`,
+            )
+            .join("") +
+          "</tr></thead><tbody>";
+        if (!intra.length)
+          html += row("Intra-operative complications", 0, "0.0%");
+        intra.forEach(
+          ([k, v]) => (html += row("Intra-op: " + esc(k), v, pctOf(v))),
+        );
+        if (!post.length)
+          html += row("Post-operative complications", 0, "0.0%");
+        post.forEach(
+          ([k, v]) => (html += row("Post-op: " + esc(k), v, pctOf(v))),
+        );
+        html += row("YAG capsulotomy", yagN, pctOf(yagN));
+        html += "</tbody></table>";
+        $("comps-table-wrap").innerHTML = html;
       }
 
       // Panel A: PE Polar + Bars
@@ -6039,6 +6510,27 @@
             pointBackgroundColor: "#10B981",
           });
         }
+        // UIVA/UNVA were parsed but never rendered — surface them for
+        // presbyopia-correcting IOL cohorts whenever the data exists.
+        const addVaCurve = (key, label, color) => {
+          const vals = d
+            .map((r) => r[key])
+            .filter((v) => v != null && !isNaN(v));
+          if (vals.length > 5)
+            datasets.push({
+              label,
+              data: sortLM.map((lm) => pctBelow(vals, lm)),
+              borderColor: color,
+              backgroundColor: "transparent",
+              cubicInterpolationMode: "monotone",
+              fill: false,
+              borderDash: [2, 3],
+              pointRadius: 2.5,
+              pointBackgroundColor: color,
+            });
+        };
+        addVaCurve("uiva", "UIVA (intermediate)", "#F59E0B");
+        addVaCurve("unva", "UNVA (near)", "#8B5CF6");
 
         charts["udva-cdf"] = new Chart($("chart-udva-cdf"), {
           type: "line",
@@ -7600,6 +8092,11 @@
           case "age":
             if (r.age == null) return null;
             return AGE_BINS.find((b) => r.age < b.max).label;
+          case "period": {
+            if (!r.date) return null;
+            const q = Math.floor(r.date.getMonth() / 3) + 1;
+            return `${r.date.getFullYear()} Q${q}`;
+          }
         }
         return null;
       }
@@ -7654,6 +8151,8 @@
           order = AGE_BINS.map((b) => b.label).filter((l) => groupsMap[l]);
         } else if (by === "eye") {
           order = ["Right (R)", "Left (L)"].filter((l) => groupsMap[l]);
+        } else if (by === "period") {
+          order = Object.keys(groupsMap).sort();
         } else {
           order.sort((a, b) => groupsMap[b].length - groupsMap[a].length);
         }
@@ -8221,6 +8720,64 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
       // ============================================================
       // 12. EXPORT FUNCTIONS
       // ============================================================
+      // ── Session save/load ────────────────────────────────────────────────
+      // The privacy policy forbids persistent browser storage, so sessions
+      // save to a local file the surgeon keeps: raw sheet + column mapping +
+      // settings + cohort name. Nothing leaves the machine.
+      function saveSession() {
+        if (!lastRaw || !columnMapping) {
+          alert("Load a data file before saving a session.");
+          return;
+        }
+        // Date cells are serialised as local YYYY-MM-DD strings —
+        // toISOString would shift the calendar day in UTC+ timezones.
+        const rawOut = lastRaw.map((row) =>
+          Array.isArray(row)
+            ? row.map((c) =>
+                c instanceof Date
+                  ? `${c.getFullYear()}-${String(c.getMonth() + 1).padStart(2, "0")}-${String(c.getDate()).padStart(2, "0")}`
+                  : c,
+              )
+            : row,
+        );
+        const payload = {
+          app: "focus-vision-roa-session",
+          version: 1,
+          savedAt: new Date().toISOString(),
+          filename: lastFilename,
+          cohort: $("cohort-name").value || "",
+          settings: { ...settings },
+          mapping: columnMapping,
+          raw: rawOut,
+        };
+        const a = document.createElement("a");
+        a.href =
+          "data:application/json;charset=utf-8," +
+          encodeURIComponent(JSON.stringify(payload));
+        a.download = `${(payload.cohort || "cohort").replace(/[^a-z0-9]/gi, "_")}_session.json`;
+        a.click();
+      }
+
+      function loadSessionData(s, name) {
+        if (
+          !s ||
+          s.app !== "focus-vision-roa-session" ||
+          !Array.isArray(s.raw) ||
+          !s.mapping
+        )
+          throw new Error("not a Focus Vision analyzer session file");
+        Object.keys(settings).forEach((k) => {
+          if (s.settings && s.settings[k] != null) settings[k] = s.settings[k];
+          document
+            .querySelectorAll(`.seg-btn[data-setting="${k}"]`)
+            .forEach((b) =>
+              b.classList.toggle("active", b.dataset.value === settings[k]),
+            );
+        });
+        if (s.cohort) $("cohort-name").value = s.cohort;
+        parseData(s.raw, s.filename || name, s.mapping);
+      }
+
       function exportCSV() {
         const cols = [
           "Eye",
@@ -8464,6 +9021,9 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             { id: "chart-scatter", title: "UDVA vs Prediction Error" },
             { id: "chart-al", title: "Axial Length vs PE" },
             { id: "chart-trend", title: "Outcomes Over Time" },
+            { id: "chart-stdva", title: "UDVA vs Pre-op CDVA (Standard)" },
+            { id: "chart-lines", title: "Change in CDVA (Safety)" },
+            { id: "chart-attained", title: "SEQ Attempted vs Achieved" },
           ];
           let pageY = 85;
           for (const { id, title } of chartCanvases) {
