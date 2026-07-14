@@ -94,12 +94,8 @@
       crossorigin="anonymous"
       onerror="(window.__libFail=window.__libFail||[]).push('jsPDF')"
     ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
-      integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H"
-      crossorigin="anonymous"
-      onerror="(window.__libFail=window.__libFail||[]).push('html2canvas')"
-    ></script>
+    <!-- html2canvas removed: both PDF exporters capture charts via
+         canvas.toDataURL — the library was a dead 45 KB dependency. -->
     <style>
       :root {
         /* Focus Vision Brand Palette — Light Theme */
@@ -2219,7 +2215,7 @@
         "applicationCategory": "MedicalApplication",
         "operatingSystem": "Any (web browser)",
         "browserRequirements": "Requires JavaScript. Works in current versions of Chrome, Firefox, Safari and Edge.",
-        "softwareVersion": "1.4",
+        "softwareVersion": "1.4.1",
         "dateModified": "2026-07-04",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" },
@@ -2837,7 +2833,7 @@
             min="18"
             max="100"
             value="18"
-            oninput="updateAgeFilter()"
+            oninput="updateAgeFilter(event)"
           />
           <input
             type="range"
@@ -2845,7 +2841,7 @@
             min="18"
             max="100"
             value="100"
-            oninput="updateAgeFilter()"
+            oninput="updateAgeFilter(event)"
           />
         </div>
 
@@ -4614,6 +4610,42 @@
         return missing.length === 0;
       }
       window.addEventListener("load", checkLibraries);
+
+      // Modal keyboard accessibility: Escape closes the mapping dialog, and
+      // Tab cycles inside whichever dialog is open instead of escaping into
+      // the page behind it. The Terms gate deliberately has no Escape-close.
+      document.addEventListener("keydown", (e) => {
+        const isOpen = (id) => {
+          const el = $(id);
+          return el && el.style.display !== "none";
+        };
+        const mapOpen = isOpen("map-overlay");
+        const termsOpen = isOpen("terms-overlay");
+        if (e.key === "Escape" && mapOpen) {
+          closeMappingModal();
+          return;
+        }
+        const overlay = mapOpen
+          ? $("map-overlay")
+          : termsOpen
+            ? $("terms-overlay")
+            : null;
+        if (e.key === "Tab" && overlay) {
+          const f = overlay.querySelectorAll(
+            "button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex='-1'])",
+          );
+          if (!f.length) return;
+          const first = f[0];
+          const last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      });
       const pct = (v) => (v == null ? "—" : `${Math.round(v)}%`);
       function debounce(fn, ms = 150) {
         clearTimeout(debounceTimer);
@@ -4681,6 +4713,16 @@
           );
           return;
         }
+        // Everything parses synchronously on the main thread — cap the input
+        // so an oversized workbook can't freeze the tab.
+        if (file.size > 25 * 1024 * 1024) {
+          showBanner(
+            "parse-banner",
+            "error",
+            `File is ${(file.size / 1048576).toFixed(0)} MB — the analyzer reads files up to 25 MB. Export a smaller sheet (values only, no images) and try again.`,
+          );
+          return;
+        }
         if (typeof XLSX === "undefined") {
           showBanner(
             "parse-banner",
@@ -4710,6 +4752,14 @@
               ) || wb.SheetNames[0];
             const ws = wb.Sheets[sheetName];
             const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "" });
+            if (raw.length > 100000) {
+              showBanner(
+                "parse-banner",
+                "error",
+                `This sheet has ${raw.length.toLocaleString()} rows — the analyzer supports up to 100,000. Split the export and try again.`,
+              );
+              return;
+            }
             const hdrIdx = findHeaderRow(raw);
             const { map, missing } = autoMapColumns(raw[hdrIdx] || []);
             map.__headerRow = hdrIdx;
@@ -4768,7 +4818,7 @@
       function findHeaderRow(raw) {
         let bestIdx = 0,
           bestScore = -1;
-        for (let i = 0; i < Math.min(10, raw.length); i++) {
+        for (let i = 0; i < Math.min(50, raw.length); i++) {
           const { map } = autoMapColumns(raw[i] || []);
           const score = Object.values(map).filter((v) => v != null).length;
           if (score > bestScore) {
@@ -4842,6 +4892,8 @@
         window._mapSample = sample;
         window._mapHdrIdx = hdrIdx;
         $("map-overlay").style.display = "flex";
+        const firstField = $("map-modal-body").querySelector("select, input");
+        if (firstField) firstField.focus();
       }
 
       function updateMapSample(sel) {
@@ -4918,20 +4970,25 @@
         // "UDVA ≥ 6/12" (v ≤ 0.30) count borderline eyes correctly.
         const parseVA = (v) => {
           if (v == null || v === "") return null;
+          // Reject clinically impossible logMAR (a stray "80%" cell would
+          // otherwise import as logMAR 80 and poison every VA statistic).
+          const vaBound = (lm) => (lm >= -0.5 && lm <= 3 ? lm : null);
           const s = String(v).trim();
           const fr = s.match(/^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
           if (fr) {
             const numer = parseFloat(fr[1]);
             const denom = parseFloat(fr[2]);
             return numer > 0 && denom > 0
-              ? Math.round(Math.log10(denom / numer) * 100) / 100
+              ? vaBound(Math.round(Math.log10(denom / numer) * 100) / 100)
               : null;
           }
           const n = parseFloat(s);
           if (isNaN(n)) return null;
           if (settings.vaNotation === "decimal")
-            return n > 0 ? Math.round(Math.log10(1 / n) * 100) / 100 : null;
-          return n;
+            return n > 0
+              ? vaBound(Math.round(Math.log10(1 / n) * 100) / 100)
+              : null;
+          return vaBound(n);
         };
         // Numeric d/m/y vs m/d/y is governed by the date-format setting.
         // "auto" resolves per value when one component exceeds 12, otherwise
@@ -4940,6 +4997,17 @@
         const parseDate = (v) => {
           if (!v) return null;
           if (v instanceof Date) return v;
+          // Bare Excel date serials (unformatted date cells / CSV exports)
+          // would otherwise fall through to new Date("45123") = year 45123.
+          const asNum =
+            typeof v === "number"
+              ? v
+              : /^\d{5}(\.\d+)?$/.test(String(v).trim())
+                ? parseFloat(v)
+                : NaN;
+          if (!isNaN(asNum) && asNum >= 20000 && asNum <= 60000) {
+            return new Date(Math.round((asNum - 25569) * 86400000));
+          }
           const s = String(v).trim();
           const m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2}|\d{4})$/);
           if (m) {
@@ -4976,10 +5044,18 @@
           const iso = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
           if (iso) {
             const d = new Date(+iso[1], +iso[2] - 1, +iso[3]);
-            return isNaN(d) ? null : d;
+            // Same rollover guard as the numeric branch: 2024-02-31 must be
+            // null, not 2 March.
+            return !isNaN(d) &&
+              d.getMonth() === +iso[2] - 1 &&
+              d.getDate() === +iso[3]
+              ? d
+              : null;
           }
           const d = new Date(s);
-          return isNaN(d) ? null : d;
+          if (isNaN(d)) return null;
+          const yr = d.getFullYear();
+          return yr >= 1900 && yr <= 2100 ? d : null;
         };
 
         let skipped = 0;
@@ -4988,17 +5064,32 @@
           const row = raw[i];
           if (row.every((c) => !c)) continue; // blank row
           const id = g(row, "id");
-          const eye =
-            EYE_MAP[
-              String(g(row, "eye") || "")
-                .toUpperCase()
-                .replace(/[^A-Z]/g, "")
-            ] || "";
+          const eyeRaw = String(g(row, "eye") || "")
+            .toUpperCase()
+            .replace(/[^A-Z]/g, "");
+          let eye = EYE_MAP[eyeRaw] || "";
+          // Composite labels like "OD (right)" or "R eye" reduce to
+          // ODRIGHT/REYE — recognise them by prefix instead of skipping.
+          if (!eye && eyeRaw) {
+            if (
+              eyeRaw.startsWith("OD") ||
+              eyeRaw.startsWith("RIGHT") ||
+              eyeRaw === "REYE"
+            )
+              eye = "R";
+            else if (
+              eyeRaw.startsWith("OS") ||
+              eyeRaw.startsWith("LEFT") ||
+              eyeRaw === "LEYE"
+            )
+              eye = "L";
+          }
           let sph = num(g(row, "sph"));
           let cyl = num(g(row, "cyl"));
           const udva = parseVA(g(row, "udva"));
           if (
-            !id ||
+            id == null ||
+            id === "" ||
             !["R", "L"].includes(eye) ||
             sph == null ||
             cyl == null ||
@@ -5104,8 +5195,10 @@
         filterState.iolTypes =
           keptIol && keptIol.length ? keptIol : [...iolTypeOptions];
 
-        // check for logMAR > 2
-        const bigVA = rows.some((r) => r.udva > 2);
+        // check for logMAR > 2 across every VA field, not just UDVA
+        const bigVA = rows.some((r) =>
+          [r.udva, r.cdva, r.uiva, r.unva].some((v) => v != null && v > 2),
+        );
         const missingTarget = rows.every((r) => r.target == null);
         const missingFormula = rows.every((r) => !r.formula);
 
@@ -5125,6 +5218,17 @@
           msgs.push(
             `⚠ ${noAxis} eye${noAxis === 1 ? "" : "s"} with cylinder but no refraction axis — excluded from astigmatism vector analyses.`,
           );
+        const seenEyeKeys = new Set();
+        let dupEyes = 0;
+        rows.forEach((r) => {
+          const k = `${r.id}|${r.eye}|${r.date ? r.date.toISOString().slice(0, 10) : ""}`;
+          if (seenEyeKeys.has(k)) dupEyes++;
+          else seenEyeKeys.add(k);
+        });
+        if (dupEyes > 0)
+          msgs.push(
+            `⚠ ${dupEyes} duplicate Patient ID + eye row${dupEyes === 1 ? "" : "s"} detected — each is counted as a separate eye.`,
+          );
         // Optional columns matched via loose synonyms can silently override
         // computed values (a generic "Refractive Error" column becoming
         // Prediction Error) — surface them for review.
@@ -5134,6 +5238,7 @@
           if (C[k] == null) return;
           const f = FIELD_DEFS.find((fd) => fd.key === k);
           const hdr = String(hdrCells[C[k]] ?? "");
+          if (!hdr.trim()) return;
           if (f && normCol(hdr) !== normCol(f.tpl))
             looseSensitive.push(`“${esc(hdr)}” → ${esc(f.label)}`);
         });
@@ -5225,11 +5330,11 @@
         applyFilters();
       }
 
-      function updateAgeFilter() {
+      function updateAgeFilter(e) {
         let mn = parseInt($("age-min").value),
           mx = parseInt($("age-max").value);
         if (mn > mx) {
-          if (event.target.id === "age-min") mn = mx;
+          if (e && e.target && e.target.id === "age-min") mn = mx;
           else mx = mn;
         }
         $("age-min").value = mn;
@@ -5354,9 +5459,11 @@
           };
         const n = a.length,
           mean = a.reduce((s, v) => s + v, 0) / n;
-        const sd = Math.sqrt(
-          a.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1 || 1),
-        );
+        // SD of a single value is undefined, not 0 — render as "—".
+        const sd =
+          n > 1
+            ? Math.sqrt(a.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1))
+            : null;
         const sorted = [...a].sort((a, b) => a - b);
         const median =
           n % 2 ? sorted[(n - 1) / 2] : (sorted[n / 2 - 1] + sorted[n / 2]) / 2;
@@ -5485,9 +5592,9 @@
             label: `UDVA ≥ ${snellenName(0.0)}`,
             val: pct(udva66),
             sub: "logMAR ≤ 0.00",
-            status: udva66 > 70 ? "good" : udva66 > 50 ? "warn" : "bad",
-            badge: udva66 > 70 ? "✓ 70% target met" : "✗ Below 70% target",
-            badgeStatus: udva66 > 70 ? "good" : "bad",
+            status: udva66 >= 70 ? "good" : udva66 >= 50 ? "warn" : "bad",
+            badge: udva66 >= 70 ? "✓ 70% target met" : "✗ Below 70% target",
+            badgeStatus: udva66 >= 70 ? "good" : "bad",
           },
           {
             label: "Mean Spherical Equivalent",
@@ -5691,13 +5798,15 @@
         });
         const maxCount = Math.max(...bins.map((b) => b.count), 1);
 
-        // Draw concentric reference rings (50%, 85%, 95% of eyes within ±X D)
-        const pct50 = pes.filter((v) => Math.abs(v) <= 0.5).length / pes.length;
-        const pct85 = pes.filter((v) => Math.abs(v) <= 1.0).length / pes.length;
+        // Concentric reference rings. Segment radius encodes each bin's
+        // share of the FULLEST bin (segR = 0.15 + 0.85·count/maxCount), so
+        // rings are placed and labelled in those units — the old 50%/85%
+        // labels implied %-of-eyes, which the radii never represented.
+        const ringFrac = (f) => R * (0.15 + 0.85 * f);
         const rings = [
-          { p: pct50, r: R * 0.5, lbl: "50%", col: "rgba(39,102,117,.18)" },
-          { p: pct85, r: R * 0.75, lbl: "85%", col: "rgba(42,148,112,.06)" },
-          { r: R, lbl: "100%", col: "rgba(197,213,224,.5)" },
+          { r: ringFrac(0.25), lbl: "25% of max", col: "rgba(39,102,117,.18)" },
+          { r: ringFrac(0.5), lbl: "50% of max", col: "rgba(42,148,112,.06)" },
+          { r: R, lbl: "fullest bin", col: "rgba(197,213,224,.5)" },
         ];
         rings.forEach((rg) => {
           ctx.beginPath();
@@ -5794,7 +5903,7 @@
               {
                 data: pcts,
                 backgroundColor: colors,
-                borderColor: colors.map((c) => c.replace(".8", "")),
+                borderColor: colors.map((c) => c.replace(".8)", "1)")),
                 borderWidth: 1,
                 hoverBackgroundColor: colors,
                 label: "% of eyes",
@@ -5812,6 +5921,8 @@
                     type: "line",
                     xMin: 55,
                     xMax: 55,
+                    yMin: 0.6,
+                    yMax: 1.4,
                     borderColor: "rgba(110,181,200,.6)",
                     borderWidth: 1.5,
                     borderDash: [4, 4],
@@ -5827,6 +5938,8 @@
                     type: "line",
                     xMin: 73,
                     xMax: 73,
+                    yMin: 0.6,
+                    yMax: 1.4,
                     borderColor: "rgba(245,158,11,.6)",
                     borderWidth: 1.5,
                     borderDash: [4, 4],
@@ -5842,6 +5955,8 @@
                     type: "line",
                     xMin: 85,
                     xMax: 85,
+                    yMin: 1.6,
+                    yMax: 2.4,
                     borderColor: "rgba(16,185,129,.6)",
                     borderWidth: 1.5,
                     borderDash: [4, 4],
@@ -5901,7 +6016,7 @@
             data: cdfData,
             borderColor: "#3A8B9E",
             backgroundColor: "rgba(110,181,200,.1)",
-            tension: 0.4,
+            cubicInterpolationMode: "monotone",
             fill: true,
             pointRadius: 4,
             pointBackgroundColor: "#3A8B9E",
@@ -5917,7 +6032,7 @@
             data: sortLM.map((lm) => pctBelow(cdvas, lm)),
             borderColor: "#10B981",
             backgroundColor: "rgba(16,185,129,.05)",
-            tension: 0.4,
+            cubicInterpolationMode: "monotone",
             fill: false,
             borderDash: [5, 5],
             pointRadius: 3,
@@ -6143,6 +6258,16 @@
         });
         // Data-driven 95% confidence ellipse of the centroid (the fixed
         // 0.5/1.0/1.5 D circles are reference rings, not statistics).
+        // Axes expand beyond ±2 D when high-cylinder outliers need it.
+        const dapLim = Math.max(
+          2,
+          Math.ceil(
+            Math.max(
+              ...d.map((r) => Math.max(Math.abs(r.j0), Math.abs(r.j45))),
+              0,
+            ) * 2,
+          ) / 2,
+        );
         const dapCE = covEllipse(d.map((r) => ({ x: r.j0, y: r.j45 })));
         if (dapCE) {
           datasets.push({
@@ -6232,8 +6357,8 @@
             },
             scales: {
               x: {
-                min: -2,
-                max: 2,
+                min: -dapLim,
+                max: dapLim,
                 title: {
                   display: true,
                   text: "J0 (D)",
@@ -6244,8 +6369,8 @@
                 grid: { color: "rgba(197,213,224,.8)" },
               },
               y: {
-                min: -2,
-                max: 2,
+                min: -dapLim,
+                max: dapLim,
                 title: {
                   display: true,
                   text: "J45 (D)",
@@ -6696,13 +6821,13 @@
           '<table style="width:100%;border-collapse:collapse;font-size:.8rem"><thead><tr>';
         ["Metric", "n", "Mean", "Median", "SD", "Min", "Max", "MAE"].forEach(
           (h) =>
-            (html += `<th style="padding:7px 10px;text-align:left;font-size:.68rem;text-transform:uppercase;color:#475569;border-bottom:1px solid #1F2D45;background:#1C2436">${esc(h)}</th>`),
+            (html += `<th style="padding:7px 10px;text-align:left;font-size:.68rem;text-transform:uppercase;color:#4A6C85;border-bottom:1px solid var(--border);background:var(--bg-elevated)">${esc(h)}</th>`),
         );
         html += "</tr></thead><tbody>";
         rows.forEach(([label, arr]) => {
           const st = stats(arr);
-          html += `<tr style="border-bottom:1px solid #1F2D45">
-      <td style="padding:7px 10px;color:#94A3B8">${esc(label)}</td>
+          html += `<tr style="border-bottom:1px solid var(--border)">
+      <td style="padding:7px 10px;color:#4A6C85">${esc(label)}</td>
       <td style="padding:7px 10px;font-family:'Manrope', sans-serif">${st.n}</td>
       <td style="padding:7px 10px;font-family:'Manrope', sans-serif">${fmt(st.mean)}</td>
       <td style="padding:7px 10px;font-family:'Manrope', sans-serif">${fmt(st.median)}</td>
@@ -7159,6 +7284,16 @@
           pointRadius: 10,
           pointHoverRadius: 12,
         });
+        // Axes expand beyond ±2 D when high-cylinder outliers need it.
+        const dapLim = Math.max(
+          2,
+          Math.ceil(
+            Math.max(
+              ...d.map((r) => Math.max(Math.abs(r.j0), Math.abs(r.j45))),
+              0,
+            ) * 2,
+          ) / 2,
+        );
         const ce = covEllipse(d.map((r) => ({ x: r.j0, y: r.j45 })));
         if (ce) {
           datasets.push({
@@ -7224,8 +7359,8 @@
             },
             scales: {
               x: {
-                min: -2,
-                max: 2,
+                min: -dapLim,
+                max: dapLim,
                 title: {
                   display: true,
                   text: "J0 (D)",
@@ -7236,8 +7371,8 @@
                 grid: { color: "rgba(197,213,224,.8)" },
               },
               y: {
-                min: -2,
-                max: 2,
+                min: -dapLim,
+                max: dapLim,
                 title: {
                   display: true,
                   text: "J45 (D)",
@@ -7498,7 +7633,10 @@
         }
         clearEmptyState("card-subgroups");
 
-        const groupsMap = {};
+        // Object.create(null): group labels are raw uploaded values — a
+        // model named "__proto__" on a plain object resolves to
+        // Object.prototype and .push throws.
+        const groupsMap = Object.create(null);
         let unassigned = 0;
         d.forEach((r) => {
           const label = subgroupLabel(r, by);
@@ -7917,6 +8055,12 @@
 
         Object.values(groups).forEach((g) => {
           const { model, formula, fkey, nom } = g;
+          if (isNaN(nom)) {
+            // A cleared <input type=number> parses to NaN — say so instead
+            // of printing "NaN" as an optimised constant.
+            html += `<div class="result-card"><div class="result-card-header"><div><div class="result-card-title">${esc(model === "__all__" ? "All IOLs" : model)}</div><div class="result-n">${esc(formula)}</div></div></div><div class="insufficient">Enter a nominal constant for this group to run the optimisation.</div></div>`;
+            return;
+          }
           const fkLow = fkey.toLowerCase();
           const factor =
             FORMULA_FACTORS[fkLow] ||
@@ -8095,19 +8239,23 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
           "Intraop Comp",
           "Postop Comp",
         ];
+        // Round derived columns for export only — se/pe are arithmetic and
+        // VA can be a Snellen conversion; raw doubles print as
+        // -0.09999999999999998-style noise.
+        const rnd = (v, dp) => (v == null || isNaN(v) ? v : +v.toFixed(dp));
         const rows = filteredData.map((r) => [
           r.eye,
           r.age,
           r.iolType,
           r.iolPower,
           r.target,
-          r.udva,
-          r.cdva,
+          rnd(r.udva, 2),
+          rnd(r.cdva, 2),
           r.sph,
           r.cyl,
           r.axis,
-          r.se,
-          r.pe,
+          rnd(r.se, 4),
+          rnd(r.pe, 4),
           r.formula,
           r.intraComp,
           r.postComp,
@@ -8127,7 +8275,8 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
           )
           .join("\n");
         const a = document.createElement("a");
-        a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+        a.href =
+          "data:text/csv;charset=utf-8," + encodeURIComponent("﻿" + csv);
         a.download = `RefractiveOutcomes_${new Date().toISOString().slice(0, 10)}.csv`;
         a.click();
       }
@@ -8322,14 +8471,16 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             // Zero-sized canvases (never laid out) return 'data:,' from
             // toDataURL and a NaN ratio that throws inside addImage.
             if (!c || !c.width || !c.height) continue;
-            if (pageY > 220) {
-              pdf.addPage();
-              pageY = 20;
-            }
             const imgData = c.toDataURL("image/png", 0.9);
             const ratio = c.width / c.height;
             const imgW = 85,
-              imgH = imgW / ratio;
+              imgH = Math.min(imgW / ratio, 110);
+            // Break on the image's BOTTOM edge (272 leaves clearance above
+            // the y=283 disclaimer line), not just its top.
+            if (pageY + imgH > 272) {
+              pdf.addPage();
+              pageY = 20;
+            }
             pdf.setFontSize(8);
             pdf.setFont("helvetica", "bold");
             pdf.text(title, 15, pageY - 2);
@@ -8548,6 +8699,11 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
               sy += 4.5;
             });
             sy += 2;
+            // Keep the footnote clear of the y=283 page disclaimer.
+            if (sy > 274) {
+              pdf.addPage();
+              sy = 20;
+            }
             pdf.setFontSize(7);
             pdf.setTextColor(120, 120, 120);
             pdf.text(
