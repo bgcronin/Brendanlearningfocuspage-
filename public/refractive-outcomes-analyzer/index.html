@@ -1932,6 +1932,16 @@
         margin-top: 6px;
         line-height: 1.5;
       }
+      .results-disclaimer {
+        margin: 18px 0 6px;
+        padding: 12px 16px;
+        border: 1px solid var(--border);
+        border-left: 3px solid #4b8796;
+        border-radius: var(--radius-sm);
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
       .seg-group {
         display: inline-flex;
         border: 1px solid var(--border);
@@ -2161,7 +2171,7 @@
         "applicationCategory": "MedicalApplication",
         "operatingSystem": "Any (web browser)",
         "browserRequirements": "Requires JavaScript. Works in current versions of Chrome, Firefox, Safari and Edge.",
-        "softwareVersion": "1.2",
+        "softwareVersion": "1.3",
         "dateModified": "2026-07-04",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" },
@@ -2193,6 +2203,7 @@
           "Refractive prediction error analysis (MAE, MPE, % within ±0.50 D / ±1.00 D)",
           "Benchmarking against published standards (Gale et al. 2009; EUREQUO registry)",
           "Cumulative UDVA distribution curve with Snellen equivalents (6/x or 20/xx)",
+          "Visual acuity input as logMAR, decimal VA or Snellen fractions (6/x and 20/xx)",
           "Double-angle (power vector) astigmatism plot with 95% confidence ellipses",
           "Toric IOL analysis: residual astigmatism, axis misalignment, corneal SIA",
           "Subgroup analysis by axial length, IOL model, formula, IOL type, eye and age",
@@ -2883,6 +2894,31 @@
           </div>
         </div>
 
+        <div class="sidebar-section">
+          <div class="sidebar-label">Import — Vision (VA) Values</div>
+          <div class="seg-group">
+            <button
+              class="seg-btn active"
+              data-setting="vaNotation"
+              data-value="logmar"
+              onclick="setSetting('vaNotation','logmar',this)"
+            >
+              logMAR
+            </button>
+            <button
+              class="seg-btn"
+              data-setting="vaNotation"
+              data-value="decimal"
+              onclick="setSetting('vaNotation','decimal',this)"
+            >
+              Decimal
+            </button>
+          </div>
+          <div class="settings-note">
+            Snellen fractions (6/12, 20/40) are always recognised.
+          </div>
+        </div>
+
         <button class="btn btn-outline sidebar-reset" onclick="resetFilters()">
           ↺ Reset All Filters
         </button>
@@ -3087,10 +3123,33 @@
                   </button>
                 </div>
               </div>
+              <div class="settings-row">
+                <span class="settings-lbl">Vision (VA) values</span>
+                <div class="seg-group">
+                  <button
+                    class="seg-btn active"
+                    data-setting="vaNotation"
+                    data-value="logmar"
+                    onclick="setSetting('vaNotation','logmar',this)"
+                  >
+                    logMAR
+                  </button>
+                  <button
+                    class="seg-btn"
+                    data-setting="vaNotation"
+                    data-value="decimal"
+                    onclick="setSetting('vaNotation','decimal',this)"
+                  >
+                    Decimal
+                  </button>
+                </div>
+              </div>
               <div class="settings-note">
                 Plus-cylinder data is converted to minus-cylinder form on
-                import. Changing date or cylinder settings re-parses the loaded
-                file automatically.
+                import. Snellen fractions (6/12 or 20/40) in vision columns are
+                always recognised, whichever VA setting is selected. Changing
+                date, cylinder or VA settings re-parses the loaded file
+                automatically.
               </div>
             </div>
 
@@ -3808,6 +3867,22 @@
           </div>
         </div>
         <!-- /tab-subgroups -->
+
+        <div
+          id="results-disclaimer"
+          class="results-disclaimer"
+          style="display: none"
+        >
+          <strong>Professional judgement required.</strong> This analysis is
+          generated automatically from user-supplied data and is provided for
+          clinical audit and education only. Results depend entirely on the
+          accuracy and completeness of the uploaded data. Surgeons must apply
+          their own professional judgement before acting on any result,
+          benchmark or optimised constant, and should validate optimised
+          constants prospectively before routine clinical use. Focus Vision
+          Pty Ltd and the tool&rsquo;s authors accept no liability for
+          clinical or other decisions made in reliance on this analysis.
+        </div>
       </main>
     </div>
     <!-- /app-body -->
@@ -4397,6 +4472,7 @@
         dateFormat: "auto", // "auto" | "dmy" | "mdy"
         cylConvention: "minus", // "minus" | "plus"
         snellen: "metric", // "metric" (6/x) | "us" (20/xx)
+        vaNotation: "logmar", // "logmar" | "decimal" — Snellen fractions are always recognised
       };
       // Raw sheet + mapping kept in memory so settings changes or a manual
       // remap can re-parse without re-uploading.
@@ -4731,6 +4807,28 @@
           const n = parseFloat(v);
           return isNaN(n) ? null : n;
         };
+        // Visual acuity parser. Snellen fractions (6/12, 20/40, optionally
+        // with a +/- letter suffix) are self-describing and always converted:
+        // logMAR = log10(denominator / numerator). Bare numbers follow the
+        // vision-notation setting: logMAR (default) or decimal VA, where
+        // logMAR = -log10(decimal VA).
+        const parseVA = (v) => {
+          if (v == null || v === "") return null;
+          const s = String(v).trim();
+          const fr = s.match(/^(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/);
+          if (fr) {
+            const numer = parseFloat(fr[1]);
+            const denom = parseFloat(fr[2]);
+            return numer > 0 && denom > 0
+              ? Math.round(Math.log10(denom / numer) * 1000) / 1000
+              : null;
+          }
+          const n = parseFloat(s);
+          if (isNaN(n)) return null;
+          if (settings.vaNotation === "decimal")
+            return n > 0 ? Math.round(Math.log10(1 / n) * 1000) / 1000 : null;
+          return n;
+        };
         // Numeric d/m/y vs m/d/y is governed by the date-format setting.
         // "auto" resolves per value when one component exceeds 12, otherwise
         // defaults to DD/MM (AU convention). Out-of-range parts return null
@@ -4791,7 +4889,7 @@
             ] || "";
           let sph = num(g(row, "sph"));
           let cyl = num(g(row, "cyl"));
-          const udva = num(g(row, "udva"));
+          const udva = parseVA(g(row, "udva"));
           if (
             !id ||
             !["R", "L"].includes(eye) ||
@@ -4852,9 +4950,9 @@
             target,
             formula: String(g(row, "formula") || "").trim(),
             udva,
-            cdva: num(g(row, "cdva")),
-            uiva: num(g(row, "uiva")),
-            unva: num(g(row, "unva")),
+            cdva: parseVA(g(row, "cdva")),
+            uiva: parseVA(g(row, "uiva")),
+            unva: parseVA(g(row, "unva")),
             sph,
             cyl: cyl2,
             axis,
@@ -4908,6 +5006,7 @@
         $("hamburger-btn").style.removeProperty("display");
         $("cohort-name").style.display = "";
         $("nav-tabs").style.display = "";
+        $("results-disclaimer").style.display = "";
         $("nav-actions").style.display = "";
 
         buildSidebarChips();
@@ -8156,6 +8255,12 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             pdf.setTextColor(160, 160, 160);
             pdf.setDrawColor(197, 213, 224);
             pdf.setLineWidth(0.3);
+            pdf.text(
+              "For clinical audit support only - apply your own professional judgement. No liability is accepted for decisions based on this report.",
+              105,
+              283,
+              { align: "center" },
+            );
             pdf.line(15, 285, 195, 285);
             pdf.text(
               "Focus Vision Pty Ltd  ABN 17 668 265 281  ·  www.focusvision.com.au  ·  Brisbane, Queensland, Australia",
@@ -8292,6 +8397,12 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             pdf.setTextColor(160, 160, 160);
             pdf.setDrawColor(197, 213, 224);
             pdf.setLineWidth(0.3);
+            pdf.text(
+              "For clinical audit support only - apply your own professional judgement. No liability is accepted for decisions based on this report.",
+              105,
+              283,
+              { align: "center" },
+            );
             pdf.line(15, 285, 195, 285);
             pdf.text(
               "Focus Vision Pty Ltd  ABN 17 668 265 281  ·  www.focusvision.com.au  ·  Brisbane, Queensland, Australia",
