@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self' https://cdn.sheetjs.com https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.sheetjs.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none';"
+      content="default-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'none'; form-action 'none'; base-uri 'none'; object-src 'none'; worker-src 'none';"
     />
     <link
       rel="icon"
@@ -59,12 +59,47 @@
       href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <!-- Pinned versions with Subresource Integrity. chart.js loads the
+         package's real dist file (chart.umd.js) — the previously used
+         chart.umd.min.js is a CDN-generated artifact that cannot be
+         integrity-pinned. SheetJS is pinned to the npm build instead of the
+         mutable cdn.sheetjs.com/xlsx-latest. -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"
+      integrity="sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw"
+      crossorigin="anonymous"
+      onerror="(window.__libFail=window.__libFail||[]).push('SheetJS')"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.js"
+      integrity="sha384-tgbB5AKnszdcfwcZtTfuhR3Ko1XZdlDfsLtkxiiAZiVkkXCkFmp+FQFh+V/UTo54"
+      crossorigin="anonymous"
+      onerror="(window.__libFail=window.__libFail||[]).push('Chart.js')"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@3.0.1/dist/chartjs-plugin-annotation.min.js"
+      integrity="sha384-oNtu+d18330MVFpltUTve1DatxCkkctlpA2AC3GulbVFOSqhHdDat3qHse/Lbuek"
+      crossorigin="anonymous"
+      onerror="(window.__libFail=window.__libFail||[]).push('chartjs-annotation')"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"
+      integrity="sha384-j4Ga4vVTRhNtxxpmW6hc+VyOHN//+8+Yk38kQuS1t74VZ36e6SkyHsm5Y75HmiNO"
+      crossorigin="anonymous"
+      onerror="(window.__libFail=window.__libFail||[]).push('simple-statistics')"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"
+      integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk"
+      crossorigin="anonymous"
+      onerror="(window.__libFail=window.__libFail||[]).push('jsPDF')"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"
+      integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H"
+      crossorigin="anonymous"
+      onerror="(window.__libFail=window.__libFail||[]).push('html2canvas')"
+    ></script>
     <style>
       :root {
         /* Focus Vision Brand Palette — Light Theme */
@@ -825,6 +860,16 @@
       .chart-canvas-wrap.h180 {
         height: 180px;
       }
+      /* Double-angle plots must render with equal pixels-per-dioptre or the
+         reference rings and confidence ellipses draw geometrically
+         distorted. */
+      .chart-canvas-wrap.dap-square {
+        height: auto;
+        aspect-ratio: 1 / 1;
+        max-width: 340px;
+        margin-left: auto;
+        margin-right: auto;
+      }
       canvas {
         display: block;
         max-width: 100%;
@@ -835,6 +880,9 @@
         }
         .chart-canvas-wrap.h180 {
           height: 160px;
+        }
+        .chart-canvas-wrap.dap-square {
+          height: auto;
         }
       }
       .empty-state {
@@ -2171,7 +2219,7 @@
         "applicationCategory": "MedicalApplication",
         "operatingSystem": "Any (web browser)",
         "browserRequirements": "Requires JavaScript. Works in current versions of Chrome, Firefox, Safari and Edge.",
-        "softwareVersion": "1.3.1",
+        "softwareVersion": "1.4",
         "dateModified": "2026-07-04",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" },
@@ -3475,7 +3523,7 @@
                   ⓘ
                 </button>
               </div>
-              <div class="chart-canvas-wrap">
+              <div class="chart-canvas-wrap dap-square">
                 <canvas id="chart-dap"></canvas>
               </div>
             </div>
@@ -3732,7 +3780,7 @@
                   </button>
                 </div>
               </div>
-              <div class="chart-canvas-wrap">
+              <div class="chart-canvas-wrap dap-square">
                 <canvas id="chart-astig-dap"></canvas>
               </div>
             </div>
@@ -4491,6 +4539,7 @@
 
       function setSetting(key, val, btn) {
         if (settings[key] === val) return;
+        const prevVal = settings[key];
         settings[key] = val;
         if (btn && btn.parentElement) {
           [...btn.parentElement.querySelectorAll(".seg-btn")].forEach((b) =>
@@ -4507,10 +4556,26 @@
           if (allData.length) applyFilters();
           return;
         }
-        // Date format and cylinder convention affect parsing — re-parse the
-        // stored sheet if data is already loaded.
+        // Date format, cylinder convention and VA notation affect parsing —
+        // re-parse the stored sheet if data is already loaded. If the new
+        // setting yields zero valid rows, revert it: leaving the old data on
+        // screen under a new setting with an unrelated error is worse.
         if (lastRaw && columnMapping) {
-          parseData(lastRaw, lastFilename, columnMapping);
+          const n = parseData(lastRaw, lastFilename, columnMapping, true);
+          if (!n && allData.length) {
+            settings[key] = prevVal;
+            document
+              .querySelectorAll(`.seg-btn[data-setting="${key}"]`)
+              .forEach((b) =>
+                b.classList.toggle("active", b.dataset.value === prevVal),
+              );
+            parseData(lastRaw, lastFilename, columnMapping, true);
+            showBanner(
+              "parse-banner",
+              "error",
+              "That setting produced 0 valid rows for this file, so it was reverted. Check that the column contents match the notation you selected.",
+            );
+          }
         }
       }
 
@@ -4526,6 +4591,29 @@
       const $ = (id) => document.getElementById(id);
       const fmt = (v, dp = 2) =>
         v == null || isNaN(v) ? "—" : Number(v).toFixed(dp);
+
+      // With SRI-pinned CDN scripts, a blocked CDN or failed integrity check
+      // leaves the library globals undefined. Say so plainly instead of
+      // failing later inside parsing or rendering.
+      function checkLibraries() {
+        const missing = [];
+        if (typeof XLSX === "undefined") missing.push("SheetJS (file reading)");
+        if (typeof Chart === "undefined") missing.push("Chart.js (charts)");
+        if (typeof ss === "undefined") missing.push("simple-statistics");
+        if (typeof window.jspdf === "undefined")
+          missing.push("jsPDF (PDF export)");
+        if (missing.length || (window.__libFail || []).length) {
+          showBanner(
+            "parse-banner",
+            "error",
+            "Required libraries failed to load from the CDN: " +
+              esc(missing.join(", ") || (window.__libFail || []).join(", ")) +
+              ". Check that your network/firewall allows cdn.jsdelivr.net, then reload. This is not a problem with your data file.",
+          );
+        }
+        return missing.length === 0;
+      }
+      window.addEventListener("load", checkLibraries);
       const pct = (v) => (v == null ? "—" : `${Math.round(v)}%`);
       function debounce(fn, ms = 150) {
         clearTimeout(debounceTimer);
@@ -4593,12 +4681,25 @@
           );
           return;
         }
+        if (typeof XLSX === "undefined") {
+          showBanner(
+            "parse-banner",
+            "error",
+            "The spreadsheet library (SheetJS) failed to load from the CDN — check your network allows cdn.jsdelivr.net and reload. This is not a problem with your file.",
+          );
+          return;
+        }
         const reader = new FileReader();
         reader.onload = (e) => {
           try {
+            // CSVs are read as raw text: SheetJS's cellDates would pre-parse
+            // "05/03/2024" as US M/D/Y into a Date object, silently
+            // bypassing the DD/MM date-format setting. XLSX date cells carry
+            // real, unambiguous date types, so cellDates stays on there.
             const wb = XLSX.read(e.target.result, {
               type: "array",
-              cellDates: true,
+              cellDates: ext !== "csv",
+              ...(ext === "csv" ? { raw: true } : {}),
             });
             // find Patient_Data sheet
             const sheetName =
@@ -4795,7 +4896,7 @@
         LEFTEYE: "L",
       };
 
-      function parseData(raw, filename, mapping) {
+      function parseData(raw, filename, mapping, reparse = false) {
         const hdrIdx = mapping.__headerRow || 0;
         const C = mapping;
         columnMapping = mapping;
@@ -4840,11 +4941,14 @@
           if (!v) return null;
           if (v instanceof Date) return v;
           const s = String(v).trim();
-          const m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+          const m = s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2}|\d{4})$/);
           if (m) {
             const a = +m[1],
-              b = +m[2],
-              y = +m[3];
+              b = +m[2];
+            // Two-digit years pivot at 50 (24 → 2024, 68 → 1968) and follow
+            // the d/m vs m/d setting instead of the US-order Date() fallback.
+            let y = +m[3];
+            if (m[3].length === 2) y += y < 50 ? 2000 : 1900;
             let day, mon;
             if (settings.dateFormat === "mdy") {
               mon = a;
@@ -4926,11 +5030,19 @@
               : se != null && target != null
                 ? se - target
                 : null;
-          const axis = axisIn || 0;
           const cyl2 = cyl || 0;
-          const axRad = ((axis || 0) * Math.PI) / 180;
-          const j0 = -(cyl2 / 2) * Math.cos(2 * axRad);
-          const j45 = -(cyl2 / 2) * Math.sin(2 * axRad);
+          // A recorded axis of 0/180 is legitimate; only a MISSING axis on a
+          // non-zero cylinder is unusable. j0/j45 stay null for those eyes
+          // so vector analyses exclude them rather than fabricating a
+          // full-magnitude vector at the 180° meridian.
+          const axis = axisIn != null ? axisIn : cyl2 === 0 ? 0 : null;
+          let j0 = null,
+            j45 = null;
+          if (axis != null) {
+            const axRad = (axis * Math.PI) / 180;
+            j0 = -(cyl2 / 2) * Math.cos(2 * axRad);
+            j45 = -(cyl2 / 2) * Math.sin(2 * axRad);
+          }
           rows.push({
             id: String(id),
             eye,
@@ -4976,14 +5088,21 @@
             "error",
             "No valid data rows found. Check that your file uses the correct column headers.",
           );
-          return;
+          return 0;
         }
 
+        const prevIolSelection = reparse ? filterState.iolTypes : null;
         allData = rows;
         iolTypeOptions = [...new Set(rows.map((r) => r.iolType))].filter(
           Boolean,
         );
-        filterState.iolTypes = [...iolTypeOptions];
+        // A settings-driven re-parse keeps the user's IOL-type selection
+        // (intersected with the new options) instead of resetting it.
+        const keptIol = prevIolSelection
+          ? prevIolSelection.filter((t) => iolTypeOptions.includes(t))
+          : null;
+        filterState.iolTypes =
+          keptIol && keptIol.length ? keptIol : [...iolTypeOptions];
 
         // check for logMAR > 2
         const bigVA = rows.some((r) => r.udva > 2);
@@ -4999,6 +5118,37 @@
           msgs.push(
             "⚠ Some UDVA values > 2.0 detected — please verify logMAR format.",
           );
+        const noAxis = rows.filter(
+          (r) => r.cyl !== 0 && r.j0 == null,
+        ).length;
+        if (noAxis > 0)
+          msgs.push(
+            `⚠ ${noAxis} eye${noAxis === 1 ? "" : "s"} with cylinder but no refraction axis — excluded from astigmatism vector analyses.`,
+          );
+        // Optional columns matched via loose synonyms can silently override
+        // computed values (a generic "Refractive Error" column becoming
+        // Prediction Error) — surface them for review.
+        const hdrCells = raw[hdrIdx] || [];
+        const looseSensitive = [];
+        ["se", "pe", "target"].forEach((k) => {
+          if (C[k] == null) return;
+          const f = FIELD_DEFS.find((fd) => fd.key === k);
+          const hdr = String(hdrCells[C[k]] ?? "");
+          if (f && normCol(hdr) !== normCol(f.tpl))
+            looseSensitive.push(`“${esc(hdr)}” → ${esc(f.label)}`);
+        });
+        if (looseSensitive.length)
+          msgs.push(
+            `⚠ Auto-mapped by synonym: ${looseSensitive.join("; ")} — if that's not right, remap below.`,
+          );
+        const hdrNorm = hdrCells.map(normCol).filter(Boolean);
+        const dupHdrs = [
+          ...new Set(hdrNorm.filter((h, i) => hdrNorm.indexOf(h) !== i)),
+        ];
+        if (dupHdrs.length)
+          msgs.push(
+            `⚠ Duplicate column headers (first occurrence used): ${esc(dupHdrs.slice(0, 3).join(", "))}${dupHdrs.length > 3 ? "…" : ""}.`,
+          );
         msgs.push(
           `<a href="#" onclick="openMappingModal(event)" style="color:inherit;text-decoration:underline">Remap columns</a>`,
         );
@@ -5013,9 +5163,18 @@
         $("nav-actions").style.display = "";
 
         buildSidebarChips();
-        switchTab("dashboard");
+        // A settings-driven re-parse keeps the user's place instead of
+        // bouncing back to the dashboard.
+        if (reparse) {
+          astigDirty = true;
+          subgroupsDirty = true;
+          switchTab(currentTab || "dashboard");
+        } else {
+          switchTab("dashboard");
+        }
         applyFilters();
         buildOptimiserInputs(missingTarget, missingFormula);
+        return rows.length;
       }
 
       // ============================================================
@@ -5121,10 +5280,18 @@
       }
 
       function applyFilters() {
+        // <input type=date> yields "YYYY-MM-DD"; new Date(str) would parse
+        // it as UTC midnight while row dates are LOCAL midnight — excluding
+        // surgeries performed ON the boundary dates in UTC+ timezones.
+        const localDay = (v) => {
+          const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+          return m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(v);
+        };
         const from = $("date-from").value
-          ? new Date($("date-from").value)
+          ? localDay($("date-from").value)
           : null;
-        const to = $("date-to").value ? new Date($("date-to").value) : null;
+        const to = $("date-to").value ? localDay($("date-to").value) : null;
+        if (to) to.setHours(23, 59, 59, 999);
         filterState.dateFrom = from;
         filterState.dateTo = to;
         filterState.exclComp = $("excl-comp").checked;
@@ -5349,7 +5516,7 @@
             label: "Within ±1.00 D",
             val: pct(w100),
             sub: "of IOL target",
-            status: w100 > 95 ? "good" : w100 > 90 ? "warn" : "bad",
+            status: w100 >= 95 ? "good" : w100 >= 85 ? "warn" : "bad",
             badge:
               w100 >= 85
                 ? "✓ NHS benchmark ≥ 85%"
@@ -5473,6 +5640,14 @@
 
       // Panel A: PE Polar + Bars
       function renderPECharts() {
+        // Tear down first (the destroy-first pattern every other renderer
+        // uses) so a filter yielding zero PE data cannot leave the previous
+        // cohort's wheel and bars on screen.
+        destroyChart("pe-bars");
+        {
+          const pc = $("chart-pe-polar");
+          pc.getContext("2d").clearRect(0, 0, pc.width, pc.height);
+        }
         const pes = filteredData
           .map((r) => r.pe)
           .filter((v) => v != null && !isNaN(v));
@@ -5839,8 +6014,11 @@
         for (let b = lo; b < hi; b += binW)
           bins.push({ lo: b, hi: b + binW, count: 0, mid: b + binW / 2 });
         ses.forEach((v) => {
-          const i = bins.findIndex((b) => v >= b.lo && v < b.hi);
-          if (i >= 0) bins[i].count++;
+          let i = bins.findIndex((b) => v >= b.lo && v < b.hi);
+          // Clamp both tails into the edge bins so the worst refractive
+          // surprises are not silently dropped (mirrors the PE chart).
+          if (i < 0) i = v < lo ? 0 : bins.length - 1;
+          bins[i].count++;
         });
         const st = stats(ses);
         const colors = bins.map((b) =>
@@ -5889,8 +6067,8 @@
                 annotations: {
                   zero: {
                     type: "line",
-                    xMin: bins.findIndex((b) => Math.abs(b.mid) < 0.1),
-                    xMax: bins.findIndex((b) => Math.abs(b.mid) < 0.1),
+                    xMin: bins.findIndex((b) => b.lo >= 0) - 0.5,
+                    xMax: bins.findIndex((b) => b.lo >= 0) - 0.5,
                     borderColor: "rgba(110,181,200,.5)",
                     borderWidth: 1.5,
                     borderDash: [4, 4],
@@ -5969,7 +6147,7 @@
         if (dapCE) {
           datasets.push({
             label: "95% CI of centroid",
-            data: ellipsePoints(dapCE, 1 / dapCE.n),
+            data: ellipsePoints(dapCE, 1 / dapCE.n, hotellingCrit(dapCE.n)),
             type: "line",
             borderColor: "#276675",
             borderWidth: 2,
@@ -6205,7 +6383,7 @@
               { x: x1, y: reg.m * x1 + reg.b },
             ],
             type: "line",
-            borderColor: "rgba(255,255,255,.5)",
+            borderColor: "rgba(74,108,133,.7)",
             borderWidth: 1.5,
             borderDash: [4, 4],
             pointRadius: 0,
@@ -6681,11 +6859,51 @@
       // Parametric ellipse points in DATA space (exact regardless of the
       // chart's pixel aspect ratio — annotation-plugin ellipses rotate in
       // pixel space and would distort).
-      // chi2(2 df): 5.991 = 95%. scale=1 → tolerance (dataset) ellipse;
-      // scale=1/n → confidence ellipse of the centroid.
-      function ellipsePoints(ce, scale) {
-        const a = Math.sqrt(ce.l1 * 5.991 * scale);
-        const b = Math.sqrt(ce.l2 * 5.991 * scale);
+      // 95% critical value of F(2, df) — interpolated lookup, like tCrit.
+      function fCrit2(df) {
+        const T = {
+          1: 199.5,
+          2: 19.0,
+          3: 9.552,
+          4: 6.944,
+          5: 5.786,
+          6: 5.143,
+          7: 4.737,
+          8: 4.459,
+          9: 4.256,
+          10: 4.103,
+          12: 3.885,
+          15: 3.682,
+          20: 3.493,
+          25: 3.385,
+          30: 3.316,
+          40: 3.232,
+          60: 3.15,
+          120: 3.072,
+        };
+        if (df <= 0) return 199.5;
+        if (T[df]) return T[df];
+        if (df > 120) return 2.996;
+        const keys = Object.keys(T).map(Number);
+        const lo = Math.max(...keys.filter((k) => k < df));
+        const hi = Math.min(...keys.filter((k) => k > df));
+        return T[lo] + ((T[hi] - T[lo]) * (df - lo)) / (hi - lo);
+      }
+      // Critical value for the 95% region. The centroid CI must use
+      // Hotelling's T² = 2(n−1)/(n−2)·F(2,n−2): χ²(2)=5.991 assumes a KNOWN
+      // covariance and materially understates uncertainty at small n (same
+      // reasoning as the tCrit table above). The dataset "tolerance" ellipse
+      // keeps 5.991 by field convention.
+      const CHI2_2_95 = 5.991;
+      function hotellingCrit(n) {
+        if (n < 3) return CHI2_2_95;
+        return ((2 * (n - 1)) / (n - 2)) * fCrit2(n - 2);
+      }
+      // scale=1 (default crit) → tolerance (dataset) ellipse;
+      // scale=1/n with hotellingCrit(n) → confidence ellipse of the centroid.
+      function ellipsePoints(ce, scale, crit = CHI2_2_95) {
+        const a = Math.sqrt(ce.l1 * crit * scale);
+        const b = Math.sqrt(ce.l2 * crit * scale);
         const pts = [];
         for (let i = 0; i <= 64; i++) {
           const t = (i / 64) * Math.PI * 2;
@@ -6945,7 +7163,7 @@
         if (ce) {
           datasets.push({
             label: "95% CI of centroid",
-            data: ellipsePoints(ce, 1 / ce.n),
+            data: ellipsePoints(ce, 1 / ce.n, hotellingCrit(ce.n)),
             type: "line",
             borderColor: "#276675",
             borderWidth: 2,
@@ -7498,12 +7716,14 @@
           "Mean UDVA (logMAR)",
           "Bias flag",
         ];
-        const csvCell = (v) =>
-          v == null || (typeof v === "number" && isNaN(v))
-            ? ""
-            : typeof v === "number"
-              ? v.toFixed(2)
-              : `"${String(v).replace(/"/g, '""')}"`;
+        const csvCell = (v) => {
+          if (v == null || (typeof v === "number" && isNaN(v))) return "";
+          if (typeof v === "number") return v.toFixed(2);
+          let s = String(v);
+          // Neutralise spreadsheet formula injection (IOL model names etc.)
+          if (/^[=+\-@\t\r]/.test(s)) s = "'" + s;
+          return `"${s.replace(/"/g, '""')}"`;
+        };
         const lines = [head.map((h) => `"${h}"`).join(",")];
         lastSubgroupRows.forEach((r) => {
           lines.push(
@@ -7894,7 +8114,16 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
         ]);
         const csv = [cols, ...rows]
           .map((r) =>
-            r.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","),
+            r
+              .map((v) => {
+                let s = String(v ?? "");
+                // Neutralise spreadsheet formula injection from free-text
+                // cells (=, +, -, @ at cell start); numbers keep their sign.
+                if (typeof v === "string" && /^[=+\-@\t\r]/.test(s))
+                  s = "'" + s;
+                return `"${s.replace(/"/g, '""')}"`;
+              })
+              .join(","),
           )
           .join("\n");
         const a = document.createElement("a");
@@ -7921,6 +8150,10 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
         const prevAnim = Chart.defaults.animation;
         Chart.defaults.animation = false;
         [
+          // Overview charts get zero size when filters change while the tab
+          // is hidden — prepare it exactly like the analysis tabs, or its
+          // canvases export as 'data:,' with NaN heights.
+          ["dashboard", () => false, renderAllCharts],
           ["astig", () => astigDirty, renderAstigTab],
           ["subgroups", () => subgroupsDirty, renderSubgroupsTab],
         ].forEach(([t, dirty, render]) => {
@@ -7932,7 +8165,16 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             panel.style.cssText =
               "display:block;position:absolute;left:-10000px;top:0;width:1000px";
           }
-          if (hidden || dirty()) render();
+          if (hidden || dirty()) {
+            try {
+              render();
+            } catch (e) {
+              // A failed render must not prevent the restore closure from
+              // being returned — losing it strands panels off-screen and
+              // leaves Chart animations disabled for the session.
+              console.error("prepare-for-export render failed:", e);
+            }
+          }
         });
         // Two frames: one for layout, one for the chart draw.
         await new Promise((r) =>
@@ -7943,7 +8185,50 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             s == null ? p.removeAttribute("style") : p.setAttribute("style", s),
           );
           Chart.defaults.animation = prevAnim;
+          // Charts were laid out for the forced off-screen 1000px width —
+          // re-render whatever tab the user is actually looking at.
+          astigDirty = true;
+          subgroupsDirty = true;
+          if (currentTab === "astig") renderAstigTab();
+          else if (currentTab === "subgroups") renderSubgroupsTab();
+          else if (currentTab === "dashboard") renderAllCharts();
         };
+      }
+
+      // Standard PDF fonts are single-byte WinAnsi: ONE character outside
+      // CP1252 makes jsPDF emit UTF-16 and garble the whole line, so every
+      // string is sanitised on its way into pdf.text.
+      const PDF_CHAR_MAP = {
+        "≥": ">=",
+        "≤": "<=",
+        "Δ": "Delta",
+        "▲": "+",
+        "▼": "-",
+        "✓": "",
+        "✗": "x",
+        "⚠": "!",
+        "ℹ": "",
+        "—": "-",
+        "–": "-",
+        "’": "'",
+        "‘": "'",
+        "“": '"',
+        "”": '"',
+        "…": "...",
+        "→": "->",
+      };
+      function winAnsiSafe(s) {
+        return String(s)
+          .replace(/[≥≤Δ▲▼✓✗⚠ℹ—–’‘“”…→]/g, (c) => PDF_CHAR_MAP[c] ?? "?")
+          .replace(/[^\x00-\xFF]/g, "?");
+      }
+      function patchPdfText(pdf) {
+        const rawText = pdf.text.bind(pdf);
+        pdf.text = (txt, ...rest) =>
+          rawText(
+            Array.isArray(txt) ? txt.map(winAnsiSafe) : winAnsiSafe(txt),
+            ...rest,
+          );
       }
 
       async function exportPDF() {
@@ -7959,6 +8244,7 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             unit: "mm",
             format: "a4",
           });
+          patchPdfText(pdf);
           const cohort = $("cohort-name").value || "Refractive Outcomes";
           const date = new Date().toLocaleDateString("en-AU");
           pdf.setFontSize(18);
@@ -8033,7 +8319,9 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
           let pageY = 85;
           for (const { id, title } of chartCanvases) {
             const c = $(id);
-            if (!c) continue;
+            // Zero-sized canvases (never laid out) return 'data:,' from
+            // toDataURL and a NaN ratio that throws inside addImage.
+            if (!c || !c.width || !c.height) continue;
             if (pageY > 220) {
               pdf.addPage();
               pageY = 20;
@@ -8300,10 +8588,11 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
           );
         } catch (err) {
           alert("PDF export failed: " + err.message);
+        } finally {
+          if (restoreTabs) restoreTabs();
+          btn.textContent = "⬇ Export PDF";
+          btn.disabled = false;
         }
-        if (restoreTabs) restoreTabs();
-        btn.textContent = "⬇ Export PDF";
-        btn.disabled = false;
       }
 
       async function exportOptimiserPDF() {
@@ -8314,6 +8603,7 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
             unit: "mm",
             format: "a4",
           });
+          patchPdfText(pdf);
           const cohort = $("cohort-name").value || "Cohort";
           const surgeon = $("surgeon-name").value || "Surgeon";
           const date = new Date().toLocaleDateString("en-AU");
