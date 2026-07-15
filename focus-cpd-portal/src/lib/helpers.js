@@ -7,29 +7,63 @@ export async function signedUrl(bucket, path, expiresIn = 3600) {
   return data.signedUrl
 }
 
-/** Convert a pasted YouTube/Vimeo link into an embeddable iframe src. */
+/**
+ * Open a private-bucket file in a new tab, popup-blocker-safe. The tab is
+ * opened synchronously inside the click handler (before we await the signed
+ * URL) so Safari/iOS don't block it; the URL is set once it resolves.
+ */
+export async function openSigned(bucket, path, expiresIn = 300) {
+  const win = window.open('', '_blank')
+  try {
+    const url = await signedUrl(bucket, path, expiresIn)
+    if (win) {
+      win.opener = null
+      win.location = url
+    } else {
+      window.location.assign(url) // popups fully blocked — navigate instead
+    }
+  } catch (e) {
+    if (win) win.close()
+    throw e
+  }
+}
+
+/**
+ * Convert a pasted YouTube/Vimeo link into an embeddable iframe src.
+ * Returns '' for anything that is not an https(s) YouTube/Vimeo video, so an
+ * admin cannot store a `javascript:`/`data:`/arbitrary-host iframe source.
+ */
 export function toEmbedUrl(url) {
   if (!url) return ''
   try {
     const u = new URL(url)
+    if (u.protocol !== 'https:' && u.protocol !== 'http:') return ''
     const host = u.hostname.replace(/^www\./, '')
-    if (host === 'youtu.be') return `https://www.youtube.com/embed/${u.pathname.slice(1)}`
+    if (host === 'youtu.be') {
+      const id = u.pathname.slice(1)
+      return id ? `https://www.youtube.com/embed/${id}` : ''
+    }
     if (host === 'youtube.com' || host === 'm.youtube.com') {
       if (u.pathname.startsWith('/embed/')) return url
       if (u.pathname.startsWith('/shorts/')) return `https://www.youtube.com/embed/${u.pathname.split('/')[2]}`
       if (u.pathname.startsWith('/live/')) return `https://www.youtube.com/embed/${u.pathname.split('/')[2]}`
       const v = u.searchParams.get('v')
-      if (v) return `https://www.youtube.com/embed/${v}`
+      return v ? `https://www.youtube.com/embed/${v}` : '' // playlist/channel isn't embeddable
     }
     if (host === 'vimeo.com') {
-      const id = u.pathname.split('/').filter(Boolean)[0]
-      if (id) return `https://player.vimeo.com/video/${id}`
+      const segs = u.pathname.split('/').filter(Boolean)
+      const id = segs[0]
+      if (!id || !/^\d+$/.test(id)) return ''
+      // Unlisted videos share as vimeo.com/{id}/{privacy-hash}; the player
+      // needs ?h={hash} or it refuses to play.
+      const hash = segs[1]
+      return `https://player.vimeo.com/video/${id}${hash ? `?h=${encodeURIComponent(hash)}` : ''}`
     }
     if (host === 'player.vimeo.com') return url
   } catch {
-    /* not a URL — fall through */
+    /* not a URL */
   }
-  return url
+  return '' // unrecognised host — not an allowed embed target
 }
 
 export function formatDate(iso) {
@@ -46,7 +80,11 @@ export function formatHours(h) {
 /** Download an array of objects as a CSV file. */
 export function downloadCsv(filename, rows, columns) {
   const esc = (v) => {
-    const s = v === null || v === undefined ? '' : String(v)
+    let s = v === null || v === undefined ? '' : String(v)
+    // Neutralise spreadsheet formula injection: a leading =, +, -, @, tab or
+    // CR in a user-controlled field (name, practice, AHPRA…) would otherwise
+    // execute when the CSV is opened in Excel/Sheets.
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`
     return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
   }
   const header = columns.map((c) => esc(c.label)).join(',')
@@ -62,4 +100,21 @@ export function downloadCsv(filename, rows, columns) {
 /** PostgREST one-to-one embeds can arrive as object or single-item array. */
 export function one(rel) {
   return Array.isArray(rel) ? rel[0] ?? null : rel ?? null
+}
+
+/**
+ * Fetch EVERY row of a query in pages. PostgREST silently caps a single
+ * response at 1000 rows, which was quietly truncating the admin dashboards,
+ * the CPD audit CSV and the analytics. `build` must return a fresh query
+ * (filters/order applied, no .range()) each time it's called.
+ */
+export async function fetchAllRows(build, pageSize = 1000) {
+  const all = []
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await build().range(from, from + pageSize - 1)
+    if (error) return { data: null, error }
+    all.push(...(data ?? []))
+    if (!data || data.length < pageSize) break
+  }
+  return { data: all, error: null }
 }

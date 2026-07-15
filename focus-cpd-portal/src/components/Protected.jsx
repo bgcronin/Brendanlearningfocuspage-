@@ -20,9 +20,20 @@ export function RequireAuth({ children }) {
 
 /** Requires a signed-in admin. */
 export function RequireAdmin({ children }) {
-  const { session, profile, profileLoading } = useAuth()
+  const { session, profile, profileLoading, profileError, refreshProfile } = useAuth()
   if (session === undefined || (session && profileLoading)) return <Loading />
   if (!session) return <Navigate to="/login" replace />
+  if (profileError) {
+    return (
+      <div className="card mx-auto max-w-md p-8 text-center">
+        <h1 className="text-lg font-semibold text-navy">Couldn&apos;t load your account</h1>
+        <p className="mt-2 text-sm text-slate-500">
+          We couldn&apos;t check your permissions just now. Please try again.
+        </p>
+        <button onClick={() => refreshProfile()} className="btn-primary mt-4">Try again</button>
+      </div>
+    )
+  }
   if (!profile?.is_admin) {
     return (
       <div className="card mx-auto max-w-md p-8 text-center">

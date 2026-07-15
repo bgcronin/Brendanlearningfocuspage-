@@ -1,6 +1,6 @@
 # Focus Vision CPD Portal
 
-An online Continuing Professional Development portal for Focus Vision Clinic (Brisbane). Optometrists complete CPD-accredited courses — pre-reading, video lecture, MCQ quiz — and receive a branded PDF certificate by email, permanently re-downloadable from their CPD record.
+An online Continuing Professional Development portal for Focus Vision Clinic (Brisbane). Optometrists complete CPD courses — pre-reading, video lecture, MCQ quiz — and receive a branded PDF certificate by email, permanently re-downloadable from their CPD record. (The certificate supports each optometrist's self-directed CPD under the Optometry Board of Australia registration standard; the Board does not accredit third-party CPD providers.)
 
 ## Architecture
 

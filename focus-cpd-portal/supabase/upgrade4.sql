@@ -15,6 +15,13 @@
 --      course facts onto certificates, so a later rename or course edit
 --      cannot rewrite an issued certificate or a CPD record.
 --   4. Public verification now reads the certificate snapshot.
+--   5. Soft-delete for quiz questions (attempt history survives edits).
+--   6. Completion/certificate records survive account deletion (RESTRICT).
+--   7. Retains read access to completed-then-unpublished courses.
+--   8. Keeps profiles.email in sync with the account email.
+--   9. Engagement tracking + a submit_quiz gate (pre-reading/video first).
+--  10. Storage RLS: drafts stay private; revoked certificates can't be
+--      re-downloaded.
 -- Safe to re-run.
 -- ============================================================
 
@@ -112,6 +119,18 @@ begin
 
   if not v_published and not v_has_completion and not public.is_admin() then
     raise exception 'Course not available';
+  end if;
+
+  if not v_has_completion and not public.is_admin() then
+    if not exists (
+      select 1 from public.course_progress cp
+      where cp.user_id = v_user and cp.course_id = p_course_id
+        and cp.video_started_at is not null
+        and (cp.prereading_confirmed_at is not null
+             or not exists (select 1 from public.prereading_documents pd where pd.course_id = p_course_id))
+    ) then
+      raise exception 'Please work through the course material before taking the quiz.';
+    end if;
   end if;
 
   select count(*) into v_total from public.questions where course_id = p_course_id;
@@ -220,3 +239,107 @@ as $$
 $$;
 
 grant execute on function public.verify_certificate(text) to anon, authenticated;
+
+-- 6. Soft-delete for quiz questions (preserve attempt_answers history).
+alter table public.questions add column if not exists archived boolean not null default false;
+
+create or replace view public.quiz_questions
+with (security_invoker = off) as
+  select q.id, q.course_id, q.sort_order, q.question_text, q.options
+  from public.questions q
+  join public.courses c on c.id = q.course_id
+  where not q.archived
+    and (c.published
+     or public.is_admin()
+     or exists (select 1 from public.completions cm
+                where cm.course_id = c.id and cm.user_id = auth.uid()));
+revoke all on public.quiz_questions from anon;
+grant select on public.quiz_questions to authenticated;
+
+-- 7. Records survive account deletion (RESTRICT, not CASCADE).
+alter table public.completions  drop constraint if exists completions_user_id_fkey;
+alter table public.completions  add  constraint completions_user_id_fkey
+  foreign key (user_id) references public.profiles (id) on delete restrict;
+alter table public.certificates drop constraint if exists certificates_user_id_fkey;
+alter table public.certificates add  constraint certificates_user_id_fkey
+  foreign key (user_id) references public.profiles (id) on delete restrict;
+
+-- 8. Retain read access to completed-then-unpublished courses (was only in
+--    the fresh migration, never the upgrade path).
+drop policy if exists "courses_select_completed" on public.courses;
+create policy "courses_select_completed" on public.courses
+  for select to authenticated
+  using (exists (select 1 from public.completions cm where cm.course_id = id and cm.user_id = auth.uid()));
+
+-- 9. Keep profiles.email in sync with the account email.
+create or replace function public.handle_user_email_change()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  update public.profiles set email = coalesce(new.email, '') where id = new.id;
+  return new;
+end;
+$$;
+drop trigger if exists on_auth_user_email_change on auth.users;
+create trigger on_auth_user_email_change
+  after update of email on auth.users
+  for each row when (new.email is distinct from old.email)
+  execute function public.handle_user_email_change();
+
+-- 10. Engagement tracking + gate (submit_quiz above already enforces it).
+create table if not exists public.course_progress (
+  user_id                 uuid not null references public.profiles (id) on delete cascade,
+  course_id               uuid not null references public.courses (id) on delete cascade,
+  prereading_confirmed_at timestamptz,
+  video_started_at        timestamptz,
+  primary key (user_id, course_id)
+);
+alter table public.course_progress enable row level security;
+drop policy if exists "course_progress_select" on public.course_progress;
+create policy "course_progress_select" on public.course_progress
+  for select to authenticated
+  using (user_id = auth.uid() or public.is_admin());
+
+create or replace function public.mark_engagement(p_course_id uuid, p_kind text)
+returns void language plpgsql security definer set search_path = public as $$
+declare v_user uuid := auth.uid();
+begin
+  if v_user is null then raise exception 'Not authenticated'; end if;
+  if p_kind not in ('prereading', 'video') then raise exception 'Invalid engagement kind'; end if;
+  insert into public.course_progress (user_id, course_id, prereading_confirmed_at, video_started_at)
+  values (v_user, p_course_id,
+          case when p_kind = 'prereading' then now() end,
+          case when p_kind = 'video' then now() end)
+  on conflict (user_id, course_id) do update set
+    prereading_confirmed_at = coalesce(public.course_progress.prereading_confirmed_at, excluded.prereading_confirmed_at),
+    video_started_at        = coalesce(public.course_progress.video_started_at, excluded.video_started_at);
+end;
+$$;
+revoke execute on function public.mark_engagement(uuid, text) from anon, public;
+grant execute on function public.mark_engagement(uuid, text) to authenticated;
+
+-- 11. Scope draft content + block revoked-certificate downloads (storage RLS).
+drop policy if exists "content_read" on storage.objects;
+create policy "content_read" on storage.objects
+  for select to authenticated
+  using (
+    bucket_id in ('course-videos', 'prereading')
+    and exists (
+      select 1 from public.courses c
+      where c.id = ((storage.foldername(name))[1])::uuid
+        and (c.published or public.is_admin()
+             or exists (select 1 from public.completions cm
+                        where cm.course_id = c.id and cm.user_id = auth.uid()))
+    )
+  );
+
+drop policy if exists "certificates_read_own" on storage.objects;
+create policy "certificates_read_own" on storage.objects
+  for select to authenticated
+  using (
+    bucket_id = 'certificates'
+    and (
+      public.is_admin()
+      or exists (select 1 from public.certificates c
+                 where c.pdf_path = name and c.user_id = auth.uid() and c.revoked_at is null)
+    )
+  );

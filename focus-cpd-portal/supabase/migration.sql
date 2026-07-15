@@ -44,6 +44,26 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- Keep profiles.email in sync when the account email changes (otherwise the
+-- denormalised copy goes stale and certificate emails go to the old address).
+create or replace function public.handle_user_email_change()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  update public.profiles set email = coalesce(new.email, '') where id = new.id;
+  return new;
+end;
+$$;
+
+create trigger on_auth_user_email_change
+  after update of email on auth.users
+  for each row
+  when (new.email is distinct from old.email)
+  execute function public.handle_user_email_change();
+
 -- Helper used throughout RLS. SECURITY DEFINER so it can read
 -- profiles without recursive policy checks.
 create or replace function public.is_admin()
@@ -103,7 +123,10 @@ create table public.questions (
   question_text text not null,
   options       jsonb not null check (jsonb_array_length(options) = 4),
   correct_index int not null check (correct_index between 0 and 3),
-  explanation   text not null default ''
+  explanation   text not null default '',
+  -- Questions are SOFT-deleted (archived) rather than removed, so the
+  -- attempt_answers that reference them survive as assessment history.
+  archived      boolean not null default false
 );
 
 -- ------------------------------------------------------------
@@ -135,7 +158,9 @@ create table public.attempt_answers (
 -- deleted (CPD records and certificates must remain valid forever).
 create table public.completions (
   id           uuid primary key default gen_random_uuid(),
-  user_id      uuid not null references public.profiles (id) on delete cascade,
+  -- RESTRICT (not CASCADE): a CPD record must survive account changes.
+  -- Removing an optometrist is an anonymise-profile flow, not a hard delete.
+  user_id      uuid not null references public.profiles (id) on delete restrict,
   course_id    uuid not null references public.courses (id) on delete restrict,
   attempt_id   uuid references public.attempts (id) on delete set null,
   score        int not null check (score >= 0),
@@ -162,7 +187,8 @@ create table public.certificates (
   id               uuid primary key default gen_random_uuid(),
   certificate_code text not null unique,
   completion_id    uuid not null unique references public.completions (id) on delete cascade,
-  user_id          uuid not null references public.profiles (id) on delete cascade,
+  -- RESTRICT: an issued certificate must remain verifiable forever.
+  user_id          uuid not null references public.profiles (id) on delete restrict,
   course_id        uuid not null references public.courses (id) on delete restrict,
   -- Snapshots (immutable record of what the certificate was issued for).
   holder_name      text not null default '',
@@ -176,6 +202,17 @@ create table public.certificates (
   revoked_at       timestamptz,
   revoked_reason   text not null default '',
   issued_at        timestamptz not null default now()
+);
+
+-- Per-learner engagement, so submit_quiz can require that a learner worked
+-- through the pre-reading + video before a first completion is recorded.
+-- Written only by mark_engagement() (SECURITY DEFINER).
+create table public.course_progress (
+  user_id                 uuid not null references public.profiles (id) on delete cascade,
+  course_id               uuid not null references public.courses (id) on delete cascade,
+  prereading_confirmed_at timestamptz,
+  video_started_at        timestamptz,
+  primary key (user_id, course_id)
 );
 
 -- Indexes on foreign keys used in joins and RLS checks.
@@ -201,10 +238,11 @@ with (security_invoker = off) as
   select q.id, q.course_id, q.sort_order, q.question_text, q.options
   from public.questions q
   join public.courses c on c.id = q.course_id
-  where c.published
+  where not q.archived
+    and (c.published
      or public.is_admin()
      or exists (select 1 from public.completions cm
-                where cm.course_id = c.id and cm.user_id = auth.uid());
+                where cm.course_id = c.id and cm.user_id = auth.uid()));
 
 revoke all on public.quiz_questions from anon;
 grant select on public.quiz_questions to authenticated;
@@ -255,6 +293,23 @@ begin
   -- completed the course before it was unpublished).
   if not v_published and not v_has_completion and not public.is_admin() then
     raise exception 'Course not available';
+  end if;
+
+  -- Engagement gate: a first completion requires the learner to have worked
+  -- through the material (recorded via mark_engagement) — the video, plus the
+  -- pre-reading when the course has any. Admins and anyone re-taking a course
+  -- they already completed are exempt. Blocks a console call to submit_quiz
+  -- that skips the course entirely.
+  if not v_has_completion and not public.is_admin() then
+    if not exists (
+      select 1 from public.course_progress cp
+      where cp.user_id = v_user and cp.course_id = p_course_id
+        and cp.video_started_at is not null
+        and (cp.prereading_confirmed_at is not null
+             or not exists (select 1 from public.prereading_documents pd where pd.course_id = p_course_id))
+    ) then
+      raise exception 'Please work through the course material before taking the quiz.';
+    end if;
   end if;
 
   select count(*) into v_total from public.questions where course_id = p_course_id;
@@ -345,6 +400,34 @@ $$;
 revoke execute on function public.submit_quiz(uuid, jsonb) from anon, public;
 grant execute on function public.submit_quiz(uuid, jsonb) to authenticated;
 
+-- Records that a learner confirmed the pre-reading / reached the video.
+-- p_kind: 'prereading' | 'video'. Timestamps are set once and never cleared.
+create or replace function public.mark_engagement(p_course_id uuid, p_kind text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_user uuid := auth.uid();
+begin
+  if v_user is null then raise exception 'Not authenticated'; end if;
+  if p_kind not in ('prereading', 'video') then raise exception 'Invalid engagement kind'; end if;
+  insert into public.course_progress (user_id, course_id, prereading_confirmed_at, video_started_at)
+  values (
+    v_user, p_course_id,
+    case when p_kind = 'prereading' then now() end,
+    case when p_kind = 'video' then now() end
+  )
+  on conflict (user_id, course_id) do update set
+    prereading_confirmed_at = coalesce(public.course_progress.prereading_confirmed_at, excluded.prereading_confirmed_at),
+    video_started_at        = coalesce(public.course_progress.video_started_at, excluded.video_started_at);
+end;
+$$;
+
+revoke execute on function public.mark_engagement(uuid, text) from anon, public;
+grant execute on function public.mark_engagement(uuid, text) to authenticated;
+
 -- ------------------------------------------------------------
 -- PUBLIC CERTIFICATE VERIFICATION (no login required)
 -- ------------------------------------------------------------
@@ -416,6 +499,7 @@ alter table public.attempts             enable row level security;
 alter table public.attempt_answers      enable row level security;
 alter table public.completions          enable row level security;
 alter table public.certificates         enable row level security;
+alter table public.course_progress      enable row level security;
 
 -- profiles: read own (admins read all); update own — but only the
 -- non-privileged columns (column-level grant prevents self-promotion to admin).
@@ -504,6 +588,11 @@ create policy "completions_update_own_reflection" on public.completions
   using (user_id = auth.uid())
   with check (user_id = auth.uid());
 
+-- course_progress: read own (admins all); written only by mark_engagement().
+create policy "course_progress_select" on public.course_progress
+  for select to authenticated
+  using (user_id = auth.uid() or public.is_admin());
+
 -- certificates: read own (admins all). Inserted only by the service role
 -- (Netlify Function), which bypasses RLS — no insert policy on purpose.
 create policy "certificates_select" on public.certificates
@@ -534,10 +623,24 @@ values
    array['application/pdf'])
 on conflict (id) do nothing;
 
--- Videos + pre-reading: any logged-in user can view; only admins manage.
+-- Videos + pre-reading: readable only when the parent course (folder name =
+-- course id) is visible to the caller — published, or admin, or a course they
+-- have completed. Mirrors the table-level course RLS so drafts stay private.
 create policy "content_read" on storage.objects
   for select to authenticated
-  using (bucket_id in ('course-videos', 'prereading'));
+  using (
+    bucket_id in ('course-videos', 'prereading')
+    and exists (
+      select 1 from public.courses c
+      where c.id = ((storage.foldername(name))[1])::uuid
+        and (
+          c.published
+          or public.is_admin()
+          or exists (select 1 from public.completions cm
+                     where cm.course_id = c.id and cm.user_id = auth.uid())
+        )
+    )
+  );
 
 create policy "content_admin_insert" on storage.objects
   for insert to authenticated
@@ -551,13 +654,22 @@ create policy "content_admin_delete" on storage.objects
   for delete to authenticated
   using (bucket_id in ('course-videos', 'prereading') and public.is_admin());
 
--- Certificates: files live at {user_id}/{certificate_code}.pdf.
--- Users can read their own; admins can read all; only the service role writes.
+-- Certificates: files live at {user_id}/{certificate_code}.pdf. A holder can
+-- read their own ONLY while it is not revoked (so a revoked holder cannot mint
+-- a fresh signed URL for the genuine PDF); admins can always read.
 create policy "certificates_read_own" on storage.objects
   for select to authenticated
   using (
     bucket_id = 'certificates'
-    and ((storage.foldername(name))[1] = auth.uid()::text or public.is_admin())
+    and (
+      public.is_admin()
+      or exists (
+        select 1 from public.certificates c
+        where c.pdf_path = name
+          and c.user_id = auth.uid()
+          and c.revoked_at is null
+      )
+    )
   );
 
 -- ------------------------------------------------------------

@@ -43,6 +43,7 @@ export default function CourseEditor() {
   const [uploadingVideo, setUploadingVideo] = useState(false)
   const [uploadingDoc, setUploadingDoc] = useState(false)
   const [completionCount, setCompletionCount] = useState(0)
+  const [replacedVideoPaths, setReplacedVideoPaths] = useState([]) // removed from storage only on successful save
 
   useEffect(() => {
     if (isNew) return
@@ -72,6 +73,7 @@ export default function CourseEditor() {
       const obj = [...c.learning_objectives].sort((a, b) => a.sort_order - b.sort_order).map((o) => o.objective)
       setObjectives(obj.length ? obj : [''])
       const qs = [...c.questions]
+        .filter((q) => !q.archived) // archived questions are kept for history, not editing
         .sort((a, b) => a.sort_order - b.sort_order)
         .map((q) => ({ id: q.id, question_text: q.question_text, options: q.options, correct_index: q.correct_index, explanation: q.explanation }))
       setQuestions(qs.length ? qs : [emptyQuestion()])
@@ -108,9 +110,11 @@ export default function CourseEditor() {
       const { error } = await supabase.storage.from('course-videos').upload(path, file, { upsert: true })
       if (error) throw error
       setCourse((c) => ({ ...c, video_type: 'upload', video_url: path }))
-      // Remove the replaced video so files don't pile up in storage.
+      // Delete the replaced video only AFTER a successful Save — otherwise a
+      // cancelled or failed save would leave the live course pointing at a
+      // file we already destroyed.
       if (previousPath && previousPath !== path) {
-        await supabase.storage.from('course-videos').remove([previousPath]).catch(() => {})
+        setReplacedVideoPaths((p) => [...p, previousPath])
       }
     } catch (err) {
       setError(`Video upload failed: ${err.message}`)
@@ -163,6 +167,12 @@ export default function CourseEditor() {
     for (const q of cleanQuestions) {
       if (q.options.some((o) => !o.trim())) return setError('Every question needs 4 answer options.')
     }
+    // A published course must be completable: a learner walks video → quiz.
+    if (course.published) {
+      if (cleanQuestions.length === 0) return setError('Add at least one quiz question before publishing this course.')
+      const hasVideo = course.video_type === 'embed' ? course.video_url.trim() : course.video_url
+      if (!hasVideo) return setError('Add a lecture video (embed link or uploaded file) before publishing this course.')
+    }
 
     setSaving(true)
     try {
@@ -193,10 +203,12 @@ export default function CourseEditor() {
         if (objError) throw objError
       }
 
-      // 3. Questions — upsert by stable id so existing attempt history is preserved
+      // 3. Questions — upsert by stable id so existing attempt history is preserved.
+      // Removed questions are ARCHIVED (soft-deleted), not hard-deleted, so the
+      // attempt_answers that reference them survive as assessment history.
       if (deletedQuestionIds.length) {
-        const { error: qDeleteError } = await supabase.from('questions').delete().in('id', deletedQuestionIds)
-        if (qDeleteError) throw qDeleteError
+        const { error: qArchiveError } = await supabase.from('questions').update({ archived: true }).in('id', deletedQuestionIds)
+        if (qArchiveError) throw qArchiveError
       }
       if (cleanQuestions.length) {
         const { error: qError } = await supabase.from('questions').upsert(
@@ -226,6 +238,12 @@ export default function CourseEditor() {
           ? await supabase.from('prereading_documents').update(row).eq('id', doc.id)
           : await supabase.from('prereading_documents').insert(row)
         if (dError) throw dError
+      }
+
+      // Course saved — now safe to delete any replaced video file(s).
+      if (replacedVideoPaths.length) {
+        await supabase.storage.from('course-videos').remove(replacedVideoPaths).catch(() => {})
+        setReplacedVideoPaths([])
       }
 
       navigate('/admin/courses')

@@ -343,17 +343,25 @@ export async function buildCertificatePdf({ fullName, courseTitle, presenter, cp
   page.drawLine({ start: { x: (width - totalW) / 2 - 20, y: y - 10 }, end: { x: (width + totalW) / 2 + 20, y: y - 10 }, thickness: 0.5, color: rgb(0.85, 0.87, 0.89) })
   y -= 34
 
-  // Learning objectives
+  // Learning objectives — render as many as fit above the footer (y=48)
+  // rather than a fixed cap, and never draw over the footer.
   if (objectives.length) {
     centerText('LEARNING OBJECTIVES', y, bold, 9, NAVY)
     y -= 16
     const maxObjectiveWidth = width - 280
-    for (const objective of objectives.slice(0, 5)) {
+    const FLOOR = 64 // keep clear of the footer drawn at y=48
+    let shown = 0
+    for (const objective of objectives) {
       const lines = wrapText(`•  ${objective}`, helvetica, 9, maxObjectiveWidth)
+      if (y - lines.length * 13 < FLOOR) break // out of room
       for (const line of lines) {
         page.drawText(line, { x: (width - maxObjectiveWidth) / 2, y, size: 9, font: helvetica, color: GREY, maxWidth: maxObjectiveWidth })
         y -= 13
       }
+      shown++
+    }
+    if (shown < objectives.length && y - 12 >= FLOOR) {
+      page.drawText(`…and ${objectives.length - shown} more`, { x: (width - maxObjectiveWidth) / 2, y, size: 8, font: helvetica, color: GREY })
     }
   }
 

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { Loading } from '../../components/Protected'
 import AdminNav from '../../components/AdminNav'
-import { signedUrl, formatDate, formatHours, downloadCsv, one } from '../../lib/helpers'
+import { openSigned, formatDate, formatHours, downloadCsv, one, fetchAllRows } from '../../lib/helpers'
 
 const PAGE_SIZE = 25
 
@@ -26,14 +26,22 @@ export default function AdminDashboard() {
   const [to, setTo] = useState('')
   const [page, setPage] = useState(0)
   const [busyId, setBusyId] = useState(null) // completion id with an action in flight
+  const [loadError, setLoadError] = useState('')
 
   async function load() {
-    const { data } = await supabase
-      .from('completions')
-      .select(
-        '*, profiles:user_id(full_name, email, practice_name, ahpra_number), courses:course_id(title, cpd_hours, is_therapeutic), certificates(id, certificate_code, pdf_path, email_sent, revoked_at, revoked_reason, issued_at)',
-      )
-      .order('completed_at', { ascending: false })
+    setLoadError('')
+    const { data, error } = await fetchAllRows(() =>
+      supabase
+        .from('completions')
+        .select(
+          '*, profiles:user_id(full_name, email, practice_name, ahpra_number), courses:course_id(title, cpd_hours, is_therapeutic), certificates(id, certificate_code, pdf_path, email_sent, revoked_at, revoked_reason, issued_at)',
+        )
+        .order('completed_at', { ascending: false }),
+    )
+    if (error) {
+      setLoadError('We couldn’t load completions. Please try again.')
+      return
+    }
     setRows(data ?? [])
   }
 
@@ -60,8 +68,18 @@ export default function AdminDashboard() {
         return [p?.full_name, p?.email, p?.practice_name, p?.ahpra_number].some((f) => (f ?? '').toLowerCase().includes(q))
       })
     }
-    if (from) out = out.filter((r) => r.completed_at >= `${from}T00:00:00`)
-    if (to) out = out.filter((r) => r.completed_at <= `${to}T23:59:59`)
+    // Dates display in Brisbane time (to match the certificate), so filter on
+    // the Brisbane day boundaries (UTC+10, no DST) rather than comparing UTC
+    // timestamp strings — otherwise completions before 10am AEST land on the
+    // wrong day in the table and CSV.
+    if (from) {
+      const t = Date.parse(`${from}T00:00:00+10:00`)
+      out = out.filter((r) => Date.parse(r.completed_at) >= t)
+    }
+    if (to) {
+      const t = Date.parse(`${to}T23:59:59.999+10:00`)
+      out = out.filter((r) => Date.parse(r.completed_at) <= t)
+    }
     return out
   }, [rows, search, courseFilter, from, to])
 
@@ -93,8 +111,7 @@ export default function AdminDashboard() {
   async function downloadPdf(r, cert) {
     setBusyId(r.id)
     try {
-      const url = await signedUrl('certificates', cert.pdf_path, 300)
-      window.open(url, '_blank', 'noopener')
+      await openSigned('certificates', cert.pdf_path, 300)
     } catch {
       alert('Could not download the certificate PDF.')
     } finally {
@@ -147,6 +164,17 @@ export default function AdminDashboard() {
     load()
   }
 
+  if (loadError) {
+    return (
+      <div>
+        <AdminNav />
+        <div className="card mx-auto max-w-md p-8 text-center">
+          <p className="text-slate-600">{loadError}</p>
+          <button onClick={load} className="btn-primary mt-4">Try again</button>
+        </div>
+      </div>
+    )
+  }
   if (!rows) return <Loading />
 
   return (

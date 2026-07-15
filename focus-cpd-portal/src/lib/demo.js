@@ -166,6 +166,7 @@ const db = {
       email_sent: true, revoked_at: null, revoked_reason: '', issued_at: daysAgo(7),
     },
   ],
+  course_progress: [],
 }
 
 /* --------------------- tiny query builder --------------------- */
@@ -240,6 +241,7 @@ class Query {
   delete() { this.action = 'delete'; return this }
   eq(col, val) { this.filters.push((r) => r[col] === val); return this }
   in(col, vals) { this.filters.push((r) => vals.includes(r[col])); return this }
+  range(from, to) { this.rangeFrom = from; this.rangeTo = to; return this }
   order(col, opts = {}) { this.orderBy = { col, ascending: opts.ascending !== false }; return this }
   maybeSingle() { this.singleMode = 'maybe'; return this }
   single() { this.singleMode = 'strict'; return this }
@@ -265,6 +267,7 @@ class Query {
         const { col, ascending } = this.orderBy
         result.sort((a, b) => (a[col] < b[col] ? -1 : a[col] > b[col] ? 1 : 0) * (ascending ? 1 : -1))
       }
+      if (this.rangeFrom != null) result = result.slice(this.rangeFrom, this.rangeTo + 1)
       return this._finish(result)
     }
     if (this.action === 'insert' || this.action === 'upsert') {
@@ -413,6 +416,17 @@ async function rpc(fn, args = {}) {
     p.is_admin = args.make_admin
     return { data: null, error: null }
   }
+  if (fn === 'mark_engagement') {
+    if (!['prereading', 'video'].includes(args.p_kind)) return { data: null, error: { message: 'Invalid engagement kind' } }
+    let row = db.course_progress.find((r) => r.user_id === DEMO_USER.id && r.course_id === args.p_course_id)
+    if (!row) {
+      row = { user_id: DEMO_USER.id, course_id: args.p_course_id, prereading_confirmed_at: null, video_started_at: null }
+      db.course_progress.push(row)
+    }
+    if (args.p_kind === 'prereading') row.prereading_confirmed_at ??= now()
+    if (args.p_kind === 'video') row.video_started_at ??= now()
+    return { data: null, error: null }
+  }
   if (fn === 'submit_quiz') {
     // Mirrors the server-side grading function, including the pass mark:
     // a completion (and certificate) is recorded only on a passing attempt,
@@ -421,10 +435,19 @@ async function rpc(fn, args = {}) {
     const answers = args.p_answers || {}
     const course = db.courses.find((c) => c.id === courseId)
     const passMark = course?.pass_mark ?? 70
+    const isAdmin = db.profiles.find((p) => p.id === DEMO_USER.id)?.is_admin
+    const priorCompletion = db.completions.some((c) => c.user_id === DEMO_USER.id && c.course_id === courseId)
     const questions = db.questions.filter((q) => q.course_id === courseId)
     if (!questions.length) return { data: null, error: { message: 'This course has no quiz questions' } }
     if (questions.some((q) => answers[q.id] === undefined || answers[q.id] === null)) {
       return { data: null, error: { message: 'All questions must be answered' } }
+    }
+    // Engagement gate (admins / already-completed exempt, mirroring the server).
+    if (!priorCompletion && !isAdmin) {
+      const prog = db.course_progress.find((r) => r.user_id === DEMO_USER.id && r.course_id === courseId)
+      const hasPrereading = db.prereading_documents.some((d) => d.course_id === courseId)
+      const ok = prog?.video_started_at && (prog?.prereading_confirmed_at || !hasPrereading)
+      if (!ok) return { data: null, error: { message: 'Please work through the course material before taking the quiz.' } }
     }
 
     const graded = [...questions]

@@ -1,4 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+/* Self-hosted Poppins (same two weights the certificate PDF bundles). No
+   Google Fonts request, so no visitor IP is sent to Google — the privacy
+   policy names only Supabase, Netlify and Resend. Regular covers 100–500,
+   SemiBold covers 600–900. */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 100 500;
+  font-display: swap;
+  src: url('./assets/fonts/Poppins-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600 900;
+  font-display: swap;
+  src: url('./assets/fonts/Poppins-SemiBold.ttf') format('truetype');
+}
 
 @tailwind base;
 @tailwind components;

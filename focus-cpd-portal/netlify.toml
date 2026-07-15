@@ -9,6 +9,19 @@
 [functions."issue-certificate"]
   included_files = ["netlify/functions/assets/**"]
 
+# Security headers. The CSP limits framed content to the video providers
+# (defence-in-depth with toEmbedUrl) and forbids the portal itself from being
+# framed (clickjacking). connect/media-src use https://*.supabase.co so the CSP
+# is the same for every deploy; tighten to your exact project host if you wish.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=(), payment=()"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; media-src 'self' blob: https://*.supabase.co; frame-src https://www.youtube.com https://player.vimeo.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
+
 # SPA fallback — function routes (/.netlify/functions/*) are handled before redirects.
 [[redirects]]
   from = "/*"

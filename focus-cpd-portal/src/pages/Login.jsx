@@ -46,7 +46,7 @@ export default function Login() {
     <div className="mx-auto max-w-md">
       <div className="card p-8">
         <h1 className="text-2xl font-semibold text-navy">Sign in</h1>
-        <p className="mt-1 text-sm text-slate-500">CPD-accredited education for optometrists.</p>
+        <p className="mt-1 text-sm text-slate-500">CPD education for optometrists.</p>
 
         <form onSubmit={onSubmit} className="mt-6 space-y-4">
           <div>

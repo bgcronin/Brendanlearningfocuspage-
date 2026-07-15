@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { Loading } from '../../components/Protected'
 import AdminNav from '../../components/AdminNav'
-import { formatHours } from '../../lib/helpers'
+import { formatHours, fetchAllRows } from '../../lib/helpers'
 
 /**
  * Course analytics: completions, attempts, average scores, and
@@ -11,20 +11,29 @@ import { formatHours } from '../../lib/helpers'
  */
 export default function AdminAnalytics() {
   const [data, setData] = useState(null)
+  const [loadError, setLoadError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
   const [openCourseId, setOpenCourseId] = useState(null)
 
   useEffect(() => {
     async function load() {
-      const [{ data: courses }, { data: completions }, { data: attempts }, { data: answers }] = await Promise.all([
-        supabase.from('courses').select('*, questions(id, sort_order, question_text)').order('created_at', { ascending: false }),
-        supabase.from('completions').select('course_id, score, total'),
-        supabase.from('attempts').select('course_id, score, total'),
-        supabase.from('attempt_answers').select('question_id, is_correct'),
+      setLoadError('')
+      // Paged so attempt_answers (≈10 rows per attempt) isn't silently
+      // truncated at 1000 rows, which would skew every miss rate.
+      const [co, cm, at, an] = await Promise.all([
+        fetchAllRows(() => supabase.from('courses').select('*, questions(id, sort_order, question_text)').order('created_at', { ascending: false })),
+        fetchAllRows(() => supabase.from('completions').select('course_id, score, total')),
+        fetchAllRows(() => supabase.from('attempts').select('course_id, score, total')),
+        fetchAllRows(() => supabase.from('attempt_answers').select('question_id, is_correct')),
       ])
-      setData({ courses: courses ?? [], completions: completions ?? [], attempts: attempts ?? [], answers: answers ?? [] })
+      if (co.error || cm.error || at.error || an.error) {
+        setLoadError('We couldn’t load analytics. Please try again.')
+        return
+      }
+      setData({ courses: co.data ?? [], completions: cm.data ?? [], attempts: at.data ?? [], answers: an.data ?? [] })
     }
     load()
-  }, [])
+  }, [reloadKey])
 
   const stats = useMemo(() => {
     if (!data) return null
@@ -55,6 +64,17 @@ export default function AdminAnalytics() {
     })
   }, [data])
 
+  if (loadError) {
+    return (
+      <div>
+        <AdminNav />
+        <div className="card mx-auto max-w-md p-8 text-center">
+          <p className="text-slate-600">{loadError}</p>
+          <button onClick={() => setReloadKey((k) => k + 1)} className="btn-primary mt-4">Try again</button>
+        </div>
+      </div>
+    )
+  }
   if (!stats) return <Loading />
 
   const totals = {

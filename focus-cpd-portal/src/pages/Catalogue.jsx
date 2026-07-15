@@ -10,10 +10,13 @@ export default function Catalogue() {
   const [courses, setCourses] = useState(null)
   const [completions, setCompletions] = useState({})
   const [filter, setFilter] = useState('all')
+  const [loadError, setLoadError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     async function load() {
-      const [{ data: courseData }, { data: completionData }] = await Promise.all([
+      setLoadError('')
+      const [{ data: courseData, error: cErr }, { data: completionData }] = await Promise.all([
         supabase
           .from('courses')
           .select('*, learning_objectives(id, sort_order, objective)')
@@ -21,11 +24,15 @@ export default function Catalogue() {
           .order('created_at', { ascending: false }),
         supabase.from('completions').select('course_id').eq('user_id', session.user.id),
       ])
+      if (cErr) {
+        setLoadError('We couldn’t load the catalogue. Please try again.')
+        return
+      }
       setCourses(courseData ?? [])
       setCompletions(Object.fromEntries((completionData ?? []).map((c) => [c.course_id, true])))
     }
     load()
-  }, [session.user.id])
+  }, [session.user.id, reloadKey])
 
   const categories = useMemo(() => {
     const set = new Set()
@@ -33,6 +40,14 @@ export default function Catalogue() {
     return [...set].sort()
   }, [courses])
 
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-md py-20 text-center">
+        <p className="text-slate-600">{loadError}</p>
+        <button onClick={() => setReloadKey((k) => k + 1)} className="btn-primary mt-4">Try again</button>
+      </div>
+    )
+  }
   if (!courses) return <Loading />
 
   const visible = filter === 'all' ? courses : courses.filter((c) => (c.categories ?? []).includes(filter))
@@ -42,7 +57,7 @@ export default function Catalogue() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold text-navy">Course catalogue</h1>
-          <p className="mt-1 text-slate-500">CPD-accredited education from Focus Vision Clinic.</p>
+          <p className="mt-1 text-slate-500">CPD education from Focus Vision Clinic to support your self-directed CPD.</p>
         </div>
       </div>
 

@@ -8,12 +8,18 @@ import { formatDate, formatHours } from '../../lib/helpers'
 export default function AdminCourses() {
   const [courses, setCourses] = useState(null)
   const [duplicatingId, setDuplicatingId] = useState(null)
+  const [loadError, setLoadError] = useState('')
 
   async function load() {
-    const { data } = await supabase
+    setLoadError('')
+    const { data, error } = await supabase
       .from('courses')
-      .select('*, questions(id), prereading_documents(id)')
+      .select('*, questions(id, archived), prereading_documents(id)')
       .order('created_at', { ascending: false })
+    if (error) {
+      setLoadError('We couldn’t load courses. Please try again.')
+      return
+    }
     setCourses(data ?? [])
   }
 
@@ -22,6 +28,16 @@ export default function AdminCourses() {
   }, [])
 
   async function togglePublish(course) {
+    // A course can only be published if a learner can actually complete it.
+    if (!course.published) {
+      const liveQuestions = (course.questions ?? []).filter((q) => !q.archived).length
+      const hasVideo = course.video_type === 'embed' ? (course.video_url || '').trim() : course.video_url
+      if (!liveQuestions || !hasVideo) {
+        return alert(
+          `"${course.title}" can't be published yet — it needs at least one quiz question and a lecture video. Open it in the editor to add them.`,
+        )
+      }
+    }
     const { error } = await supabase.from('courses').update({ published: !course.published }).eq('id', course.id)
     if (error) alert(error.message)
     else load()
@@ -148,6 +164,17 @@ export default function AdminCourses() {
     }
   }
 
+  if (loadError) {
+    return (
+      <div>
+        <AdminNav />
+        <div className="card mx-auto max-w-md p-8 text-center">
+          <p className="text-slate-600">{loadError}</p>
+          <button onClick={load} className="btn-primary mt-4">Try again</button>
+        </div>
+      </div>
+    )
+  }
   if (!courses) return <Loading />
 
   return (
@@ -180,7 +207,7 @@ export default function AdminCourses() {
                 </div>
                 <h2 className="mt-1.5 truncate font-semibold text-navy">{c.title}</h2>
                 <p className="text-sm text-slate-400">
-                  {c.presenter} · {formatHours(c.cpd_hours)} hrs{c.is_therapeutic ? ' (therapeutic)' : ''} · {c.questions.length} questions ·{' '}
+                  {c.presenter} · {formatHours(c.cpd_hours)} hrs{c.is_therapeutic ? ' (therapeutic)' : ''} · {c.questions.filter((q) => !q.archived).length} questions ·{' '}
                   {c.prereading_documents.length} pre-reading · created {formatDate(c.created_at)}
                 </p>
               </div>

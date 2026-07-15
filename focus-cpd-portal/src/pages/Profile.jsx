@@ -9,7 +9,7 @@ import { Loading } from '../components/Protected'
  * be fixed without contacting the clinic.
  */
 export default function Profile() {
-  const { profile, profileLoading, refreshProfile } = useAuth()
+  const { profile, profileLoading, profileError, refreshProfile } = useAuth()
   const [form, setForm] = useState(null)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
@@ -25,6 +25,14 @@ export default function Profile() {
     }
   }, [profile, form])
 
+  if (profileError) {
+    return (
+      <div className="mx-auto max-w-md py-20 text-center">
+        <p className="text-slate-600">We couldn&apos;t load your profile. Please try again.</p>
+        <button onClick={() => refreshProfile()} className="btn-primary mt-4">Try again</button>
+      </div>
+    )
+  }
   if (profileLoading || !form) return <Loading />
 
   const set = (k) => (e) => {

@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { Loading } from '../components/Protected'
 import ReflectionEditor from '../components/ReflectionEditor'
-import { signedUrl, formatDate, formatHours, one } from '../lib/helpers'
+import { openSigned, formatDate, formatHours, one } from '../lib/helpers'
 
 // The CPD record reads the course facts SNAPSHOTTED onto the completion at
 // pass time (immutable), falling back to the live course only for older
@@ -23,17 +23,45 @@ function courseFacts(r) {
 export default function MyCpd() {
   const { session, profile } = useAuth()
   const [rows, setRows] = useState(null)
+  const [loadError, setLoadError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
   const [downloadingId, setDownloadingId] = useState(null)
+  const [generatingId, setGeneratingId] = useState(null)
   const [openReflectionId, setOpenReflectionId] = useState(null)
 
   useEffect(() => {
+    setLoadError('')
     supabase
       .from('completions')
       .select('*, courses:course_id(title, presenter, cpd_hours, is_therapeutic), certificates(id, certificate_code, pdf_path, revoked_at, issued_at)')
       .eq('user_id', session.user.id)
       .order('completed_at', { ascending: false })
-      .then(({ data }) => setRows(data ?? []))
-  }, [session.user.id])
+      .then(({ data, error }) => {
+        if (error) setLoadError('We couldn’t load your CPD record. Please try again.')
+        else setRows(data ?? [])
+      })
+  }, [session.user.id, reloadKey])
+
+  // Recover a completion whose certificate never issued (e.g. the email/
+  // generation failed at the time). The function is idempotent.
+  async function generateCert(completionId) {
+    setGeneratingId(completionId)
+    try {
+      const { data: { session: s } } = await supabase.auth.getSession()
+      const res = await fetch('/.netlify/functions/issue-certificate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${s.access_token}` },
+        body: JSON.stringify({ completionId }),
+      })
+      const body = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(body.error || 'Could not generate the certificate')
+      setReloadKey((k) => k + 1)
+    } catch (err) {
+      alert(err.message)
+    } finally {
+      setGeneratingId(null)
+    }
+  }
 
   const totals = useMemo(() => {
     let all = 0
@@ -50,8 +78,7 @@ export default function MyCpd() {
   async function download(cert) {
     setDownloadingId(cert.id)
     try {
-      const url = await signedUrl('certificates', cert.pdf_path, 300)
-      window.open(url, '_blank', 'noopener')
+      await openSigned('certificates', cert.pdf_path, 300)
     } catch {
       alert('Could not download the certificate. Please try again.')
     } finally {
@@ -59,6 +86,14 @@ export default function MyCpd() {
     }
   }
 
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-md py-20 text-center">
+        <p className="text-slate-600">{loadError}</p>
+        <button onClick={() => setReloadKey((k) => k + 1)} className="btn-primary mt-4">Try again</button>
+      </div>
+    )
+  }
   if (!rows) return <Loading />
 
   return (
@@ -143,7 +178,14 @@ export default function MyCpd() {
                             {downloadingId === cert.id ? 'Preparing…' : 'Download PDF'}
                           </button>
                         ) : (
-                          <span className="text-xs text-slate-400">Pending</span>
+                          <button
+                            onClick={() => generateCert(r.id)}
+                            disabled={generatingId === r.id}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-teal/40 px-3 py-1.5 text-xs font-bold text-teal-dark transition hover:bg-teal-pale disabled:opacity-50"
+                            title="Your completion is recorded — generate the certificate PDF and email it to yourself."
+                          >
+                            {generatingId === r.id ? 'Generating…' : 'Generate certificate'}
+                          </button>
                         )}
                         {cert && <div className="mt-1 font-mono text-[10px] text-slate-400">{cert.certificate_code}</div>}
                       </td>

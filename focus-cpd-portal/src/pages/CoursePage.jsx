@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { Loading } from '../components/Protected'
 import Certificate from '../components/Certificate'
 import ReflectionEditor from '../components/ReflectionEditor'
-import { signedUrl, toEmbedUrl, formatDate, formatHours } from '../lib/helpers'
+import { signedUrl, openSigned, toEmbedUrl, formatDate, formatHours } from '../lib/helpers'
 
 export default function CoursePage() {
   const { id } = useParams()
@@ -13,6 +13,8 @@ export default function CoursePage() {
 
   const [course, setCourse] = useState(null)
   const [notFound, setNotFound] = useState(false)
+  const [loadError, setLoadError] = useState('')
+  const [reloadKey, setReloadKey] = useState(0)
   const [completion, setCompletion] = useState(null)
   const [certificate, setCertificate] = useState(null)
   const [step, setStep] = useState('overview') // overview | prereading | video | quiz | result
@@ -26,9 +28,11 @@ export default function CoursePage() {
 
   useEffect(() => {
     async function load() {
+      setNotFound(false)
+      setLoadError('')
       // Questions come from the quiz_questions view — correct answers and
       // explanations are never sent to the browser before submission.
-      const [{ data: c }, { data: qs }] = await Promise.all([
+      const [{ data: c, error: cErr }, { data: qs, error: qErr }] = await Promise.all([
         supabase
           .from('courses')
           .select('*, learning_objectives(*), prereading_documents(*)')
@@ -36,8 +40,18 @@ export default function CoursePage() {
           .maybeSingle(),
         supabase.from('quiz_questions').select('*').eq('course_id', id),
       ])
+      // Distinguish "the course genuinely doesn't exist" from a transient
+      // fetch failure — the latter must not read as "Course not found".
+      if (cErr) {
+        setLoadError('We couldn’t load this course. Check your connection and try again.')
+        return
+      }
       if (!c) {
         setNotFound(true)
+        return
+      }
+      if (qErr) {
+        setLoadError('We couldn’t load this course’s quiz. Please try again.')
         return
       }
       c.learning_objectives.sort((a, b) => a.sort_order - b.sort_order)
@@ -62,7 +76,7 @@ export default function CoursePage() {
       }
     }
     load()
-  }, [id, session.user.id])
+  }, [id, session.user.id, reloadKey])
 
   const steps = useMemo(() => {
     if (!course) return []
@@ -73,6 +87,17 @@ export default function CoursePage() {
     return (
       <div className="py-24 text-center text-slate-500">
         Course not found. <Link to="/courses" className="text-teal hover:underline">Back to catalogue</Link>
+      </div>
+    )
+  }
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-md py-20 text-center">
+        <p className="text-slate-600">{loadError}</p>
+        <button onClick={() => setReloadKey((k) => k + 1)} className="btn-primary mt-4">Try again</button>
+        <div className="mt-3">
+          <Link to="/courses" className="text-sm font-semibold text-teal hover:underline">Back to catalogue</Link>
+        </div>
       </div>
     )
   }
@@ -136,6 +161,16 @@ export default function CoursePage() {
     }
   }
 
+  // Record engagement so the server will accept the quiz submission. The
+  // real enforcement is the submit_quiz gate; this just writes the markers.
+  async function markEngagement(kind) {
+    try {
+      await supabase.rpc('mark_engagement', { p_course_id: id, p_kind: kind })
+    } catch {
+      /* best effort — the gate re-checks server-side */
+    }
+  }
+
   const stepIndex = steps.indexOf(step)
 
   return (
@@ -171,12 +206,20 @@ export default function CoursePage() {
           docs={course.prereading_documents}
           confirmed={prereadConfirmed}
           setConfirmed={setPrereadConfirmed}
-          onNext={() => setStep('video')}
+          onNext={() => {
+            markEngagement('prereading')
+            setStep('video')
+          }}
         />
       )}
 
       {step === 'video' && (
-        <VideoStep course={course} onNext={() => setStep('quiz')} onBack={() => setStep(stepIndex > 0 ? steps[stepIndex - 1] : 'overview')} />
+        <VideoStep
+          course={course}
+          onSeen={() => markEngagement('video')}
+          onNext={() => setStep('quiz')}
+          onBack={() => setStep(stepIndex > 0 ? steps[stepIndex - 1] : 'overview')}
+        />
       )}
 
       {step === 'quiz' && (
@@ -268,8 +311,7 @@ function Fact({ label, value }) {
 function Prereading({ docs, confirmed, setConfirmed, onNext }) {
   async function openDoc(doc) {
     try {
-      const url = await signedUrl('prereading', doc.storage_path)
-      window.open(url, '_blank', 'noopener')
+      await openSigned('prereading', doc.storage_path)
     } catch {
       alert('Could not open the document. Please try again.')
     }
@@ -315,15 +357,27 @@ function Prereading({ docs, confirmed, setConfirmed, onNext }) {
 }
 
 /* ---------------- Video ---------------- */
-function VideoStep({ course, onNext, onBack }) {
+function VideoStep({ course, onSeen, onNext, onBack }) {
   const [uploadUrl, setUploadUrl] = useState(null)
   const [error, setError] = useState('')
+  const embedUrl = course.video_type === 'embed' ? toEmbedUrl(course.video_url) : ''
+  // An embed URL that isn't a recognised YouTube/Vimeo video, or an "upload"
+  // course with no file, would otherwise render a blank frame / endless spinner.
+  const missing =
+    (course.video_type === 'embed' && !embedUrl) ||
+    (course.video_type === 'upload' && !course.video_url)
+
+  // Record that the learner reached the video (engagement gate).
+  useEffect(() => {
+    onSeen?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (course.video_type === 'upload' && course.video_url) {
       signedUrl('course-videos', course.video_url, 3 * 3600)
         .then(setUploadUrl)
-        .catch(() => setError('Could not load the video. Please refresh and try again.'))
+        .catch(() => setError('We couldn’t load the video. Please refresh and try again.'))
     }
   }, [course])
 
@@ -333,10 +387,14 @@ function VideoStep({ course, onNext, onBack }) {
       <p className="mt-1 text-sm text-slate-500">Watch the full lecture, then continue to the quiz.</p>
 
       <div className="mt-5 overflow-hidden rounded-lg bg-black">
-        {course.video_type === 'embed' ? (
+        {missing ? (
+          <p className="p-8 text-center text-sm text-slate-300">
+            This lecture video isn’t available yet. Please check back soon, or contact Focus Vision.
+          </p>
+        ) : course.video_type === 'embed' ? (
           <div className="aspect-video">
             <iframe
-              src={toEmbedUrl(course.video_url)}
+              src={embedUrl}
               title={course.title}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -364,7 +422,22 @@ function VideoStep({ course, onNext, onBack }) {
 
 /* ---------------- Quiz ---------------- */
 function Quiz({ questions, answers, setAnswers, submitting, passMark, onSubmit, onBack }) {
-  const allAnswered = questions.every((q) => answers[q.id] !== undefined)
+  const noQuestions = questions.length === 0
+  const allAnswered = !noQuestions && questions.every((q) => answers[q.id] !== undefined)
+
+  if (noQuestions) {
+    return (
+      <div className="mt-6">
+        <div className="card p-8 text-center">
+          <h1 className="text-2xl font-semibold text-navy">Quiz unavailable</h1>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
+            This course doesn’t have any quiz questions yet, so it can’t be completed. Please check back soon, or contact Focus Vision.
+          </p>
+          <button onClick={onBack} className="btn-secondary mt-6">← Back to video</button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="mt-6">
@@ -431,8 +504,7 @@ function ResultStep({ course, result, completion, certificate, certError, issuin
     if (!certificate) return
     setDownloading(true)
     try {
-      const url = await signedUrl('certificates', certificate.pdf_path, 300)
-      window.open(url, '_blank', 'noopener')
+      await openSigned('certificates', certificate.pdf_path, 300)
     } catch {
       alert('Could not download the certificate. Please try again from My CPD Record.')
     } finally {
@@ -517,7 +589,7 @@ function ResultStep({ course, result, completion, certificate, certError, issuin
             <Link to="/my-cpd" className="btn-secondary">Go to My CPD Record</Link>
           </div>
           <p className="text-center text-xs text-slate-400">
-            Tip: you can screenshot the certificate above — the emailed PDF is identical.
+            Your certificate has also been emailed to you and is always saved under My CPD Record.
           </p>
         </>
       )}

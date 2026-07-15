@@ -3,7 +3,7 @@ import { supabase } from '../../lib/supabase'
 import { useAuth } from '../../context/AuthContext'
 import { Loading } from '../../components/Protected'
 import AdminNav from '../../components/AdminNav'
-import { formatDate, downloadCsv } from '../../lib/helpers'
+import { formatDate, downloadCsv, fetchAllRows } from '../../lib/helpers'
 
 export default function AdminUsers() {
   const { session } = useAuth()
@@ -11,15 +11,21 @@ export default function AdminUsers() {
   const [completionCounts, setCompletionCounts] = useState({})
   const [search, setSearch] = useState('')
   const [busyId, setBusyId] = useState(null)
+  const [loadError, setLoadError] = useState('')
 
   async function load() {
-    const [{ data: profiles }, { data: completions }] = await Promise.all([
-      supabase.from('profiles').select('*').order('created_at', { ascending: false }),
-      supabase.from('completions').select('user_id'),
+    setLoadError('')
+    const [pr, cr] = await Promise.all([
+      fetchAllRows(() => supabase.from('profiles').select('*').order('created_at', { ascending: false })),
+      fetchAllRows(() => supabase.from('completions').select('user_id')),
     ])
-    setUsers(profiles ?? [])
+    if (pr.error || cr.error) {
+      setLoadError('We couldn’t load users. Please try again.')
+      return
+    }
+    setUsers(pr.data ?? [])
     const counts = {}
-    for (const c of completions ?? []) counts[c.user_id] = (counts[c.user_id] ?? 0) + 1
+    for (const c of cr.data ?? []) counts[c.user_id] = (counts[c.user_id] ?? 0) + 1
     setCompletionCounts(counts)
   }
 
@@ -64,6 +70,17 @@ export default function AdminUsers() {
     setUsers((us) => us.map((x) => (x.id === u.id ? { ...x, is_admin: promoting } : x)))
   }
 
+  if (loadError) {
+    return (
+      <div>
+        <AdminNav />
+        <div className="card mx-auto max-w-md p-8 text-center">
+          <p className="text-slate-600">{loadError}</p>
+          <button onClick={load} className="btn-primary mt-4">Try again</button>
+        </div>
+      </div>
+    )
+  }
   if (!users) return <Loading />
 
   return (
