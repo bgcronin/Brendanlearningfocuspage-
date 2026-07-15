@@ -70,7 +70,12 @@ export async function handler(event) {
     .select('*, courses:course_id(title, presenter, cpd_hours, is_therapeutic, learning_objectives(sort_order, objective)), profiles:user_id(full_name, email)')
     .eq('id', completionId)
     .maybeSingle()
-  if (compError) return json(500, { error: compError.message })
+  // 5xx paths log the detail server-side and return a generic message —
+  // raw Postgres/API errors leak schema details to any authenticated caller.
+  if (compError) {
+    console.error('completion query failed:', compError)
+    return json(500, { error: 'Could not issue the certificate — please try again' })
+  }
   if (!completion) return json(404, { error: 'Completion not found' })
   if (completion.user_id !== user.id && !callerIsAdmin) {
     return json(403, { error: 'This completion belongs to another user' })
@@ -84,7 +89,10 @@ export async function handler(event) {
     .select('id', { count: 'exact', head: true })
     .eq('user_id', completion.user_id)
     .eq('course_id', completion.course_id)
-  if (attemptError) return json(500, { error: attemptError.message })
+  if (attemptError) {
+    console.error('attempt check failed:', attemptError)
+    return json(500, { error: 'Could not issue the certificate — please try again' })
+  }
   if (!attemptCount) return json(403, { error: 'No quiz attempt found for this course' })
 
   const course = Array.isArray(completion.courses) ? completion.courses[0] : completion.courses
@@ -161,7 +169,8 @@ export async function handler(event) {
       if (raced.email_sent) return json(200, { certificate: raced, emailSent: true, alreadyIssued: true })
       return json(200, await retryEmail(admin, raced, emailPayload))
     }
-    return json(500, { error: insertError?.message || 'Could not create certificate' })
+    console.error('certificate insert failed:', insertError)
+    return json(500, { error: 'Could not create the certificate — please try again' })
   }
   if (!certificate) return json(500, { error: 'Could not generate a unique certificate code — please try again' })
 
@@ -184,8 +193,9 @@ export async function handler(event) {
     if (uploadError) throw new Error(uploadError.message)
   } catch (err) {
     // Roll back the row so the next attempt starts clean.
+    console.error('certificate PDF generation/upload failed:', err)
     await admin.from('certificates').delete().eq('id', certificate.id)
-    return json(500, { error: `Could not store certificate: ${err.message}` })
+    return json(500, { error: 'Could not store the certificate PDF — please try again' })
   }
 
   // --- 5. Email the PDF (failure here must not block the certificate) ---
@@ -469,8 +479,11 @@ async function sendEmail({ to, fullName, courseTitle, cpdHours, isTherapeutic, c
     }),
   })
   if (!res.ok) {
+    // Log the provider detail server-side; the thrown message is surfaced to
+    // the client as emailError, so keep it generic.
     const body = await res.text().catch(() => '')
-    throw new Error(`Resend API error ${res.status}: ${body}`)
+    console.error(`Resend API error ${res.status}:`, body)
+    throw new Error('The certificate email could not be sent — you can still download the PDF from My CPD Record')
   }
 }
 

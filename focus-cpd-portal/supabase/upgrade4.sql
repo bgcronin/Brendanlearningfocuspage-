@@ -95,6 +95,7 @@ declare
   v_score          int;
   v_total          int;
   v_passed         boolean;
+  v_is_preview     boolean := false;
   v_reveal         boolean;
   v_attempt_id     uuid;
   v_completion     public.completions%rowtype;
@@ -154,6 +155,9 @@ begin
 
   v_passed := (v_score::numeric * 100 / v_total) >= v_pass_mark;
 
+  -- Admin previewing an unpublished course: log the attempt, no completion.
+  v_is_preview := (not v_published) and public.is_admin() and not v_has_completion;
+
   insert into public.attempts (user_id, course_id, score, total)
   values (v_user, p_course_id, v_score, v_total)
   returning id into v_attempt_id;
@@ -165,7 +169,7 @@ begin
   from public.questions q
   where q.course_id = p_course_id;
 
-  if v_passed and not v_has_completion then
+  if v_passed and not v_has_completion and not v_is_preview then
     insert into public.completions
       (user_id, course_id, attempt_id, score, total, course_title, cpd_hours, is_therapeutic)
     values
@@ -201,6 +205,7 @@ begin
     'total',               v_total,
     'pass_mark',           v_pass_mark,
     'passed',              v_passed,
+    'is_preview',          v_is_preview,
     'is_first_completion', v_is_first,
     'completion_id',       v_completion.id,
     'completed_at',        v_completion.completed_at,
@@ -343,3 +348,74 @@ create policy "certificates_read_own" on storage.objects
                  where c.pdf_path = name and c.user_id = auth.uid() and c.revoked_at is null)
     )
   );
+
+-- 12. set_admin: never allow the last admin to be demoted (two admins
+-- demoting each other concurrently could previously leave zero admins).
+create or replace function public.set_admin(target uuid, make_admin boolean)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_remaining int;
+begin
+  if not public.is_admin() then
+    raise exception 'Admins only';
+  end if;
+  if target = auth.uid() and not make_admin then
+    raise exception 'You cannot remove your own admin access';
+  end if;
+  if not make_admin then
+    perform 1 from public.profiles where is_admin for update;
+    select count(*) into v_remaining from public.profiles
+    where is_admin and id <> target;
+    if v_remaining = 0 then
+      raise exception 'Cannot remove the last admin — promote someone else first';
+    end if;
+  end if;
+  update public.profiles set is_admin = make_admin where id = target;
+  if not found then
+    raise exception 'User not found';
+  end if;
+end;
+$$;
+
+revoke execute on function public.set_admin(uuid, boolean) from anon, public;
+grant execute on function public.set_admin(uuid, boolean) to authenticated;
+
+-- 13. Atomic replacement of a course's learning objectives (admin-only).
+create or replace function public.replace_objectives(p_course_id uuid, p_objectives text[])
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Admins only';
+  end if;
+  delete from public.learning_objectives where course_id = p_course_id;
+  insert into public.learning_objectives (course_id, sort_order, objective)
+  select p_course_id, ord, obj
+  from unnest(p_objectives) with ordinality as t(obj, ord)
+  where btrim(obj) <> '';
+end;
+$$;
+
+revoke execute on function public.replace_objectives(uuid, text[]) from anon, public;
+grant execute on function public.replace_objectives(uuid, text[]) to authenticated;
+
+-- 14. Objectives + pre-reading stay readable for completed-then-unpublished
+-- courses (matching courses_select_completed and the quiz view).
+drop policy if exists "objectives_select" on public.learning_objectives;
+create policy "objectives_select" on public.learning_objectives
+  for select to authenticated
+  using (exists (select 1 from public.courses c where c.id = course_id and (c.published or public.is_admin()))
+         or exists (select 1 from public.completions cm where cm.course_id = course_id and cm.user_id = auth.uid()));
+
+drop policy if exists "prereading_select" on public.prereading_documents;
+create policy "prereading_select" on public.prereading_documents
+  for select to authenticated
+  using (exists (select 1 from public.courses c where c.id = course_id and (c.published or public.is_admin()))
+         or exists (select 1 from public.completions cm where cm.course_id = course_id and cm.user_id = auth.uid()));

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
@@ -17,9 +17,20 @@ export default function CoursePage() {
   const [reloadKey, setReloadKey] = useState(0)
   const [completion, setCompletion] = useState(null)
   const [certificate, setCertificate] = useState(null)
-  const [step, setStep] = useState('overview') // overview | prereading | video | quiz | result
-  const [prereadConfirmed, setPrereadConfirmed] = useState(false)
-  const [answers, setAnswers] = useState({})
+  // Progress (step / pre-reading tick / selected answers) survives a refresh
+  // or accidental back-navigation via sessionStorage; cleared on submit.
+  const progressKey = `cpd-progress-${id}`
+  const saved = useMemo(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem(progressKey)) || {}
+    } catch {
+      return {}
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [progressKey])
+  const [step, setStep] = useState(saved.step && saved.step !== 'result' ? saved.step : 'overview') // overview | prereading | video | quiz | result
+  const [prereadConfirmed, setPrereadConfirmed] = useState(Boolean(saved.prereadConfirmed))
+  const [answers, setAnswers] = useState(saved.answers || {})
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState(null) // { score, total, isFirstCompletion, results }
   const [certError, setCertError] = useState('')
@@ -82,6 +93,17 @@ export default function CoursePage() {
     if (!course) return []
     return ['overview', ...(course.prereading_documents.length ? ['prereading'] : []), 'video', 'quiz']
   }, [course])
+
+  // Persist in-course progress (not results) across refreshes. Declared here,
+  // before the early returns, so hook order stays stable across renders.
+  useEffect(() => {
+    if (step === 'result') return
+    try {
+      sessionStorage.setItem(progressKey, JSON.stringify({ step, prereadConfirmed, answers }))
+    } catch {
+      /* storage full/blocked — non-essential */
+    }
+  }, [step, prereadConfirmed, answers, progressKey])
 
   if (notFound) {
     return (
@@ -149,10 +171,14 @@ export default function CoursePage() {
         total: data.total,
         passed: data.passed,
         passMark: data.pass_mark,
+        isPreview: Boolean(data.is_preview),
         isFirstCompletion,
         results: data.results ?? [],
       })
       setStep('result')
+      try {
+        sessionStorage.removeItem(progressKey) // submitted — clear saved progress
+      } catch { /* ignore */ }
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
       alert(`Could not submit quiz: ${err.message}`)
@@ -360,7 +386,31 @@ function Prereading({ docs, confirmed, setConfirmed, onNext }) {
 function VideoStep({ course, onSeen, onNext, onBack }) {
   const [uploadUrl, setUploadUrl] = useState(null)
   const [error, setError] = useState('')
+  const refreshCount = useRef(0)
   const embedUrl = course.video_type === 'embed' ? toEmbedUrl(course.video_url) : ''
+
+  // The signed URL expires after 3 h; if the player errors (e.g. the viewer
+  // paused for a long time), mint a fresh URL and resume where they were.
+  async function onVideoError(e) {
+    const video = e.currentTarget
+    if (refreshCount.current >= 3) {
+      setError('We couldn’t load the video. Please refresh the page and try again.')
+      return
+    }
+    refreshCount.current += 1
+    const resumeAt = video.currentTime
+    try {
+      const url = await signedUrl('course-videos', course.video_url, 3 * 3600)
+      setUploadUrl(url)
+      requestAnimationFrame(() => {
+        try {
+          video.currentTime = resumeAt
+        } catch { /* ignore */ }
+      })
+    } catch {
+      setError('We couldn’t load the video. Please refresh the page and try again.')
+    }
+  }
   // An embed URL that isn't a recognised YouTube/Vimeo video, or an "upload"
   // course with no file, would otherwise render a blank frame / endless spinner.
   const missing =
@@ -404,7 +454,7 @@ function VideoStep({ course, onSeen, onNext, onBack }) {
         ) : error ? (
           <p className="p-8 text-center text-sm text-red-300">{error}</p>
         ) : uploadUrl ? (
-          <video src={uploadUrl} controls className="aspect-video w-full" />
+          <video src={uploadUrl} controls onError={onVideoError} className="aspect-video w-full" />
         ) : (
           <div className="flex aspect-video items-center justify-center">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-white/20 border-t-white" />
@@ -496,9 +546,10 @@ function ResultStep({ course, result, completion, certificate, certError, issuin
   const questionById = Object.fromEntries(course.questions.map((q) => [q.id, q]))
   const pct = Math.round((result.score / result.total) * 100)
   // A brand-new pass issues a certificate; a retake leaves the original
-  // completion untouched; a fail with no prior completion means "try again".
+  // completion untouched; a fail with no prior completion means "try again";
+  // an admin previewing a draft records an attempt but no completion.
   const isRetakeOfCompleted = !result.isFirstCompletion && completion
-  const isFail = !result.passed && !completion
+  const isFail = !result.passed && !completion && !result.isPreview
 
   async function downloadPdf() {
     if (!certificate) return
@@ -549,6 +600,12 @@ function ResultStep({ course, result, completion, certificate, certError, issuin
             </p>
             <button onClick={onRetake} className="btn-primary mt-4">Retake quiz</button>
           </div>
+        )}
+        {result.isPreview && (
+          <p className="mx-auto mt-4 max-w-md rounded-lg bg-slate-50 px-4 py-2.5 text-xs text-slate-500">
+            Draft preview — this course is unpublished, so your test attempt was logged but no completion or
+            certificate was recorded. The draft can still be edited or deleted.
+          </p>
         )}
       </div>
 

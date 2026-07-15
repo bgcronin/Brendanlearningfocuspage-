@@ -411,9 +411,21 @@ async function rpc(fn, args = {}) {
     if (args.target === DEMO_USER.id && !args.make_admin) {
       return { data: null, error: { message: 'You cannot remove your own admin access' } }
     }
+    if (!args.make_admin) {
+      const remaining = db.profiles.filter((x) => x.is_admin && x.id !== args.target).length
+      if (remaining === 0) return { data: null, error: { message: 'Cannot remove the last admin — promote someone else first' } }
+    }
     const p = db.profiles.find((x) => x.id === args.target)
     if (!p) return { data: null, error: { message: 'User not found' } }
     p.is_admin = args.make_admin
+    return { data: null, error: null }
+  }
+  if (fn === 'replace_objectives') {
+    const courseId = args.p_course_id
+    db.learning_objectives = db.learning_objectives.filter((o) => o.course_id !== courseId)
+    ;(args.p_objectives || []).forEach((obj, i) => {
+      if (String(obj).trim()) db.learning_objectives.push({ id: uuid(), course_id: courseId, sort_order: i + 1, objective: String(obj).trim() })
+    })
     return { data: null, error: null }
   }
   if (fn === 'mark_engagement') {
@@ -437,6 +449,7 @@ async function rpc(fn, args = {}) {
     const passMark = course?.pass_mark ?? 70
     const isAdmin = db.profiles.find((p) => p.id === DEMO_USER.id)?.is_admin
     const priorCompletion = db.completions.some((c) => c.user_id === DEMO_USER.id && c.course_id === courseId)
+    const isPreview = !course?.published && isAdmin && !priorCompletion
     const questions = db.questions.filter((q) => q.course_id === courseId)
     if (!questions.length) return { data: null, error: { message: 'This course has no quiz questions' } }
     if (questions.some((q) => answers[q.id] === undefined || answers[q.id] === null)) {
@@ -481,7 +494,7 @@ async function rpc(fn, args = {}) {
 
     let completion = db.completions.find((c) => c.user_id === DEMO_USER.id && c.course_id === courseId)
     let isFirst = false
-    if (passed && !completion) {
+    if (passed && !completion && !isPreview) {
       completion = {
         id: uuid(), user_id: DEMO_USER.id, course_id: courseId, attempt_id: attempt.id,
         score, total, reflection: '', completed_at: now(),

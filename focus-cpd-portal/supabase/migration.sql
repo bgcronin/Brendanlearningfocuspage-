@@ -267,6 +267,7 @@ declare
   v_score          int;
   v_total          int;
   v_passed         boolean;
+  v_is_preview     boolean := false;
   v_reveal         boolean;
   v_attempt_id     uuid;
   v_completion     public.completions%rowtype;
@@ -346,11 +347,16 @@ begin
   from public.questions q
   where q.course_id = p_course_id;
 
+  -- An admin taking an UNPUBLISHED course is previewing/QA-ing it: log the
+  -- attempt but record no completion — otherwise the test run becomes an
+  -- indelible CPD record that permanently blocks deleting the draft.
+  v_is_preview := (not v_published) and public.is_admin() and not v_has_completion;
+
   -- A completion (and therefore a certificate) is recorded ONLY on a
   -- passing attempt, and only the first pass stands. Course facts are
   -- snapshotted onto the completion so a later course edit cannot rewrite
   -- an optometrist's CPD record.
-  if v_passed and not v_has_completion then
+  if v_passed and not v_has_completion and not v_is_preview then
     insert into public.completions
       (user_id, course_id, attempt_id, score, total, course_title, cpd_hours, is_therapeutic)
     values
@@ -389,6 +395,7 @@ begin
     'total',               v_total,
     'pass_mark',           v_pass_mark,
     'passed',              v_passed,
+    'is_preview',          v_is_preview,
     'is_first_completion', v_is_first,
     'completion_id',       v_completion.id,
     'completed_at',        v_completion.completed_at,
@@ -427,6 +434,30 @@ $$;
 
 revoke execute on function public.mark_engagement(uuid, text) from anon, public;
 grant execute on function public.mark_engagement(uuid, text) to authenticated;
+
+-- Replaces a course's learning objectives ATOMICALLY (the editor previously
+-- did a client-side delete + insert as two requests, so a failure in between
+-- permanently wiped the objectives). Admin-only.
+create or replace function public.replace_objectives(p_course_id uuid, p_objectives text[])
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if not public.is_admin() then
+    raise exception 'Admins only';
+  end if;
+  delete from public.learning_objectives where course_id = p_course_id;
+  insert into public.learning_objectives (course_id, sort_order, objective)
+  select p_course_id, ord, obj
+  from unnest(p_objectives) with ordinality as t(obj, ord)
+  where btrim(obj) <> '';
+end;
+$$;
+
+revoke execute on function public.replace_objectives(uuid, text[]) from anon, public;
+grant execute on function public.replace_objectives(uuid, text[]) to authenticated;
 
 -- ------------------------------------------------------------
 -- PUBLIC CERTIFICATE VERIFICATION (no login required)
@@ -470,12 +501,25 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+declare
+  v_remaining int;
 begin
   if not public.is_admin() then
     raise exception 'Admins only';
   end if;
   if target = auth.uid() and not make_admin then
     raise exception 'You cannot remove your own admin access';
+  end if;
+  if not make_admin then
+    -- Serialise concurrent demotions on the admin rows, then ensure at
+    -- least one admin remains — two admins demoting each other at the same
+    -- time must not leave the portal with zero admins.
+    perform 1 from public.profiles where is_admin for update;
+    select count(*) into v_remaining from public.profiles
+    where is_admin and id <> target;
+    if v_remaining = 0 then
+      raise exception 'Cannot remove the last admin — promote someone else first';
+    end if;
   end if;
   update public.profiles set is_admin = make_admin where id = target;
   if not found then
@@ -532,9 +576,12 @@ create policy "courses_admin_write" on public.courses
   with check (public.is_admin());
 
 -- Course child tables: readable when the parent course is visible; admin-writable.
+-- Includes the completion branch (like courses_select_completed) so a course
+-- completed before being unpublished keeps its objectives and pre-reading.
 create policy "objectives_select" on public.learning_objectives
   for select to authenticated
-  using (exists (select 1 from public.courses c where c.id = course_id and (c.published or public.is_admin())));
+  using (exists (select 1 from public.courses c where c.id = course_id and (c.published or public.is_admin()))
+         or exists (select 1 from public.completions cm where cm.course_id = course_id and cm.user_id = auth.uid()));
 
 create policy "objectives_admin_write" on public.learning_objectives
   for all to authenticated
@@ -543,7 +590,8 @@ create policy "objectives_admin_write" on public.learning_objectives
 
 create policy "prereading_select" on public.prereading_documents
   for select to authenticated
-  using (exists (select 1 from public.courses c where c.id = course_id and (c.published or public.is_admin())));
+  using (exists (select 1 from public.courses c where c.id = course_id and (c.published or public.is_admin()))
+         or exists (select 1 from public.completions cm where cm.course_id = course_id and cm.user_id = auth.uid()));
 
 create policy "prereading_admin_write" on public.prereading_documents
   for all to authenticated

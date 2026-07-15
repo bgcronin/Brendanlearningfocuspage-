@@ -64,15 +64,25 @@ export default function MyCpd() {
   }
 
   const totals = useMemo(() => {
-    let all = 0
-    let therapeutic = 0
+    // OBA CPD registration period: 1 December – 30 November (Brisbane time).
+    // The headline tiles report THIS period — the number that matters for
+    // registration — with all-time shown underneath.
+    const nowBrisbane = new Date(Date.now() + 10 * 3600 * 1000) // UTC+10, no DST
+    const y = nowBrisbane.getUTCFullYear()
+    const periodStartYear = nowBrisbane.getUTCMonth() + 1 >= 12 ? y : y - 1
+    const periodStart = Date.parse(`${periodStartYear}-12-01T00:00:00+10:00`)
+    const t = { period: 0, periodTherapeutic: 0, all: 0, therapeutic: 0, periodStartYear }
     for (const r of rows ?? []) {
       if (one(r.certificates)?.revoked_at) continue // revoked credits don't count
       const f = courseFacts(r)
-      all += f.hours
-      if (f.therapeutic) therapeutic += f.hours
+      t.all += f.hours
+      if (f.therapeutic) t.therapeutic += f.hours
+      if (Date.parse(r.completed_at) >= periodStart) {
+        t.period += f.hours
+        if (f.therapeutic) t.periodTherapeutic += f.hours
+      }
     }
-    return { all, therapeutic }
+    return t
   }, [rows])
 
   async function download(cert) {
@@ -105,12 +115,18 @@ export default function MyCpd() {
         </div>
         <div className="flex gap-3">
           <div className="rounded-lg bg-navy px-5 py-3 text-white">
-            <div className="text-xs font-semibold uppercase tracking-wider text-teal-light">Total CPD hours</div>
-            <div className="text-2xl font-bold">{formatHours(totals.all)}</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-teal-light">CPD hours · this period</div>
+            <div className="text-2xl font-bold">{formatHours(totals.period)}</div>
+            <div className="mt-0.5 text-[10px] text-teal-light/80">
+              since 1 Dec {totals.periodStartYear} · all-time {formatHours(totals.all)}
+            </div>
           </div>
           <div className="rounded-lg bg-teal px-5 py-3 text-white">
-            <div className="text-xs font-semibold uppercase tracking-wider text-white/80">Therapeutic hours</div>
-            <div className="text-2xl font-bold">{formatHours(totals.therapeutic)}</div>
+            <div className="text-xs font-semibold uppercase tracking-wider text-white/80">Therapeutic · this period</div>
+            <div className="text-2xl font-bold">{formatHours(totals.periodTherapeutic)}</div>
+            <div className="mt-0.5 text-[10px] text-white/70">
+              all-time {formatHours(totals.therapeutic)}
+            </div>
           </div>
         </div>
       </div>

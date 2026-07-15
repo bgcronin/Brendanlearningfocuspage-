@@ -73,7 +73,9 @@ export function formatDate(iso) {
 }
 
 export function formatHours(h) {
-  const n = Number(h)
+  // Round to 2 dp: totals are float sums, and unrounded float noise would
+  // otherwise render (e.g. "2.3000000000000003 hours").
+  const n = Math.round(Number(h) * 100) / 100
   return Number.isInteger(n) ? `${n}.0` : `${n}`
 }
 
@@ -95,6 +97,19 @@ export function downloadCsv(filename, rows, columns) {
   a.download = filename
   a.click()
   URL.revokeObjectURL(a.href)
+}
+
+/**
+ * Normalise + validate an optometry AHPRA registration number (optional
+ * field, but when present it feeds CPD audit records, so keep it accurate:
+ * OPT followed by 10 digits). Returns { value, error }.
+ */
+export function normalizeAhpra(raw) {
+  const value = String(raw || '').toUpperCase().replace(/\s+/g, '')
+  if (!value) return { value: '', error: null }
+  return /^OPT\d{10}$/.test(value)
+    ? { value, error: null }
+    : { value, error: 'AHPRA number should be OPT followed by 10 digits, e.g. OPT0001234567 — or leave it blank.' }
 }
 
 /** PostgREST one-to-one embeds can arrive as object or single-item array. */

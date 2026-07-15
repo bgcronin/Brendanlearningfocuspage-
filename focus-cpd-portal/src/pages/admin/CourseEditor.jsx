@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import { Loading } from '../../components/Protected'
 
@@ -44,6 +44,9 @@ export default function CourseEditor() {
   const [uploadingDoc, setUploadingDoc] = useState(false)
   const [completionCount, setCompletionCount] = useState(0)
   const [replacedVideoPaths, setReplacedVideoPaths] = useState([]) // removed from storage only on successful save
+  // Unsaved-changes guard: snapshot of the loaded state; compared on leave.
+  const cleanSnapshot = useRef('')
+  const savedOk = useRef(false)
 
   useEffect(() => {
     if (isNew) return
@@ -92,6 +95,30 @@ export default function CourseEditor() {
   }, [courseId, isNew])
 
   const set = (k) => (e) => setCourse((c) => ({ ...c, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }))
+
+  /* ---------- unsaved-changes guard ---------- */
+  const serialized = JSON.stringify({ course, objectives, questions, docs })
+  useEffect(() => {
+    // First render after load (or immediately for a new course) = clean state.
+    if (!loading && cleanSnapshot.current === '') cleanSnapshot.current = serialized
+  }, [loading, serialized])
+  const isDirty = () => cleanSnapshot.current !== '' && serialized !== cleanSnapshot.current && !savedOk.current
+
+  useEffect(() => {
+    const onBeforeUnload = (e) => {
+      if (isDirty()) {
+        e.preventDefault()
+        e.returnValue = ''
+      }
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => window.removeEventListener('beforeunload', onBeforeUnload)
+  })
+
+  function leave() {
+    if (isDirty() && !confirm('Discard your unsaved changes to this course?')) return
+    navigate('/admin/courses')
+  }
 
   /* ---------- uploads ---------- */
   const MAX_VIDEO_BYTES = 1024 * 1024 * 1024 // 1 GB — matches the bucket limit
@@ -192,16 +219,13 @@ export default function CourseEditor() {
       })
       if (courseError) throw courseError
 
-      // 2. Learning objectives — replace wholesale (nothing references them)
-      const { error: objDeleteError } = await supabase.from('learning_objectives').delete().eq('course_id', courseId)
-      if (objDeleteError) throw objDeleteError
-      const cleanObjectives = objectives.map((o) => o.trim()).filter(Boolean)
-      if (cleanObjectives.length) {
-        const { error: objError } = await supabase
-          .from('learning_objectives')
-          .insert(cleanObjectives.map((objective, i) => ({ course_id: courseId, sort_order: i + 1, objective })))
-        if (objError) throw objError
-      }
+      // 2. Learning objectives — replaced atomically server-side (a separate
+      // delete + insert could lose all objectives if the second call failed).
+      const { error: objError } = await supabase.rpc('replace_objectives', {
+        p_course_id: courseId,
+        p_objectives: objectives.map((o) => o.trim()).filter(Boolean),
+      })
+      if (objError) throw objError
 
       // 3. Questions — upsert by stable id so existing attempt history is preserved.
       // Removed questions are ARCHIVED (soft-deleted), not hard-deleted, so the
@@ -246,6 +270,7 @@ export default function CourseEditor() {
         setReplacedVideoPaths([])
       }
 
+      savedOk.current = true
       navigate('/admin/courses')
     } catch (err) {
       setError(err.message)
@@ -258,7 +283,7 @@ export default function CourseEditor() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <Link to="/admin/courses" className="text-sm font-semibold text-teal hover:underline">← Back to courses</Link>
+      <button onClick={leave} className="text-sm font-semibold text-teal hover:underline">← Back to courses</button>
       <h1 className="mt-2 text-3xl font-semibold text-navy">{isNew ? 'New course' : 'Edit course'}</h1>
 
       {completionCount > 0 && (
@@ -458,7 +483,7 @@ export default function CourseEditor() {
       {error && <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
 
       <div className="mt-6 flex justify-end gap-3 border-t border-slate-200 pt-6">
-        <Link to="/admin/courses" className="btn-secondary">Cancel</Link>
+        <button onClick={leave} className="btn-secondary">Cancel</button>
         <button onClick={save} disabled={saving || uploadingVideo || uploadingDoc} className="btn-primary">
           {saving ? 'Saving…' : 'Save course'}
         </button>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { normalizeAhpra } from '../lib/helpers'
 
 export default function Register() {
   const [form, setForm] = useState({ full_name: '', email: '', practice_name: '', ahpra_number: '', password: '' })
@@ -13,8 +14,13 @@ export default function Register() {
 
   async function onSubmit(e) {
     e.preventDefault()
-    setBusy(true)
     setError('')
+    const ahpra = normalizeAhpra(form.ahpra_number)
+    if (ahpra.error) {
+      setError(ahpra.error)
+      return
+    }
+    setBusy(true)
     const { data, error } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,
@@ -23,7 +29,7 @@ export default function Register() {
         data: {
           full_name: form.full_name.trim(),
           practice_name: form.practice_name.trim(),
-          ahpra_number: form.ahpra_number.trim(),
+          ahpra_number: ahpra.value,
         },
       },
     })

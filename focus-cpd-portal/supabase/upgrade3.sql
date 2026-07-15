@@ -7,15 +7,16 @@
 -- current migration.sql do NOT need this file.
 -- ============================================================
 
--- 1. Certificate revocation.
+-- 1. Certificate revocation. (Idempotent — safe to re-run.)
 alter table public.certificates
-  add column revoked_at timestamptz,
-  add column revoked_reason text not null default '';
+  add column if not exists revoked_at timestamptz,
+  add column if not exists revoked_reason text not null default '';
 
 -- Admins may revoke/reinstate — and ONLY that (column-level grant).
 revoke update on public.certificates from authenticated;
 grant update (revoked_at, revoked_reason) on public.certificates to authenticated;
 
+drop policy if exists "certificates_admin_update" on public.certificates;
 create policy "certificates_admin_update" on public.certificates
   for update to authenticated
   using (public.is_admin())

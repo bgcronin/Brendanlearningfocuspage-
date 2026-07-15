@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { Loading } from '../components/Protected'
+import { normalizeAhpra } from '../lib/helpers'
 
 /**
  * Self-service profile editing. The full name entered here is what
@@ -48,13 +49,18 @@ export default function Profile() {
       setError('Full name is required — it appears on your certificates.')
       return
     }
+    const ahpra = normalizeAhpra(form.ahpra_number)
+    if (ahpra.error) {
+      setError(ahpra.error)
+      return
+    }
     setBusy(true)
     const { error } = await supabase
       .from('profiles')
       .update({
         full_name: form.full_name.trim(),
         practice_name: form.practice_name.trim(),
-        ahpra_number: form.ahpra_number.trim(),
+        ahpra_number: ahpra.value,
       })
       .eq('id', profile.id)
     setBusy(false)

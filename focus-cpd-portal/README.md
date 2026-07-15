@@ -26,12 +26,16 @@ focus-cpd-portal/
 
 ## Quick preview (no Supabase needed)
 
-Double-click `Focus-CPD-Portal-DEMO.html` (in the folder above this one) to tour the whole portal with sample data — course flow, quiz, certificate, admin area. Sign-in accepts anything; emails and PDF downloads are simulated. To rebuild it:
+Demo mode is a full in-browser mock (sample data, simulated emails and PDF downloads, admin area included). Sign-in accepts anything. Run it with:
 
 ```bash
-VITE_DEMO=1 DEMO_SINGLE=1 npx vite build --outDir demo-dist
-# then inline demo-dist assets into one HTML file (see demo notes), or just serve demo-dist
+npm install
+VITE_DEMO=1 npm run dev          # dev server at http://localhost:5173
+# or a production-style preview:
+VITE_DEMO=1 npm run build && npm run preview
 ```
+
+Demo mode is gated on `VITE_DEMO=1` exactly (see `src/lib/supabase.js`), so a normal build is never accidentally a demo.
 
 ## Setup
 
