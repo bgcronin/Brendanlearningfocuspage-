@@ -2015,7 +2015,8 @@
       }
 
       /* COLUMN MAPPING MODAL */
-      #map-overlay {
+      #map-overlay,
+      #cert-overlay {
         position: fixed;
         inset: 0;
         background: rgba(5, 28, 53, 0.55);
@@ -2025,6 +2026,20 @@
         align-items: center;
         justify-content: center;
         padding: 20px;
+      }
+      .cert-field {
+        margin-bottom: 12px;
+      }
+      .cert-field label {
+        display: block;
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+      }
+      .cert-field .surgeon-input {
+        width: 100%;
+        margin-right: 0;
       }
       .map-modal {
         background: var(--bg-base);
@@ -2215,8 +2230,8 @@
         "applicationCategory": "MedicalApplication",
         "operatingSystem": "Any (web browser)",
         "browserRequirements": "Requires JavaScript. Works in current versions of Chrome, Firefox, Safari and Edge.",
-        "softwareVersion": "1.5",
-        "dateModified": "2026-07-04",
+        "softwareVersion": "1.6",
+        "dateModified": "2026-07-14",
         "isAccessibleForFree": true,
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AUD" },
         "screenshot": "https://www.focusvision.com.au/refractive-outcomes-analyzer/og-image.png",
@@ -2253,6 +2268,7 @@
           "Wilson 95% confidence intervals on headline percentages",
           "Complications & YAG capsulotomy incidence table; UIVA/UNVA cumulative curves",
           "Save/load local session file (no browser storage, no server)",
+          "One-page audit certificate (PDF) with benchmark status, signature line and a reproducible dataset fingerprint",
           "Double-angle (power vector) astigmatism plot with 95% confidence ellipses",
           "Toric IOL analysis: residual astigmatism, axis misalignment, corneal SIA",
           "Subgroup analysis by axial length, IOL model, formula, IOL type, eye and age",
@@ -2688,6 +2704,13 @@
           💾 Save Session
         </button>
         <button
+          class="btn btn-outline"
+          onclick="openCertModal()"
+          title="Generate a one-page signed audit summary for your records, appraisal or CPD portfolio."
+        >
+          📜 Audit Certificate
+        </button>
+        <button
           class="btn btn-primary"
           id="btn-export-pdf"
           onclick="exportPDF()"
@@ -2787,6 +2810,12 @@
               onclick="triggerUpload();closeSidebar()"
             >
               &#8593; Upload New File
+            </button>
+            <button
+              class="btn btn-outline"
+              onclick="openCertModal();closeSidebar()"
+            >
+              &#128220; Audit Certificate
             </button>
             <button
               class="btn btn-primary"
@@ -4060,9 +4089,68 @@
       </div>
     </div>
 
+    <!-- AUDIT CERTIFICATE MODAL -->
+    <div
+      id="cert-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="cert-modal-title"
+      style="display: none"
+    >
+      <div class="map-modal" style="max-width: 480px">
+        <div class="map-modal-header">
+          <h3 id="cert-modal-title">One-Page Audit Certificate</h3>
+          <p>
+            Generates a single-page PDF summary of this audit — refractive
+            accuracy, benchmark status, visual and safety outcomes — with a
+            signature line for your records, appraisal or CPD portfolio. The
+            names below appear only inside the PDF; nothing is stored or
+            transmitted.
+          </p>
+        </div>
+        <div class="map-modal-body">
+          <div class="cert-field">
+            <label for="cert-surgeon">Surgeon name (printed on the certificate)</label>
+            <input
+              class="surgeon-input"
+              id="cert-surgeon"
+              type="text"
+              placeholder="e.g. Dr A. Surname"
+            />
+          </div>
+          <div class="cert-field">
+            <label for="cert-clinic">Clinic / practice (optional)</label>
+            <input
+              class="surgeon-input"
+              id="cert-clinic"
+              type="text"
+              placeholder="e.g. Focus Vision, Brisbane"
+            />
+          </div>
+          <p style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.5">
+            The certificate reports the currently filtered cohort and carries
+            a dataset fingerprint that is reproducible from the same data and
+            filters.
+          </p>
+        </div>
+        <div class="map-modal-footer">
+          <button class="btn btn-outline" onclick="closeCertModal()">
+            Cancel
+          </button>
+          <button
+            class="btn btn-primary"
+            id="btn-cert-generate"
+            onclick="generateCertificate()"
+          >
+            Generate Certificate
+          </button>
+        </div>
+      </div>
+    </div>
+
     <footer class="site-footer">
       <div>
-        <strong>Focus Vision Refractive Outcomes Analyzer</strong> · v1.2 · Free
+        <strong>Focus Vision Refractive Outcomes Analyzer</strong> · v1.6 · Free
         for the global ophthalmology community — all analysis runs locally in
         your browser and no patient data is ever transmitted to any server.
       </div>
@@ -4623,6 +4711,8 @@
         evo: "EVO Constant",
       };
 
+      // Keep in sync with the JSON-LD softwareVersion and the site footer.
+      const APP_VERSION = "1.6";
       let allData = [];
       let filteredData = [];
       let charts = {};
@@ -4751,16 +4841,20 @@
           return el && el.style.display !== "none";
         };
         const mapOpen = isOpen("map-overlay");
+        const certOpen = isOpen("cert-overlay");
         const termsOpen = isOpen("terms-overlay");
-        if (e.key === "Escape" && mapOpen) {
-          closeMappingModal();
+        if (e.key === "Escape" && (mapOpen || certOpen)) {
+          if (mapOpen) closeMappingModal();
+          if (certOpen) closeCertModal();
           return;
         }
         const overlay = mapOpen
           ? $("map-overlay")
-          : termsOpen
-            ? $("terms-overlay")
-            : null;
+          : certOpen
+            ? $("cert-overlay")
+            : termsOpen
+              ? $("terms-overlay")
+              : null;
         if (e.key === "Tab" && overlay) {
           const f = overlay.querySelectorAll(
             "button:not([disabled]), [href], input, select, textarea, [tabindex]:not([tabindex='-1'])",
@@ -9309,6 +9403,414 @@ Generated by Focus Vision Refractive Outcomes Analyzer — ${date}`;
           btn.textContent = "⬇ Export PDF";
           btn.disabled = false;
         }
+      }
+
+      // ============================================================
+      // ONE-PAGE AUDIT CERTIFICATE
+      // ============================================================
+      // FNV-1a over the analysed rows. The same data under the same filters
+      // always yields the same fingerprint (generation date is deliberately
+      // excluded), so a certificate can be checked by re-running the tool.
+      function certHash(str) {
+        let h = 0x811c9dc5;
+        for (let i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h = Math.imul(h, 0x01000193);
+        }
+        return (h >>> 0).toString(16).padStart(8, "0").toUpperCase();
+      }
+
+      // Every figure the certificate prints, gathered in one testable place.
+      // Thresholds mirror the KPI strip: NHS standard 55% / 85% (Gale et al.,
+      // Eye 2009); EUREQUO registry mean 73% within ±0.50 D (Lundström 2018).
+      function certData() {
+        const d = filteredData;
+        const pes = d.map((r) => r.pe).filter((v) => v != null && !isNaN(v));
+        const peSt = stats(pes);
+        const medae = stats(pes.map(Math.abs)).median;
+        const udvas = d.map((r) => r.udva).filter((v) => v != null);
+        const udvaSt = stats(udvas);
+        const preCdvas = d.map((r) => r.preCdva).filter((v) => v != null);
+        const postCdvas = d.map((r) => r.cdva).filter((v) => v != null);
+        const w25 = pctWithin(pes, 0.25);
+        const w50 = pctWithin(pes, 0.5);
+        const w100 = pctWithin(pes, 1.0);
+        const ciFor = (pctVal) =>
+          pctVal == null
+            ? null
+            : wilsonCI(Math.round((pctVal / 100) * pes.length), pes.length);
+        const dates = d
+          .map((r) => r.date)
+          .filter(Boolean)
+          .sort((a, b) => a - b);
+        const fmtD = (dt) => dt.toLocaleDateString("en-AU");
+        const dateRange = !dates.length
+          ? null
+          : +dates[0] === +dates[dates.length - 1]
+            ? fmtD(dates[0])
+            : `${fmtD(dates[0])} - ${fmtD(dates[dates.length - 1])}`;
+        const efficacy =
+          preCdvas.length >= 5 && udvas.length
+            ? vaDecimalMean(udvas) / vaDecimalMean(preCdvas)
+            : null;
+        const safety =
+          preCdvas.length >= 5 && postCdvas.length
+            ? vaDecimalMean(postCdvas) / vaDecimalMean(preCdvas)
+            : null;
+        // Lost ≥2 lines of CDVA — same ≥5-pair gate as the safety chart.
+        const paired = d.filter((r) => r.preCdva != null && r.cdva != null);
+        const lost2 =
+          paired.length >= 5
+            ? (100 *
+                paired.filter((r) => linesChange(r.preCdva, r.cdva) <= -2)
+                  .length) /
+              paired.length
+            : null;
+        // Complication tallies only when a complication/YAG column is mapped
+        // (otherwise "0%" would falsely certify a complication-free cohort).
+        const compsMapped = d.some((r) => r.intraComp || r.postComp || r.yag);
+        const isEvent = (v) => {
+          const s = String(v || "").trim();
+          return !!s && !/^(none|n\/?a|nil|no|-)$/i.test(s);
+        };
+        const intraN = compsMapped
+          ? d.filter((r) => isEvent(r.intraComp)).length
+          : null;
+        const postN = compsMapped
+          ? d.filter((r) => isEvent(r.postComp)).length
+          : null;
+        const yagN = compsMapped
+          ? d.filter((r) =>
+              String(r.yag || "")
+                .toUpperCase()
+                .startsWith("Y"),
+            ).length
+          : null;
+        const certId =
+          "FV-" +
+          certHash(
+            d
+              .map((r) => [r.id, r.eye, r.pe, r.se, r.udva].join("|"))
+              .join(";") +
+              "#" +
+              d.length,
+          );
+        return {
+          n: d.length,
+          nTotal: allData.length,
+          file: lastFilename || "—",
+          dateRange,
+          nPE: pes.length,
+          mpe: peSt.mean,
+          sd: peSt.sd,
+          mae: peSt.mae,
+          medae,
+          w25,
+          w50,
+          w100,
+          ci25: ciFor(w25),
+          ci50: ciFor(w50),
+          ci100: ciFor(w100),
+          nhs50: w50 == null ? null : w50 >= 55,
+          nhs100: w100 == null ? null : w100 >= 85,
+          eurequo: w50 == null ? null : w50 >= 73,
+          nUdva: udvas.length,
+          meanUdva: udvaSt.mean,
+          udva612: pctBelow(udvas, 0.3),
+          udva66: pctBelow(udvas, 0.001),
+          efficacy,
+          safety,
+          nPaired: paired.length,
+          lost2,
+          intraN,
+          postN,
+          yagN,
+          certId,
+        };
+      }
+
+      function openCertModal() {
+        if (!filteredData.length) {
+          alert(
+            "No eyes match the current filters — adjust the filters before generating a certificate.",
+          );
+          return;
+        }
+        // Prefill from the optimiser's surgeon field when it has been used.
+        const s = $("surgeon-name");
+        if (s && s.value.trim() && !$("cert-surgeon").value.trim())
+          $("cert-surgeon").value = s.value.trim();
+        $("cert-overlay").style.display = "flex";
+        $("cert-surgeon").focus();
+      }
+      function closeCertModal() {
+        $("cert-overlay").style.display = "none";
+      }
+      function generateCertificate() {
+        try {
+          exportCertificate(
+            $("cert-surgeon").value.trim(),
+            $("cert-clinic").value.trim(),
+          );
+          closeCertModal();
+        } catch (err) {
+          alert("Certificate generation failed: " + err.message);
+        }
+      }
+
+      // Text-only single A4 page — every section has a bounded row count, so
+      // unlike the full report it can never spill onto a second page.
+      function exportCertificate(surgeon, clinic) {
+        const C = certData();
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+        });
+        patchPdfText(pdf);
+        const genDate = new Date().toLocaleDateString("en-AU");
+        const cohort = $("cohort-name").value || "Refractive Outcomes";
+        const NAVY = [27, 43, 75];
+        const TEAL = [74, 144, 164];
+        const INK = [40, 40, 40];
+        const MUTED = [110, 110, 110];
+        const GOOD = [16, 130, 90];
+        const BAD = [192, 64, 64];
+        const pct1 = (v) => (v == null ? "—" : v.toFixed(1) + "%");
+        const ciStr = (ci) =>
+          ci ? ` (95% CI ${ci[0].toFixed(0)}–${ci[1].toFixed(0)}%)` : "";
+        // A tiny negative bias rounds to "-0.00" — print it unsigned.
+        const fmtZ = (v, dp = 2) => fmt(v, dp).replace(/^-(0\.0+)$/, "$1");
+
+        // ── Header ──
+        pdf.setFontSize(18);
+        pdf.setFont("helvetica", "bold");
+        const fvW = pdf.getTextWidth("FOCUS VISION");
+        pdf.setTextColor(...NAVY);
+        pdf.text("FOCUS VISION", 15, 14);
+        pdf.setTextColor(...TEAL);
+        pdf.text(" · Refractive Outcomes Analyzer", 15 + fvW, 14);
+        pdf.setDrawColor(...TEAL);
+        pdf.setLineWidth(0.4);
+        pdf.line(15, 17, 195, 17);
+
+        pdf.setFontSize(15);
+        pdf.setFont("helvetica", "bold");
+        pdf.setTextColor(...NAVY);
+        pdf.text("REFRACTIVE OUTCOMES AUDIT CERTIFICATE", 105, 28, {
+          align: "center",
+        });
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "normal");
+        pdf.setTextColor(...MUTED);
+        pdf.text(
+          `Generated on ${genDate} with the Focus Vision Refractive Outcomes Analyzer v${APP_VERSION} — analysis performed locally in the surgeon's browser.`,
+          105,
+          34,
+          { align: "center", maxWidth: 170 },
+        );
+
+        // ── Details block ──
+        let y = 46;
+        // Free-text values must stay on one line — wrap would collide with
+        // the next detail row.
+        const trunc = (s, max = 60) =>
+          String(s).length > max ? String(s).slice(0, max - 1) + "…" : s;
+        const detail = (label, value) => {
+          if (value == null || value === "") return;
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(8.5);
+          pdf.setTextColor(...MUTED);
+          pdf.text(label.toUpperCase(), 15, y);
+          pdf.setFont("helvetica", "normal");
+          pdf.setTextColor(...INK);
+          pdf.text(String(value), 62, y);
+          y += 6;
+        };
+        detail(
+          "Surgeon",
+          surgeon ? trunc(surgeon) : "________________________________",
+        );
+        detail("Clinic / practice", clinic && trunc(clinic));
+        detail("Cohort", trunc(cohort));
+        detail("Data file", trunc(C.file));
+        detail("Surgery dates", C.dateRange || "Not recorded in dataset");
+        detail(
+          "Eyes analysed",
+          `${C.n} of ${C.nTotal} uploaded` +
+            (C.n !== C.nTotal ? " (current filters applied)" : ""),
+        );
+        detail("Dataset fingerprint", C.certId);
+
+        // ── Section: refractive accuracy ──
+        const section = (title) => {
+          y += 4;
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(10.5);
+          pdf.setTextColor(...NAVY);
+          pdf.text(title, 15, y);
+          y += 1.5;
+          pdf.setDrawColor(197, 213, 224);
+          pdf.setLineWidth(0.3);
+          pdf.line(15, y, 195, y);
+          y += 5.5;
+        };
+        const row = (label, value, colour) => {
+          pdf.setFont("helvetica", "normal");
+          pdf.setFontSize(8.5);
+          pdf.setTextColor(...INK);
+          pdf.text(label, 15, y);
+          pdf.setFont("helvetica", "bold");
+          pdf.setTextColor(...(colour || INK));
+          pdf.text(String(value), 195, y, { align: "right" });
+          y += 5.5;
+        };
+
+        section(`Refractive Accuracy (n = ${C.nPE} eyes with prediction error)`);
+        if (C.nPE) {
+          row(
+            "Mean prediction error (bias)",
+            `${fmtZ(C.mpe)} D  (SD ±${fmt(C.sd)} D)`,
+          );
+          row("Mean absolute error", `${fmt(C.mae)} D`);
+          row("Median absolute error", `${fmt(C.medae)} D`);
+          row("Within ±0.25 D of target", pct1(C.w25) + ciStr(C.ci25));
+          row("Within ±0.50 D of target", pct1(C.w50) + ciStr(C.ci50));
+          row("Within ±1.00 D of target", pct1(C.w100) + ciStr(C.ci100));
+        } else {
+          row("No prediction-error data in this dataset", "—");
+        }
+
+        // ── Section: benchmark status ──
+        section("Benchmark Status");
+        const bench = (label, pass, value) =>
+          row(
+            label,
+            pass == null
+              ? "—"
+              : `${value}  -  ${pass ? "MET" : "NOT MET"}`,
+            pass == null ? MUTED : pass ? GOOD : BAD,
+          );
+        bench(
+          "NHS standard: >=55% within ±0.50 D (Gale et al., Eye 2009)",
+          C.nhs50,
+          pct1(C.w50),
+        );
+        bench(
+          "NHS standard: >=85% within ±1.00 D (Gale et al., Eye 2009)",
+          C.nhs100,
+          pct1(C.w100),
+        );
+        if (C.w50 != null)
+          row(
+            "EUREQUO registry mean: 73% within ±0.50 D (Lundström et al., JCRS 2018)",
+            `${pct1(C.w50)}  -  ${C.eurequo ? "ABOVE" : "BELOW"} registry mean`,
+            C.eurequo ? GOOD : BAD,
+          );
+
+        // ── Section: visual & safety outcomes ──
+        section("Visual & Safety Outcomes");
+        let anyVs = false;
+        if (C.nUdva) {
+          anyVs = true;
+          row(
+            `Mean post-op UDVA (n = ${C.nUdva})`,
+            `${fmt(C.meanUdva)} logMAR`,
+          );
+          row(`UDVA ${snellenName(0.3)} or better`, pct1(C.udva612));
+          row(`UDVA ${snellenName(0.0)} or better`, pct1(C.udva66));
+        }
+        if (C.efficacy != null) {
+          anyVs = true;
+          row("Efficacy index (mean decimal UDVA ÷ pre-op CDVA)", C.efficacy.toFixed(2));
+        }
+        if (C.safety != null) {
+          anyVs = true;
+          row("Safety index (mean decimal CDVA ÷ pre-op CDVA)", C.safety.toFixed(2));
+        }
+        if (C.lost2 != null) {
+          anyVs = true;
+          row(
+            `Eyes losing >=2 lines of CDVA (n = ${C.nPaired} with pre-op CDVA)`,
+            pct1(C.lost2),
+            C.lost2 === 0 ? GOOD : BAD,
+          );
+        }
+        if (C.intraN != null) {
+          anyVs = true;
+          row(
+            "Intra-operative complications recorded",
+            `${C.intraN} (${pct1((100 * C.intraN) / C.n)})`,
+          );
+          row(
+            "Post-operative complications recorded",
+            `${C.postN} (${pct1((100 * C.postN) / C.n)})`,
+          );
+          row(
+            "YAG capsulotomy",
+            `${C.yagN} (${pct1((100 * C.yagN) / C.n)})`,
+          );
+        }
+        if (!anyVs)
+          row("No visual-acuity or complication columns in this dataset", "—");
+
+        // ── Signature block ──
+        y = Math.max(y + 8, 226);
+        pdf.setDrawColor(...INK);
+        pdf.setLineWidth(0.3);
+        pdf.line(15, y, 90, y);
+        pdf.line(120, y, 165, y);
+        y += 4;
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(7.5);
+        pdf.setTextColor(...MUTED);
+        pdf.text(
+          "Surgeon signature" + (surgeon ? ` — ${surgeon}` : ""),
+          15,
+          y,
+        );
+        pdf.text("Date", 120, y);
+
+        // ── Statement ──
+        y += 8;
+        pdf.setFontSize(7);
+        pdf.setTextColor(...MUTED);
+        pdf.text(
+          "This certificate summarises an analysis generated automatically from user-supplied data and is provided for clinical audit, appraisal and " +
+            "educational purposes only. Results depend entirely on the accuracy and completeness of the uploaded data, which was not independently " +
+            "verified. Surgeons must apply their own professional judgement before acting on any result or benchmark. Focus Vision Pty Ltd and the " +
+            "tool's authors accept no liability for clinical or other decisions made in reliance on this analysis. Not a registered medical device. " +
+            "The dataset fingerprint above is reproducible: re-analysing the same data under the same filters yields the same fingerprint.",
+          15,
+          y,
+          { maxWidth: 180 },
+        );
+
+        // ── Standard footer ──
+        pdf.setFontSize(7);
+        pdf.setTextColor(160, 160, 160);
+        pdf.setDrawColor(197, 213, 224);
+        pdf.setLineWidth(0.3);
+        pdf.text(
+          "For clinical audit support only - apply your own professional judgement. No liability is accepted for decisions based on this report.",
+          105,
+          283,
+          { align: "center" },
+        );
+        pdf.line(15, 285, 195, 285);
+        pdf.text(
+          "Focus Vision Pty Ltd  ABN 17 668 265 281  ·  www.focusvision.com.au  ·  Brisbane, Queensland, Australia",
+          105,
+          289,
+          { align: "center" },
+        );
+        pdf.text(`${C.certId} · v${APP_VERSION}`, 195, 289, {
+          align: "right",
+        });
+        pdf.save(
+          `Audit_Certificate_${cohort.replace(/[^a-z0-9]/gi, "_")}_${genDate.replace(/\//g, "-")}.pdf`,
+        );
       }
 
       async function exportOptimiserPDF() {
