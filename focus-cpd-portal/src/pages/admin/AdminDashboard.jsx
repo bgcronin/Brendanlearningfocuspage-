@@ -6,6 +6,18 @@ import { signedUrl, formatDate, formatHours, downloadCsv, one } from '../../lib/
 
 const PAGE_SIZE = 25
 
+// Prefer the course facts snapshotted onto the completion (immutable CPD
+// record) over the live course, which a later edit could change.
+function courseFacts(r) {
+  const course = one(r.courses)
+  const hasSnap = r.cpd_hours != null
+  return {
+    title: r.course_title || course?.title || '',
+    hours: hasSnap ? r.cpd_hours : course?.cpd_hours ?? '',
+    therapeutic: hasSnap ? r.is_therapeutic : course?.is_therapeutic,
+  }
+}
+
 export default function AdminDashboard() {
   const [rows, setRows] = useState(null)
   const [search, setSearch] = useState('')
@@ -66,9 +78,9 @@ export default function AdminDashboard() {
         { label: 'Email', value: (r) => one(r.profiles)?.email ?? '' },
         { label: 'Practice', value: (r) => one(r.profiles)?.practice_name ?? '' },
         { label: 'AHPRA', value: (r) => one(r.profiles)?.ahpra_number ?? '' },
-        { label: 'Course', value: (r) => one(r.courses)?.title ?? '' },
-        { label: 'CPD hours', value: (r) => one(r.courses)?.cpd_hours ?? '' },
-        { label: 'Therapeutic', value: (r) => (one(r.courses)?.is_therapeutic ? 'Yes' : 'No') },
+        { label: 'Course', value: (r) => courseFacts(r).title },
+        { label: 'CPD hours', value: (r) => courseFacts(r).hours },
+        { label: 'Therapeutic', value: (r) => (courseFacts(r).therapeutic ? 'Yes' : 'No') },
         { label: 'Completed at', value: (r) => r.completed_at },
         { label: 'Score', value: (r) => `${r.score}/${r.total}` },
         { label: 'Certificate ID', value: (r) => one(r.certificates)?.certificate_code ?? '' },
@@ -208,7 +220,7 @@ export default function AdminDashboard() {
               <tbody>
                 {visible.map((r) => {
                   const p = one(r.profiles)
-                  const c = one(r.courses)
+                  const facts = courseFacts(r)
                   const cert = one(r.certificates)
                   const busy = busyId === r.id
                   return (
@@ -219,12 +231,12 @@ export default function AdminDashboard() {
                         {p?.ahpra_number && <div className="text-xs text-slate-400">AHPRA: {p.ahpra_number}</div>}
                       </td>
                       <td className="px-5 py-4 text-slate-600">{p?.practice_name || '—'}</td>
-                      <td className="px-5 py-4 font-medium text-navy">{c?.title}</td>
+                      <td className="px-5 py-4 font-medium text-navy">{facts.title}</td>
                       <td className="px-5 py-4 text-slate-600">{formatDate(r.completed_at)}</td>
                       <td className="px-5 py-4 text-slate-600">{r.score} / {r.total}</td>
                       <td className="px-5 py-4 font-semibold text-navy">
-                        {formatHours(c?.cpd_hours ?? 0)}
-                        {c?.is_therapeutic && (
+                        {formatHours(facts.hours || 0)}
+                        {facts.therapeutic && (
                           <div className="mt-1 inline-flex rounded-full bg-teal-pale px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-dark">Therapeutic</div>
                         )}
                       </td>

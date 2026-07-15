@@ -76,11 +76,13 @@ export async function handler(event) {
     return json(403, { error: 'This completion belongs to another user' })
   }
 
-  // Belt-and-braces: a graded quiz attempt must exist for this course.
+  // Belt-and-braces: a graded quiz attempt must exist for the completion's
+  // OWNER (not the caller — an admin re-sending another user's certificate
+  // has no attempt of their own on that course).
   const { count: attemptCount, error: attemptError } = await admin
     .from('attempts')
     .select('id', { count: 'exact', head: true })
-    .eq('user_id', user.id)
+    .eq('user_id', completion.user_id)
     .eq('course_id', completion.course_id)
   if (attemptError) return json(500, { error: attemptError.message })
   if (!attemptCount) return json(403, { error: 'No quiz attempt found for this course' })
@@ -91,12 +93,22 @@ export async function handler(event) {
     .sort((a, b) => a.sort_order - b.sort_order)
     .map((o) => o.objective)
 
+  // Course facts come from the SNAPSHOT taken on the completion at pass
+  // time, so a later course edit cannot change an issued certificate.
+  // (Older completions with no snapshot fall back to the live course.)
+  const snap = {
+    title: completion.course_title || course.title,
+    cpdHours: completion.cpd_hours != null ? completion.cpd_hours : course.cpd_hours,
+    isTherapeutic: completion.is_therapeutic ?? course.is_therapeutic,
+  }
+  const holderName = profile.full_name || profile.email || ''
+
   const emailPayload = (code, pdfBytes) => ({
     to: profile.email,
     fullName: profile.full_name || 'there',
-    courseTitle: course.title,
-    cpdHours: course.cpd_hours,
-    isTherapeutic: course.is_therapeutic,
+    courseTitle: snap.title,
+    cpdHours: snap.cpdHours,
+    isTherapeutic: snap.isTherapeutic,
     certificateCode: code,
     completedAt: completion.completed_at,
     pdfBytes,
@@ -127,9 +139,13 @@ export async function handler(event) {
       .insert({
         certificate_code: code,
         completion_id: completionId,
-        user_id: user.id,
+        user_id: completion.user_id,
         course_id: completion.course_id,
-        pdf_path: `${user.id}/${code}.pdf`,
+        holder_name: holderName,
+        course_title: snap.title,
+        cpd_hours: snap.cpdHours,
+        is_therapeutic: snap.isTherapeutic,
+        pdf_path: `${completion.user_id}/${code}.pdf`,
         email_sent: false,
       })
       .select()
@@ -153,11 +169,11 @@ export async function handler(event) {
   let pdfBytes
   try {
     pdfBytes = await buildCertificatePdf({
-      fullName: profile.full_name || profile.email,
-      courseTitle: course.title,
+      fullName: holderName,
+      courseTitle: snap.title,
       presenter: course.presenter,
-      cpdHours: course.cpd_hours,
-      isTherapeutic: course.is_therapeutic,
+      cpdHours: snap.cpdHours,
+      isTherapeutic: snap.isTherapeutic,
       objectives,
       completedAt: completion.completed_at,
       certificateCode: code,
@@ -239,7 +255,7 @@ function loadAsset(filename) {
 
 const loadLogo = () => loadAsset('logo.png')
 
-async function buildCertificatePdf({ fullName, courseTitle, presenter, cpdHours, isTherapeutic, objectives, completedAt, certificateCode }) {
+export async function buildCertificatePdf({ fullName, courseTitle, presenter, cpdHours, isTherapeutic, objectives, completedAt, certificateCode }) {
   const doc = await PDFDocument.create()
   doc.registerFontkit(fontkit)
   const page = doc.addPage([841.89, 595.28]) // A4 landscape
@@ -255,7 +271,14 @@ async function buildCertificatePdf({ fullName, courseTitle, presenter, cpdHours,
   const bold = poppinsSemiBold
     ? await doc.embedFont(poppinsSemiBold, { subset: true })
     : await doc.embedFont(StandardFonts.HelveticaBold)
-  const serif = await doc.embedFont(StandardFonts.TimesRomanItalic) // certificate-name flourish (matches on-screen font-serif)
+  // The holder name is drawn with the embedded Unicode font (Poppins), NOT
+  // a WinAnsi StandardFont: pdf-lib throws "WinAnsi cannot encode" on any
+  // character outside Latin-1 (e.g. an accented name), which previously
+  // 500'd the whole issuance. `usingUnicodeName` is false only if the font
+  // files are missing from the bundle, in which case we ASCII-fold as a
+  // last resort so a certificate is always produced.
+  const nameFont = bold
+  const usingUnicodeName = Boolean(poppinsSemiBold)
 
   // Borders
   page.drawRectangle({ x: 18, y: 18, width: width - 36, height: height - 36, borderColor: NAVY, borderWidth: 4 })
@@ -286,7 +309,13 @@ async function buildCertificatePdf({ fullName, courseTitle, presenter, cpdHours,
 
   centerText('This certifies that', y, helvetica, 11, GREY)
   y -= 30
-  centerText(fullName, y, serif, 30, NAVY)
+  // Guard against any un-encodable glyph so a name can never crash issuance.
+  const safeName = usingUnicodeName ? fullName : asciiFold(fullName)
+  try {
+    centerText(safeName || 'Certificate Holder', y, nameFont, 30, NAVY)
+  } catch {
+    centerText(asciiFold(fullName) || 'Certificate Holder', y, bold, 30, NAVY)
+  }
   y -= 30
   centerText('has successfully completed', y, helvetica, 11, GREY)
   y -= 24
@@ -354,6 +383,17 @@ function wrapText(text, font, size, maxWidth) {
   }
   if (line) lines.push(line)
   return lines
+}
+
+// Last-resort transliteration used only if the Unicode font files are
+// missing from the bundle: strip diacritics, drop anything still outside
+// Latin-1 so a WinAnsi StandardFont can encode it.
+export function asciiFold(s) {
+  return String(s)
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\x20-\xFF]/g, '')
+    .trim()
 }
 
 function formatDate(iso) {

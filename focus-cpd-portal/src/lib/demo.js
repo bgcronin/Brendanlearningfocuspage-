@@ -42,6 +42,7 @@ const db = {
       presenter: 'Dr Brendan Cronin',
       categories: ['cornea'],
       cpd_hours: 1.5,
+      pass_mark: 70,
       is_therapeutic: false,
       video_type: 'embed',
       video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -56,6 +57,7 @@ const db = {
       presenter: 'Dr David Gunn',
       categories: ['glaucoma'],
       cpd_hours: 1.0,
+      pass_mark: 70,
       is_therapeutic: true,
       video_type: 'embed',
       video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -70,6 +72,7 @@ const db = {
       presenter: 'Dr Brendan Cronin',
       categories: ['refractive'],
       cpd_hours: 1.5,
+      pass_mark: 70,
       is_therapeutic: false,
       video_type: 'embed',
       video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
@@ -411,16 +414,20 @@ async function rpc(fn, args = {}) {
     return { data: null, error: null }
   }
   if (fn === 'submit_quiz') {
-    // Mirrors the server-side grading function.
+    // Mirrors the server-side grading function, including the pass mark:
+    // a completion (and certificate) is recorded only on a passing attempt,
+    // and correct answers are withheld until the learner passes.
     const courseId = args.p_course_id
     const answers = args.p_answers || {}
+    const course = db.courses.find((c) => c.id === courseId)
+    const passMark = course?.pass_mark ?? 70
     const questions = db.questions.filter((q) => q.course_id === courseId)
     if (!questions.length) return { data: null, error: { message: 'This course has no quiz questions' } }
     if (questions.some((q) => answers[q.id] === undefined || answers[q.id] === null)) {
       return { data: null, error: { message: 'All questions must be answered' } }
     }
 
-    const results = [...questions]
+    const graded = [...questions]
       .sort((a, b) => a.sort_order - b.sort_order)
       .map((q) => ({
         question_id: q.id,
@@ -429,20 +436,34 @@ async function rpc(fn, args = {}) {
         is_correct: answers[q.id] === q.correct_index,
         explanation: q.explanation,
       }))
-    const score = results.filter((r) => r.is_correct).length
+    const score = graded.filter((r) => r.is_correct).length
     const total = questions.length
+    const hadCompletion = db.completions.some((c) => c.user_id === DEMO_USER.id && c.course_id === courseId)
+    const passed = (score * 100) / total >= passMark
+    const reveal = passed || hadCompletion
+    const results = graded.map((r) => ({
+      question_id: r.question_id,
+      selected_index: r.selected_index,
+      is_correct: r.is_correct,
+      correct_index: reveal ? r.correct_index : null,
+      explanation: reveal ? r.explanation : '',
+    }))
 
     const attempt = { id: uuid(), user_id: DEMO_USER.id, course_id: courseId, score, total, created_at: now() }
     db.attempts.push(attempt)
-    db.attempt_answers.push(...results.map((r) => ({
+    db.attempt_answers.push(...graded.map((r) => ({
       id: uuid(), attempt_id: attempt.id, question_id: r.question_id,
       selected_index: r.selected_index, is_correct: r.is_correct,
     })))
 
     let completion = db.completions.find((c) => c.user_id === DEMO_USER.id && c.course_id === courseId)
     let isFirst = false
-    if (!completion) {
-      completion = { id: uuid(), user_id: DEMO_USER.id, course_id: courseId, attempt_id: attempt.id, score, total, reflection: '', completed_at: now() }
+    if (passed && !completion) {
+      completion = {
+        id: uuid(), user_id: DEMO_USER.id, course_id: courseId, attempt_id: attempt.id,
+        score, total, reflection: '', completed_at: now(),
+        course_title: course?.title, cpd_hours: course?.cpd_hours, is_therapeutic: course?.is_therapeutic ?? false,
+      }
       db.completions.push(completion)
       isFirst = true
     }
@@ -452,9 +473,11 @@ async function rpc(fn, args = {}) {
         attempt_id: attempt.id,
         score,
         total,
+        pass_mark: passMark,
+        passed,
         is_first_completion: isFirst,
-        completion_id: completion.id,
-        completed_at: completion.completed_at,
+        completion_id: completion?.id ?? null,
+        completed_at: completion?.completed_at ?? null,
         results,
       },
       error: null,
@@ -467,13 +490,14 @@ async function rpc(fn, args = {}) {
     const profile = db.profiles.find((p) => p.id === cert.user_id)
     const course = db.courses.find((c) => c.id === cert.course_id)
     const completion = db.completions.find((c) => c.id === cert.completion_id)
+    // Prefer the certificate snapshot (as the live function now does).
     return {
       data: [{
         certificate_code: cert.certificate_code,
-        full_name: profile?.full_name,
-        course_title: course?.title,
-        cpd_hours: course?.cpd_hours,
-        is_therapeutic: course?.is_therapeutic ?? false,
+        full_name: cert.holder_name || profile?.full_name,
+        course_title: cert.course_title || course?.title,
+        cpd_hours: cert.cpd_hours ?? course?.cpd_hours,
+        is_therapeutic: cert.is_therapeutic ?? course?.is_therapeutic ?? false,
         completed_at: completion?.completed_at,
         issued_at: cert.issued_at,
         revoked: Boolean(cert.revoked_at),
@@ -497,12 +521,17 @@ function patchFetch() {
       if (existing?.revoked_at) {
         return new Response(JSON.stringify({ error: 'This certificate has been revoked', certificate: existing, alreadyIssued: true }), { status: 409 })
       }
+      const holder = db.profiles.find((p) => p.id === completion.user_id)
       const certificate = existing ?? {
         id: uuid(),
         certificate_code: `FV-${new Date().getFullYear()}-DEMO${Math.floor(10 + Math.random() * 89)}`,
         completion_id: completionId,
         user_id: completion.user_id,
         course_id: completion.course_id,
+        holder_name: holder?.full_name ?? '',
+        course_title: completion.course_title ?? '',
+        cpd_hours: completion.cpd_hours ?? null,
+        is_therapeutic: completion.is_therapeutic ?? false,
         pdf_path: `${completion.user_id}/demo.pdf`,
         email_sent: true,
         revoked_at: null,

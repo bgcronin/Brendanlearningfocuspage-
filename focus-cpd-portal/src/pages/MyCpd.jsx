@@ -6,6 +6,20 @@ import { Loading } from '../components/Protected'
 import ReflectionEditor from '../components/ReflectionEditor'
 import { signedUrl, formatDate, formatHours, one } from '../lib/helpers'
 
+// The CPD record reads the course facts SNAPSHOTTED onto the completion at
+// pass time (immutable), falling back to the live course only for older
+// rows that predate the snapshot.
+function courseFacts(r) {
+  const course = one(r.courses)
+  const hasSnap = r.cpd_hours != null
+  return {
+    title: r.course_title || course?.title,
+    presenter: course?.presenter,
+    hours: Number(hasSnap ? r.cpd_hours : course?.cpd_hours ?? 0),
+    therapeutic: hasSnap ? r.is_therapeutic : course?.is_therapeutic,
+  }
+}
+
 export default function MyCpd() {
   const { session, profile } = useAuth()
   const [rows, setRows] = useState(null)
@@ -26,10 +40,9 @@ export default function MyCpd() {
     let therapeutic = 0
     for (const r of rows ?? []) {
       if (one(r.certificates)?.revoked_at) continue // revoked credits don't count
-      const course = one(r.courses)
-      const h = Number(course?.cpd_hours ?? 0)
-      all += h
-      if (course?.is_therapeutic) therapeutic += h
+      const f = courseFacts(r)
+      all += f.hours
+      if (f.therapeutic) therapeutic += f.hours
     }
     return { all, therapeutic }
   }, [rows])
@@ -86,15 +99,15 @@ export default function MyCpd() {
             </thead>
             <tbody>
               {rows.map((r) => {
-                const course = one(r.courses)
+                const facts = courseFacts(r)
                 const cert = one(r.certificates)
                 const reflectionOpen = openReflectionId === r.id
                 return (
                   <Fragment key={r.id}>
                     <tr className="border-b border-slate-100 last:border-0">
                       <td className="px-5 py-4">
-                        <div className="font-semibold text-navy">{course?.title}</div>
-                        <div className="text-xs text-slate-400">{course?.presenter}</div>
+                        <div className="font-semibold text-navy">{facts.title}</div>
+                        <div className="text-xs text-slate-400">{facts.presenter}</div>
                         <button
                           onClick={() => setOpenReflectionId(reflectionOpen ? null : r.id)}
                           className="mt-1 text-xs font-semibold text-teal hover:underline"
@@ -104,8 +117,8 @@ export default function MyCpd() {
                       </td>
                       <td className="px-5 py-4 text-slate-600">{formatDate(r.completed_at)}</td>
                       <td className="px-5 py-4">
-                        <span className="font-semibold text-navy">{formatHours(course?.cpd_hours ?? 0)}</span>
-                        {course?.is_therapeutic && (
+                        <span className="font-semibold text-navy">{formatHours(facts.hours)}</span>
+                        {facts.therapeutic && (
                           <div className="mt-1 inline-flex rounded-full bg-teal-pale px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-dark">
                             Therapeutic
                           </div>

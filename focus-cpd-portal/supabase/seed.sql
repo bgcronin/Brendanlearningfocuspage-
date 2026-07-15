@@ -1,7 +1,11 @@
 -- ============================================================
 -- Focus Vision CPD Portal — seed data
--- Run AFTER migration.sql. Creates 3 published example courses
--- with placeholder videos, learning objectives, and MCQs.
+-- Run AFTER migration.sql. Creates 3 example courses as UNPUBLISHED
+-- DRAFTS (published = false) with learning objectives and MCQs but no
+-- video. Before publishing a course, an admin must add the real lecture
+-- video in the course editor. This prevents real optometrists from
+-- earning genuine CPD certificates against placeholder content.
+-- Optional: for a non-production demo you may publish these manually.
 -- ============================================================
 
 -- Course 1: Cornea
@@ -15,8 +19,8 @@ values (
   1.5,
   false,
   'embed',
-  'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-  true
+  '',
+  false
 );
 
 insert into public.learning_objectives (course_id, sort_order, objective) values
@@ -52,8 +56,8 @@ values (
   1.0,
   true,
   'embed',
-  'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-  true
+  '',
+  false
 );
 
 insert into public.learning_objectives (course_id, sort_order, objective) values
@@ -84,8 +88,8 @@ values (
   1.5,
   false,
   'embed',
-  'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-  true
+  '',
+  false
 );
 
 insert into public.learning_objectives (course_id, sort_order, objective) values

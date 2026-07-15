@@ -66,6 +66,10 @@ create table public.courses (
   presenter   text not null default '',
   categories  text[] not null default '{}',
   cpd_hours   numeric(4,2) not null default 1.0 check (cpd_hours > 0),
+  -- Minimum percentage of quiz questions the learner must answer
+  -- correctly to complete the course and be issued a certificate.
+  -- A certificate asserts "successfully completed", so a pass is required.
+  pass_mark   int not null default 70 check (pass_mark between 0 and 100),
   -- Counts toward the therapeutic (scheduled medicines) CPD hours that
   -- therapeutically endorsed optometrists must complete. Shown on the
   -- certificate and totalled separately in My CPD Record.
@@ -136,6 +140,11 @@ create table public.completions (
   attempt_id   uuid references public.attempts (id) on delete set null,
   score        int not null check (score >= 0),
   total        int not null check (total > 0),
+  -- Course facts snapshotted at completion time. The CPD record must
+  -- reflect what was earned; a later course edit must not rewrite history.
+  course_title   text not null default '',
+  cpd_hours      numeric(4,2),
+  is_therapeutic boolean not null default false,
   -- Optional learning reflection written by the optometrist after
   -- completing the course (supports the OBA CPD portfolio requirement).
   reflection   text not null default '',
@@ -145,12 +154,21 @@ create table public.completions (
 );
 
 -- Rows inserted only by the issue-certificate Netlify Function (service role).
+-- The holder name and course facts are SNAPSHOTTED here at issue time:
+-- the certificate (and public verification) must forever reflect what was
+-- issued, not the live profile/course, which a later rename or course edit
+-- would otherwise silently rewrite.
 create table public.certificates (
   id               uuid primary key default gen_random_uuid(),
   certificate_code text not null unique,
   completion_id    uuid not null unique references public.completions (id) on delete cascade,
   user_id          uuid not null references public.profiles (id) on delete cascade,
   course_id        uuid not null references public.courses (id) on delete restrict,
+  -- Snapshots (immutable record of what the certificate was issued for).
+  holder_name      text not null default '',
+  course_title     text not null default '',
+  cpd_hours        numeric(4,2),
+  is_therapeutic   boolean not null default false,
   pdf_path         text not null, -- path in the 'certificates' bucket
   email_sent       boolean not null default false, -- lets the function retry a failed email
   -- Set by an admin to invalidate a certificate issued in error.
@@ -203,9 +221,15 @@ as $$
 declare
   v_user           uuid := auth.uid();
   v_published      boolean;
+  v_pass_mark      int;
+  v_title          text;
+  v_hours          numeric(4,2);
+  v_therapeutic    boolean;
   v_has_completion boolean;
   v_score          int;
   v_total          int;
+  v_passed         boolean;
+  v_reveal         boolean;
   v_attempt_id     uuid;
   v_completion     public.completions%rowtype;
   v_is_first       boolean := false;
@@ -215,7 +239,9 @@ begin
     raise exception 'Not authenticated';
   end if;
 
-  select published into v_published from public.courses where id = p_course_id;
+  select published, pass_mark, title, cpd_hours, is_therapeutic
+    into v_published, v_pass_mark, v_title, v_hours, v_therapeutic
+  from public.courses where id = p_course_id;
   if not found then
     raise exception 'Course not found';
   end if;
@@ -251,6 +277,9 @@ begin
   where q.course_id = p_course_id
     and (p_answers ->> q.id::text)::int = q.correct_index;
 
+  -- Pass = score percentage at or above the course's pass mark.
+  v_passed := (v_score::numeric * 100 / v_total) >= v_pass_mark;
+
   insert into public.attempts (user_id, course_id, score, total)
   values (v_user, p_course_id, v_score, v_total)
   returning id into v_attempt_id;
@@ -262,9 +291,15 @@ begin
   from public.questions q
   where q.course_id = p_course_id;
 
-  if not v_has_completion then
-    insert into public.completions (user_id, course_id, attempt_id, score, total)
-    values (v_user, p_course_id, v_attempt_id, v_score, v_total)
+  -- A completion (and therefore a certificate) is recorded ONLY on a
+  -- passing attempt, and only the first pass stands. Course facts are
+  -- snapshotted onto the completion so a later course edit cannot rewrite
+  -- an optometrist's CPD record.
+  if v_passed and not v_has_completion then
+    insert into public.completions
+      (user_id, course_id, attempt_id, score, total, course_title, cpd_hours, is_therapeutic)
+    values
+      (v_user, p_course_id, v_attempt_id, v_score, v_total, v_title, v_hours, v_therapeutic)
     on conflict (user_id, course_id) do nothing
     returning * into v_completion;
     if v_completion.id is not null then
@@ -272,17 +307,22 @@ begin
     end if;
   end if;
 
-  if not v_is_first then
+  if not v_is_first and v_has_completion then
     select * into v_completion from public.completions
     where user_id = v_user and course_id = p_course_id;
   end if;
 
+  -- Correct answers + explanations are revealed only once the learner has
+  -- passed (now or previously) — otherwise a failing attempt would hand
+  -- over the answer key for a trivial retake.
+  v_reveal := v_passed or v_has_completion;
+
   select jsonb_agg(jsonb_build_object(
            'question_id',    q.id,
            'selected_index', (p_answers ->> q.id::text)::int,
-           'correct_index',  q.correct_index,
            'is_correct',     (p_answers ->> q.id::text)::int = q.correct_index,
-           'explanation',    q.explanation
+           'correct_index',  case when v_reveal then q.correct_index else null end,
+           'explanation',    case when v_reveal then q.explanation else '' end
          ) order by q.sort_order)
     into v_results
   from public.questions q
@@ -292,6 +332,8 @@ begin
     'attempt_id',          v_attempt_id,
     'score',               v_score,
     'total',               v_total,
+    'pass_mark',           v_pass_mark,
+    'passed',              v_passed,
     'is_first_completion', v_is_first,
     'completion_id',       v_completion.id,
     'completed_at',        v_completion.completed_at,
@@ -322,11 +364,12 @@ stable
 security definer
 set search_path = public
 as $$
-  select c.certificate_code, p.full_name, co.title, co.cpd_hours, co.is_therapeutic, cm.completed_at, c.issued_at,
+  -- Reads the SNAPSHOT on the certificate, not the live profile/course:
+  -- a rename or course edit after issue must not change what verification
+  -- reports. completed_at comes from the (immutable) completion.
+  select c.certificate_code, c.holder_name, c.course_title, c.cpd_hours, c.is_therapeutic, cm.completed_at, c.issued_at,
          (c.revoked_at is not null) as revoked
   from public.certificates c
-  join public.profiles    p  on p.id  = c.user_id
-  join public.courses     co on co.id = c.course_id
   join public.completions cm on cm.id = c.completion_id
   where upper(c.certificate_code) = upper(trim(cert_code));
 $$;

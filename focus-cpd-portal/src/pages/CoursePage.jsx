@@ -114,11 +114,19 @@ export default function CoursePage() {
       if (isFirstCompletion) {
         const comp = { id: data.completion_id, completed_at: data.completed_at }
         setCompletion(comp)
-        // Generate + email the certificate.
+        // A completion (and certificate) is only recorded on a passing
+        // attempt, so this fires exactly when the learner has just passed.
         issueCertificate(comp.id)
       }
 
-      setResult({ score: data.score, total: data.total, isFirstCompletion, results: data.results ?? [] })
+      setResult({
+        score: data.score,
+        total: data.total,
+        passed: data.passed,
+        passMark: data.pass_mark,
+        isFirstCompletion,
+        results: data.results ?? [],
+      })
       setStep('result')
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (err) {
@@ -177,6 +185,7 @@ export default function CoursePage() {
           answers={answers}
           setAnswers={setAnswers}
           submitting={submitting}
+          passMark={course.pass_mark}
           onSubmit={submitQuiz}
           onBack={() => setStep('video')}
         />
@@ -192,6 +201,12 @@ export default function CoursePage() {
           issuing={issuing}
           emailState={emailState}
           onRetryCertificate={() => completion && issueCertificate(completion.id)}
+          onRetake={() => {
+            setResult(null)
+            setAnswers({})
+            setStep('quiz')
+            window.scrollTo({ top: 0, behavior: 'smooth' })
+          }}
           profile={profile}
         />
       )}
@@ -348,7 +363,7 @@ function VideoStep({ course, onNext, onBack }) {
 }
 
 /* ---------------- Quiz ---------------- */
-function Quiz({ questions, answers, setAnswers, submitting, onSubmit, onBack }) {
+function Quiz({ questions, answers, setAnswers, submitting, passMark, onSubmit, onBack }) {
   const allAnswered = questions.every((q) => answers[q.id] !== undefined)
 
   return (
@@ -356,7 +371,8 @@ function Quiz({ questions, answers, setAnswers, submitting, onSubmit, onBack }) 
       <div className="card p-8">
         <h1 className="text-2xl font-semibold text-navy">Quiz</h1>
         <p className="mt-1 text-sm text-slate-500">
-          Answer all {questions.length} questions, then submit. Your certificate is issued on completion; your score is recorded for your records.
+          Answer all {questions.length} questions, then submit. You need <span className="font-semibold text-navy">{passMark ?? 70}% or more</span> to
+          complete the course and receive your certificate. You can retake the quiz as many times as you need.
         </p>
       </div>
 
@@ -402,9 +418,14 @@ function Quiz({ questions, answers, setAnswers, submitting, onSubmit, onBack }) 
 }
 
 /* ---------------- Result + certificate ---------------- */
-function ResultStep({ course, result, completion, certificate, certError, issuing, emailState, onRetryCertificate, profile }) {
+function ResultStep({ course, result, completion, certificate, certError, issuing, emailState, onRetryCertificate, onRetake, profile }) {
   const [downloading, setDownloading] = useState(false)
   const questionById = Object.fromEntries(course.questions.map((q) => [q.id, q]))
+  const pct = Math.round((result.score / result.total) * 100)
+  // A brand-new pass issues a certificate; a retake leaves the original
+  // completion untouched; a fail with no prior completion means "try again".
+  const isRetakeOfCompleted = !result.isFirstCompletion && completion
+  const isFail = !result.passed && !completion
 
   async function downloadPdf() {
     if (!certificate) return
@@ -423,12 +444,19 @@ function ResultStep({ course, result, completion, certificate, certError, issuin
     <div className="mt-6 space-y-6">
       <div className="card p-8 text-center">
         <h1 className="text-3xl font-semibold text-navy">
-          {result.isFirstCompletion ? 'Congratulations — course complete! 🎓' : 'Quiz submitted'}
+          {result.isFirstCompletion
+            ? 'Congratulations — course complete! 🎓'
+            : isFail
+              ? 'Not quite yet'
+              : 'Quiz submitted'}
         </h1>
         <p className="mt-2 text-slate-600">
-          You scored <span className="font-semibold text-navy">{result.score} / {result.total}</span>.
-          {!result.isFirstCompletion && completion && (
+          You scored <span className="font-semibold text-navy">{result.score} / {result.total}</span> ({pct}%).
+          {isRetakeOfCompleted && (
             <> This retake has been logged. Your original completion from {formatDate(completion.completed_at)} stands.</>
+          )}
+          {isFail && (
+            <> You need <span className="font-semibold text-navy">{result.passMark}%</span> to complete the course and receive your certificate.</>
           )}
         </p>
         {result.isFirstCompletion && (
@@ -442,9 +470,17 @@ function ResultStep({ course, result, completion, certificate, certError, issuin
                   : ''}
           </p>
         )}
+        {isFail && (
+          <div className="mt-5">
+            <p className="text-sm text-slate-500">
+              Review the questions you missed below, then retake the quiz. There&apos;s no limit on attempts.
+            </p>
+            <button onClick={onRetake} className="btn-primary mt-4">Retake quiz</button>
+          </div>
+        )}
       </div>
 
-      {/* Certificate */}
+      {/* Certificate — only on a passing first completion */}
       {result.isFirstCompletion && (
         <>
           {certError && (
@@ -496,14 +532,21 @@ function ResultStep({ course, result, completion, certificate, certError, issuin
         </div>
       )}
 
-      {/* Answer review — correct answers + explanations come back from
-          the server only after submission */}
+      {/* Answer review — correct answers + explanations are returned by the
+          server only once the learner has passed, so a failed attempt can't
+          harvest the answer key for a trivial retake. */}
       <div className="card p-8">
         <h2 className="text-xl font-semibold text-navy">Your answers</h2>
+        {isFail && (
+          <p className="mt-1 text-sm text-slate-500">
+            Correct answers and explanations are shown once you pass. For now, here are the questions you missed.
+          </p>
+        )}
         <div className="mt-4 space-y-5">
           {(result.results ?? []).map((r, qi) => {
             const q = questionById[r.question_id]
             if (!q) return null
+            const revealed = r.correct_index !== null && r.correct_index !== undefined
             return (
               <div key={r.question_id} className="border-b border-slate-100 pb-5 last:border-0 last:pb-0">
                 <p className="font-semibold text-navy">
@@ -513,7 +556,7 @@ function ResultStep({ course, result, completion, certificate, certError, issuin
                 <p className={`mt-2 text-sm font-medium ${r.is_correct ? 'text-emerald-700' : 'text-red-600'}`}>
                   {r.is_correct ? '✓ Correct' : '✗ Incorrect'} — you answered: {q.options[r.selected_index]}
                 </p>
-                {!r.is_correct && (
+                {!r.is_correct && revealed && (
                   <p className="mt-1 text-sm text-slate-600">
                     Correct answer: <span className="font-semibold">{q.options[r.correct_index]}</span>
                   </p>

@@ -29,6 +29,7 @@ export default function CourseEditor() {
     presenter: '',
     categories: '',
     cpd_hours: '1.0',
+    pass_mark: '70',
     is_therapeutic: false,
     video_type: 'embed',
     video_url: '',
@@ -41,6 +42,7 @@ export default function CourseEditor() {
   const [deletedDocs, setDeletedDocs] = useState([]) // {id, storage_path}
   const [uploadingVideo, setUploadingVideo] = useState(false)
   const [uploadingDoc, setUploadingDoc] = useState(false)
+  const [completionCount, setCompletionCount] = useState(0)
 
   useEffect(() => {
     if (isNew) return
@@ -61,6 +63,7 @@ export default function CourseEditor() {
         presenter: c.presenter,
         categories: (c.categories ?? []).join(', '),
         cpd_hours: String(c.cpd_hours),
+        pass_mark: String(c.pass_mark ?? 70),
         is_therapeutic: c.is_therapeutic,
         video_type: c.video_type,
         video_url: c.video_url,
@@ -74,6 +77,14 @@ export default function CourseEditor() {
       setQuestions(qs.length ? qs : [emptyQuestion()])
       setDocs([...c.prereading_documents].sort((a, b) => a.sort_order - b.sort_order))
       setLoading(false)
+
+      // How many optometrists have already completed this course? Their
+      // certificates are snapshotted, but editing warns against surprises.
+      const { count } = await supabase
+        .from('completions')
+        .select('id', { count: 'exact', head: true })
+        .eq('course_id', courseId)
+      setCompletionCount(count ?? 0)
     }
     load()
   }, [courseId, isNew])
@@ -146,6 +157,8 @@ export default function CourseEditor() {
     if (!course.presenter.trim()) return setError('Presenter is required.')
     const hours = parseFloat(course.cpd_hours)
     if (!hours || hours <= 0) return setError('CPD hours must be a positive number.')
+    const passMark = parseInt(course.pass_mark, 10)
+    if (Number.isNaN(passMark) || passMark < 0 || passMark > 100) return setError('Pass mark must be between 0 and 100.')
     const cleanQuestions = questions.filter((q) => q.question_text.trim())
     for (const q of cleanQuestions) {
       if (q.options.some((o) => !o.trim())) return setError('Every question needs 4 answer options.')
@@ -161,6 +174,7 @@ export default function CourseEditor() {
         presenter: course.presenter.trim(),
         categories: course.categories.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
         cpd_hours: hours,
+        pass_mark: passMark,
         is_therapeutic: course.is_therapeutic,
         video_type: course.video_type,
         video_url: course.video_url.trim(),
@@ -229,6 +243,14 @@ export default function CourseEditor() {
       <Link to="/admin/courses" className="text-sm font-semibold text-teal hover:underline">← Back to courses</Link>
       <h1 className="mt-2 text-3xl font-semibold text-navy">{isNew ? 'New course' : 'Edit course'}</h1>
 
+      {completionCount > 0 && (
+        <div className="mt-6 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <span className="font-semibold">{completionCount} optometrist{completionCount === 1 ? '' : 's'}</span> {completionCount === 1 ? 'has' : 'have'} already completed this course.
+          Certificates already issued keep the title, CPD hours and therapeutic status they were issued with — editing those
+          fields here only affects <span className="font-semibold">new</span> completions and the course page.
+        </div>
+      )}
+
       {/* Details */}
       <section className="card mt-6 space-y-4 p-6">
         <h2 className="font-semibold text-navy">Course details</h2>
@@ -254,6 +276,11 @@ export default function CourseEditor() {
             <input className="input" type="number" step="0.25" min="0.25" value={course.cpd_hours} onChange={set('cpd_hours')} />
             <p className="mt-1 text-xs text-slate-400">Appears on the certificate.</p>
           </div>
+        </div>
+        <div className="sm:w-48">
+          <label className="label">Pass mark (%)</label>
+          <input className="input" type="number" step="1" min="0" max="100" value={course.pass_mark} onChange={set('pass_mark')} />
+          <p className="mt-1 text-xs text-slate-400">Minimum quiz score to complete the course and be issued a certificate.</p>
         </div>
         <label className="flex cursor-pointer items-center gap-2.5 pt-1">
           <input type="checkbox" checked={course.is_therapeutic} onChange={set('is_therapeutic')} className="h-5 w-5 accent-[#04838c]" />
