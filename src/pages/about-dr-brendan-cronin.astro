@@ -16,12 +16,13 @@ import drCroninImage from "../assets/images/dr-brendan-cronin-square.jpg";
 
 const authorData = await getEntry("authors", "brendan-cronin");
 
-const title = "About | Dr. Brendan Cronin | Focus Vision | Woolloongabba, QLD";
+const title = "Dr Brendan Cronin – Brisbane Corneal & Refractive Surgeon";
 const description = `Dr. Brendan Cronin is a skilled ophthalmologist specializing in advanced eye care and surgery. Contact us today to book your eye health consultation!`;
 const ogType = "website";
 ---
 
 <BaseLayout
+	title={title}
 	showCurve={false}
 	topColor="#ffffff"
 	direction="down"
@@ -232,8 +233,8 @@ const ogType = "website";
 			<li>Pterygium and ocular surface surgery</li>
 			<li>Implantable Collamer Lenses</li>
 			<li>
-				Keratoconus including CAIRS and advanced corneal collagen cross
-				linking
+				Keratoconus including <a href="/cairsplan">CAIRS</a> and advanced
+				corneal collagen cross linking
 			</li>
 		</ul>
 

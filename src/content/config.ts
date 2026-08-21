@@ -33,11 +33,14 @@ const authorsCollection = defineCollection({
       name: z.string(),
       bio: z.string().optional(),
       credentials: z.string().optional(),
+      jobTitle: z.string().optional(),
       ahpraNumber: z.string().optional(),
       medicalSpecialty: z.string().optional(),
+      knowsAbout: z.array(z.string()).optional(),
       avatar: z.string().or(image()).optional(),
       social: z
         .object({
+          website: z.string().optional(),
           facebook: z.string().optional(),
           instagram: z.string().optional(),
           linkedin: z.string().optional(),
@@ -45,6 +48,7 @@ const authorsCollection = defineCollection({
         })
         .optional()
         .default({}),
+      sameAs: z.array(z.string()).optional(),
       affiliations: z
         .array(
           z.object({

@@ -64,6 +64,7 @@ const schemaArray: any[] = [
 ---
 
 <BaseLayout
+	title={frontmatter.title}
 	showCurve={false}
 	description={frontmatter.description || ""}
 	author={author ? author.data.name : (frontmatter.author as string)}

@@ -9,6 +9,7 @@ import Card from "../components/Card.astro";
 import TwoColumnContent from "../components/TwoColumnContent.astro";
 import StyledList from "../components/StyledList.astro";
 import Faq from "../components/Faq.astro";
+import ReviewedBy from "../components/ReviewedBy.astro";
 import Schema from "../components/Schema.astro";
 import {
 	getMedicalClinicSchema,
@@ -16,17 +17,18 @@ import {
 	getBreadcrumbSchema,
 } from "../utils/seo";
 import usImage from "../assets/images/img-Focus-Brisbane-Eye-ICL-Cronin-Gunn.webp";
+import dashboardImage from "../assets/images/dashboard.png";
 import { Image } from "astro:assets";
 
 const title = "Free Refractive Outcomes Analyzer | Focus Vision Brisbane";
 const description =
-	"Analyse your cataract surgery refractive outcomes, benchmark against ESCRS standards and optimise your IOL lens constants — free forever, from the surgeons at Focus Vision Brisbane.";
+	"Analyse your cataract surgery refractive outcomes, benchmark against published international standards and optimise your IOL lens constants — free forever, from the surgeons at Focus Vision Brisbane.";
 const ogType = "website";
 
 const analyzerFeatures = [
 	{
 		title: "Benchmarks Accuracy",
-		text: "Benchmarks your refractive prediction accuracy against ESCRS 2024 standards",
+		text: "Benchmarks your refractive prediction accuracy against published international standards (NHS benchmark and EUREQUO registry outcomes)",
 		icon: "target",
 		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></g></svg>`,
 	},
@@ -61,6 +63,18 @@ const analyzerFeatures = [
 		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8m0 8v4m0-8h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"/></g></svg>`,
 	},
 	{
+		title: "Toric & SIA Analysis",
+		text: "Analyses toric IOL outcomes — residual astigmatism with 95% confidence ellipses, axis misalignment, and corneal surgically induced astigmatism (SIA)",
+		icon: "compass",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76l-2.12 6.36l-6.36 2.12l2.12-6.36z"/></g></svg>`,
+	},
+	{
+		title: "Subgroup Analysis",
+		text: "Breaks results down by axial length, IOL model, formula, IOL type, eye and age band — and flags subgroups with systematic bias",
+		icon: "bar-chart",
+		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><rect x="7" y="10" width="3" height="8"/><rect x="13" y="6" width="3" height="12"/><rect x="19" y="12" width="3" height="6"/></g></svg>`,
+	},
+	{
 		title: "Performance Tracking",
 		text: "Tracks outcomes over time to detect learning curves and equipment changes",
 		icon: "history",
@@ -87,7 +101,7 @@ const clinicalBenefits = [
 	},
 	{
 		title: "Benchmark Performance",
-		text: "Benchmark performance against ESCRS published standards — 85% of eyes within ±0.50 D of target",
+		text: "Benchmark performance against published standards — from the NHS benchmark of 55% of eyes within ±0.50 D to the high-performer target of 85%",
 		svg: `<svg class="analyzer-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978m7-7.318v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978M18 9h1.5a1 1 0 0 0 0-5H18M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm0 0H4.5a1 1 0 0 1 0-5H6"/></g></svg>`,
 	},
 	{
@@ -117,15 +131,23 @@ const faqs = [
 	},
 	{
 		q: "What file format does the analyzer accept?",
-		a: "The analyzer accepts .xlsx and .xls (Microsoft Excel) files. A free downloadable template is provided on the tool page. The template contains all required column headers, dropdown validations, and auto-calculated fields for spherical equivalent and prediction error.",
+		a: "The analyzer accepts .xlsx and .xls (Microsoft Excel) files as well as .csv files. A free downloadable template is provided on the tool page — it contains all required column headers, dropdown validations, auto-calculated fields for spherical equivalent and prediction error, and optional toric and keratometry columns that unlock the toric misalignment and SIA analyses. You do not have to use the template: if your spreadsheet uses different column names, a built-in column-mapping step lets you match your headers to the analyzer's fields.",
+	},
+	{
+		q: "My spreadsheet doesn't use the template headers — can I still use the analyzer?",
+		a: "Yes. The analyzer first tries to recognise your column names automatically, including common variants such as MRN, UCVA, Sphere, Cyl and Axial Length. If any required field cannot be matched, a column-mapping dialog opens where you match each analyzer field to a column in your file, with a live sample value shown for each column. You can also re-open the mapping at any time via the 'Remap columns' link after import. The mapping applies to your session only — nothing is stored or transmitted.",
+	},
+	{
+		q: "Can I use US-format data — 20/20 Snellen, plus-cylinder refractions, MM/DD dates?",
+		a: "Yes. The tool page has data-format settings for date format (auto-detect, DD/MM/YYYY, or MM/DD/YYYY), cylinder convention (minus or plus cylinder — plus-cylinder refractions are converted to minus-cylinder form on import so all analysis uses one convention), and Snellen notation (6/6 metric or 20/20 US) for chart labels. Eye laterality is recognised automatically whether recorded as R/L, OD/OS, or Right/Left.",
 	},
 	{
 		q: "How many eyes do I need for the analysis to be meaningful?",
-		a: "A minimum of 30 eyes is recommended for reliable outcomes benchmarking. For lens constant optimisation, the ESCRS recommends a minimum of 50 eyes per IOL model per formula. The analyzer will display a warning if your sample size falls below this threshold for any optimisation calculation.",
+		a: 'A minimum of 30 eyes is recommended for reliable outcomes benchmarking. For lens constant optimisation, at least 50 eyes per IOL model per formula is a widely used minimum, and 100 or more eyes further improves the reliability of the optimised constant (<a href="https://pubmed.ncbi.nlm.nih.gov/21183099/" target="_blank" rel="noopener">Aristodemou et al., JCRS 2011</a>). The analyzer will display a warning if your sample size falls below 50 eyes for any optimisation calculation.',
 	},
 	{
 		q: "What is refractive prediction error and why does it matter?",
-		a: "Refractive prediction error (PE) is the difference between the post-operative spherical equivalent refraction and the pre-operative target refraction calculated by the IOL power formula. It is the primary measure of IOL formula accuracy. A mean prediction error close to zero indicates no systematic bias; a non-zero mean PE indicates that lens constant optimisation may improve outcomes. The ESCRS benchmark is 85% of eyes within ±0.50 D of target.",
+		a: 'Refractive prediction error (PE) is the difference between the post-operative spherical equivalent refraction and the pre-operative target refraction calculated by the IOL power formula. It is the primary measure of IOL formula accuracy. A mean prediction error close to zero indicates no systematic bias; a non-zero mean PE indicates that lens constant optimisation may improve outcomes. The published NHS benchmark is 55% of eyes within ±0.50 D and 85% within ±1.00 D (<a href="https://pubmed.ncbi.nlm.nih.gov/17721503/" target="_blank" rel="noopener">Gale et al., Eye 2009</a>); high-performing surgeons using optimised constants and modern formulas typically achieve 85% or more within ±0.50 D.',
 	},
 	{
 		q: "What is lens constant optimisation and how does it improve outcomes?",
@@ -133,15 +155,15 @@ const faqs = [
 	},
 	{
 		q: "Which IOL formulas does the lens constant optimiser support?",
-		a: "The Focus Vision Refractive Outcomes Analyzer supports lens constant optimisation for Barrett Universal II (Lens Factor), SRK/T (A-constant), Kane Formula (Kane Constant), Holladay 2 (Surgeon Factor), and EVO (EVO Constant). The correction factors applied are consistent with ESCRS published optimisation guidelines.",
+		a: "The Focus Vision Refractive Outcomes Analyzer supports lens constant optimisation for Barrett Universal II (Lens Factor), SRK/T (A-constant), Kane, Holladay 2 (Surgeon Factor), and EVO. Note that the Kane and EVO calculators take the manufacturer's SRK/T A-constant as their nominal input constant. The optimiser applies a formula-specific linear correction factor — an approximation of full iterative optimisation — and all optimised constants should be validated prospectively before routine clinical use.",
 	},
 	{
 		q: "What is a double-angle plot (DAP) and what does it show?",
-		a: "A double-angle plot, also called a power vector or Alpins vector diagram, plots each eye's residual astigmatism as a point in a two-dimensional space (J0 vs J45 power vectors). The centroid of the distribution reveals systematic astigmatic bias — for example, a systematic against-the-rule shift in toric IOL alignment. It is the recommended method for astigmatism outcomes analysis by the ESCRS and Alpins methodology.",
+		a: "A double-angle plot, also called a power vector or Alpins vector diagram, plots each eye's residual astigmatism as a point in a two-dimensional space (J0 vs J45 power vectors). The centroid of the distribution reveals systematic astigmatic bias — for example, a systematic against-the-rule shift in toric IOL alignment. The analyzer draws a data-driven 95% confidence ellipse of the centroid and a 95% tolerance ellipse of the dataset, classifies the centroid as with-the-rule, against-the-rule or oblique, and compares toric and non-toric eyes. It is the standard method for astigmatism outcomes reporting in the refractive surgery literature, based on the Alpins power vector methodology.",
 	},
 	{
-		q: 'What does "within ±0.50 D" mean and what is the ESCRS benchmark?',
-		a: "The proportion of eyes within ±0.50 D of the IOL target refraction is the primary global benchmark for IOL formula accuracy. The European Society of Cataract and Refractive Surgeons (ESCRS) published benchmark is 85% of eyes within ±0.50 D. High-performing formulas with optimised constants in experienced hands routinely achieve 90% or above. The analyzer displays your result with a colour-coded badge indicating whether you meet or fall below this standard.",
+		q: 'What does "within ±0.50 D" mean and what benchmark should I aim for?',
+		a: 'The proportion of eyes within ±0.50 D of the IOL target refraction is the primary global measure of IOL formula accuracy. The published NHS benchmark is 55% of eyes within ±0.50 D and 85% within ±1.00 D (<a href="https://pubmed.ncbi.nlm.nih.gov/17721503/" target="_blank" rel="noopener">Gale et al., Eye 2009</a>), while the European EUREQUO registry average is 73% within ±0.50 D (<a href="https://www.sciencedirect.com/science/article/abs/pii/S0886335018302293" target="_blank" rel="noopener">Lundström et al., JCRS 2018</a>, analysis of 282,811 cataract extractions). High-performing surgeons with optimised lens constants and modern formulas routinely achieve 85% or above within ±0.50 D. The analyzer displays your result with colour-coded badges against both the published benchmarks and this high-performer target.',
 	},
 	{
 		q: "How do I calculate spherical equivalent from a manifest refraction?",
@@ -161,7 +183,7 @@ const faqs = [
 	},
 	{
 		q: "Is this tool endorsed by the ESCRS or any professional body?",
-		a: "The Focus Vision Refractive Outcomes Analyzer has been designed in alignment with ESCRS published benchmarks and outcomes analysis guidelines. It is not formally endorsed by the ESCRS or any other professional body. Surgeons are encouraged to validate any optimised constants prospectively before routine clinical use, as recommended by ESCRS guidelines.",
+		a: "The Focus Vision Refractive Outcomes Analyzer has been designed in alignment with published benchmarks and outcomes-analysis methodology from the peer-reviewed literature, including standard power vector (double-angle) astigmatism reporting. It is not formally endorsed by the ESCRS or any other professional body. Surgeons are encouraged to validate any optimised constants prospectively before routine clinical use, as recommended throughout the IOL calculation literature.",
 	},
 	{
 		q: "Can I use this tool for audit, credentialling, or medico-legal documentation?",
@@ -169,13 +191,26 @@ const faqs = [
 	},
 ];
 
+const lastReviewed = "2026-07-04";
+
 const graph = [
 	getMedicalClinicSchema(),
-	getMedicalWebPageSchema(
-		"/free-refractive-outcomes-analyzer",
-		title,
-		description,
-	),
+	{
+		...getMedicalWebPageSchema(
+			"/free-refractive-outcomes-analyzer",
+			title,
+			description,
+			undefined,
+			lastReviewed,
+			lastReviewed,
+		),
+		// AU/UK spelling variant so "refractive outcomes analyser" searches
+		// and AI assistants resolve to the same entity
+		alternateName: [
+			"Free Refractive Outcomes Analyser",
+			"IOL Refractive Outcomes Analyser",
+		],
+	},
 	getBreadcrumbSchema([
 		{
 			name: "Free Refractive Outcomes Analyzer",
@@ -186,12 +221,14 @@ const graph = [
 ---
 
 <BaseLayout
+	title="Free Refractive Outcomes Analyzer & IOL Constant Optimiser"
 	showCurve={false}
 	topColor="#f4f1ed"
 	direction="down"
 	bottomColor="transparent"
 	description={description}
 	ogType={ogType}
+	ogImage={dashboardImage}
 >
 	<Fragment slot="head-schema">
 		<Schema item={graph} />
@@ -372,6 +409,12 @@ const graph = [
 	</SimpleBanner>
 
 	<Faq title="Frequently Asked Questions" faqs={faqs} style="eggshell" />
+
+	<ReviewedBy
+		author="Dr Brendan Cronin"
+		authorUrl="/about-dr-brendan-cronin"
+		lastReviewed={lastReviewed}
+	/>
 
 	<Section backgroundColor="#C2DBE3">
 		<h2 class="big-text" style="color: #1C2F49;">

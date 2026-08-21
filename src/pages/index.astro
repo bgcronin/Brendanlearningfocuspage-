@@ -34,6 +34,7 @@ import readingIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryre
 import rleIcon from "../assets/images/cards/img-FocusVisionLaserEyeSurgeryRefractiveLens.png";
 import cataractIcon from "../assets/images/cards/img-FocusVisionCataractEyeSurger.png";
 import pterygiumIcon from "../assets/images/cards/img-FocusVisionPterygiumSurgeryR.png";
+import rayTracingIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+Laser.png";
 
 // Import the icon images
 import latestTechIcon from "../assets/images/cards/img-FOCUS+Vision+Laser+Eye+LASIK+Brisbane+David+Gunn+Brendan+Cronin+Laser.png";
@@ -86,6 +87,22 @@ const ogType = "website";
 			<Button
 				href="/vision-correction/laser-eye-surgery"
 				text="Laser Eye Surgery"
+			/>
+		</Card>
+
+		<Card layout="icon">
+			<div slot="image">
+				<Image src={rayTracingIcon} alt={`Ray Tracing LASIK Icon`} />
+			</div>
+			<h3>Ray Tracing LASIK</h3>
+			<p>
+				The only clinic in Queensland offering Ray Tracing LASIK —
+				laser vision correction personalised from a 3D model of your
+				eye.
+			</p>
+			<Button
+				href="/vision-correction/ray-tracing-lasik/"
+				text="Ray Tracing LASIK"
 			/>
 		</Card>
 
@@ -263,9 +280,8 @@ const ogType = "website";
 				/>
 				<h3>Only Cornea Specialists</h3>
 				<p>
-					At Focus Vision, your surgery will be performed only by
-					surgeons who have completed international cornea surgery
-					fellowship training.
+					Our internationally trained corneal specialists have
+					completed over 40,000 procedures.
 				</p>
 			</Card>
 
@@ -337,6 +353,28 @@ const ogType = "website";
 
 		<!-- You can add lists, buttons, etc. here -->
 	</TwoColumnContent>
+
+	<SimpleBanner
+		textAlign="center"
+		backgroundColor="#F4F1ED"
+		headerColor="#1C2F49"
+		textColor="#1C2F49"
+		textWeight="300"
+	>
+		<h2>Outcomes We Measure — With Software We Built</h2>
+		<p>
+			Modern cataract and lens surgery is judged in fractions of a
+			dioptre. Dr Brendan Cronin and Dr David Gunn audit their refractive
+			results with the free <a href="/free-refractive-outcomes-analyzer"
+				>Refractive Outcomes Analyzer</a
+			> they built for the global ophthalmology community — benchmarking every
+			outcome against published international standards.
+		</p>
+		<Button
+			href="/free-refractive-outcomes-analyzer"
+			text="Explore The Analyzer"
+		/>
+	</SimpleBanner>
 
 	<PartnerLogos />
 </BaseLayout>
