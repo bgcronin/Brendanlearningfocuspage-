@@ -4,3 +4,4 @@ Disallow: /my-cpd
 Disallow: /profile
 Disallow: /forgot-password
 Disallow: /reset-password
+Sitemap: https://cpd.focusvision.com.au/sitemap.xml
