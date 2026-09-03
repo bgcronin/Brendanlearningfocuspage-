@@ -2,8 +2,10 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { normalizeAhpra } from '../lib/helpers'
+import useDocumentHead from '../lib/useDocumentHead'
 
 export default function Register() {
+  useDocumentHead({ title: 'Create your free account', description: "Register for free CPD for optometrists: presentations by Focus Vision's corneal, cataract and refractive specialists, with instant emailed certificates." })
   const [form, setForm] = useState({ full_name: '', email: '', practice_name: '', ahpra_number: '', password: '' })
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)

@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import useDocumentHead from '../lib/useDocumentHead'
 
 export default function Login() {
+  useDocumentHead({ title: 'Log in', description: 'Log in to the Focus Vision CPD Portal to watch presentations, complete quizzes and download your CPD certificates.' })
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
