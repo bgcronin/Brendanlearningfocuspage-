@@ -1,3 +1,5 @@
+import useDocumentHead from '../lib/useDocumentHead'
+
 /**
  * Privacy policy for the Focus Vision CPD Portal.
  * Reviewed content should be confirmed with your legal adviser before launch —
@@ -12,6 +14,7 @@ const Section = ({ title, children }) => (
 )
 
 export default function Privacy() {
+  useDocumentHead({ title: 'Privacy policy', description: 'How the Focus Vision CPD Portal collects, uses and protects your personal information.' })
   return (
     <div className="mx-auto max-w-3xl">
       <div className="card p-8 sm:p-10">

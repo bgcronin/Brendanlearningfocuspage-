@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { formatDate, formatHours } from '../lib/helpers'
+import useDocumentHead from '../lib/useDocumentHead'
 
 export default function VerifyCertificate() {
+  useDocumentHead({ title: 'Verify a CPD certificate', description: 'Check the authenticity of a Focus Vision CPD certificate by entering its unique certificate ID. No login required.' })
   const [code, setCode] = useState('')
   const [result, setResult] = useState(null) // null | 'notfound' | record
   const [busy, setBusy] = useState(false)

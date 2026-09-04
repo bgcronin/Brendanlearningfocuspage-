@@ -16,6 +16,12 @@ import AdminCourses from './pages/admin/AdminCourses'
 import AdminUsers from './pages/admin/AdminUsers'
 import AdminAnalytics from './pages/admin/AdminAnalytics'
 import CourseEditor from './pages/admin/CourseEditor'
+import useDocumentHead from './lib/useDocumentHead'
+
+function NotFound() {
+  useDocumentHead({ title: 'Page not found', canonical: false, robots: 'noindex' })
+  return <div className="py-24 text-center text-slate-500">Page not found.</div>
+}
 
 export default function App() {
   return (
@@ -41,7 +47,7 @@ export default function App() {
         <Route path="/admin/courses/new" element={<RequireAdmin><CourseEditor /></RequireAdmin>} />
         <Route path="/admin/courses/:id" element={<RequireAdmin><CourseEditor /></RequireAdmin>} />
 
-        <Route path="*" element={<div className="py-24 text-center text-slate-500">Page not found.</div>} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </Layout>
   )
